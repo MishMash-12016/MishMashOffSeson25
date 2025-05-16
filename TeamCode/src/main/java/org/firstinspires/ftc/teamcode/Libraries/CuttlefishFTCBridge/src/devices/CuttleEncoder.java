@@ -62,7 +62,7 @@ public class CuttleEncoder
      * Set the direction of the encoder.
      * @param direction
      * */
-    public void setDirection(Direction direction)
+    public CuttleEncoder setDirection(Direction direction)
     {
         if(direction == Direction.REVERSE)
         {
@@ -72,5 +72,7 @@ public class CuttleEncoder
         {
             this.direction = 1;
         }
+
+        return this;
     }
 }

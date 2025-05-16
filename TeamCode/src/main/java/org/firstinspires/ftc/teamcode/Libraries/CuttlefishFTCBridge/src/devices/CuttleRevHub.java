@@ -326,8 +326,8 @@ public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmin
    /**
     * Set the color of the LED on the hub
     * @param r Red channel
-    * @param r Green channel
-    * @param r Blue channel
+    * @param g Green channel
+    * @param b Blue channel
     */
    public void setLedColor(byte r, byte g, byte b)
    {

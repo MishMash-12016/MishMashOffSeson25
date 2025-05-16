@@ -17,7 +17,7 @@ public class FFKvSysid extends CommandBase {
     private static final double RAMP_VOLTS_PER_SEC = 0.1;
 
     private FeedForwardCharacterizationData data;
-    private final Consumer<Double> voltageConsumer;
+    private final Consumer<Double> powerConsumer;
     private final Supplier<Double> velocitySupplier;
 
     private final ElapsedTime timer = new ElapsedTime();
@@ -26,9 +26,9 @@ public class FFKvSysid extends CommandBase {
      * Creates a new FeedForwardCharacterization command.
      */
     public FFKvSysid(
-            Subsystem subsystem, Consumer<Double> voltageConsumer, Supplier<Double> velocitySupplier) {
+            Subsystem subsystem, Consumer<Double> powerConsumer, Supplier<Double> velocitySupplier) {
         addRequirements(subsystem);
-        this.voltageConsumer = voltageConsumer;
+        this.powerConsumer = powerConsumer;
         this.velocitySupplier = velocitySupplier;
     }
 
@@ -43,18 +43,18 @@ public class FFKvSysid extends CommandBase {
     @Override
     public void execute() {
         if (timer.seconds() < START_DELAY_SECS) {
-            voltageConsumer.accept(0.0);
+            powerConsumer.accept(0.0);
         } else {
-            double voltage = (timer.seconds() - START_DELAY_SECS) * RAMP_VOLTS_PER_SEC;
-            voltageConsumer.accept(voltage);
-            data.add(velocitySupplier.get(), voltage);
+            double power = (timer.seconds() - START_DELAY_SECS) * RAMP_VOLTS_PER_SEC;
+            powerConsumer.accept(power);
+            data.add(velocitySupplier.get(), power);
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        voltageConsumer.accept(0.0);
+        powerConsumer.accept(0.0);
         data.print();
     }
 
@@ -66,24 +66,24 @@ public class FFKvSysid extends CommandBase {
 
     public static class FeedForwardCharacterizationData {
         private final List<Double> velocityData = new LinkedList<>();
-        private final List<Double> voltageData = new LinkedList<>();
+        private final List<Double> powerData = new LinkedList<>();
 
-        public void add(double velocity, double voltage) {
+        public void add(double velocity, double power) {
             if (Math.abs(velocity) > 1E-4) {
                 velocityData.add(Math.abs(velocity));
-                voltageData.add(Math.abs(voltage));
+                powerData.add(Math.abs(power));
             }
         }
 
         public void print() {
-            if (velocityData.isEmpty() || voltageData.isEmpty()) {
+            if (velocityData.isEmpty() || powerData.isEmpty()) {
                 return;
             }
 
             PolynomialRegression regression =
                     new PolynomialRegression(
                             velocityData.stream().mapToDouble(Double::doubleValue).toArray(),
-                            voltageData.stream().mapToDouble(Double::doubleValue).toArray(),
+                            powerData.stream().mapToDouble(Double::doubleValue).toArray(),
                             1);
 
             //between 0-1 how good are the results (the higher the better)

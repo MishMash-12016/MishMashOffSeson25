@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems;
+package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor;
 
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.RunCommand;
@@ -9,7 +9,10 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleEncoder;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleMotor;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PIDController;
+import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -45,11 +48,48 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
      * @param kp proportional gain
      * @param ki integral gain
      * @param kd derivative gain
-     * @param encoder encoder for measuring the subsystem's position
+     * @param encoderPort      Port number the encoder is connected to.
+     * @param encoderCPR       Counts per revolution (CPR) of the encoder.
+     * @param encoderDirection Direction configuration of the encoder (e.g. forward or reverse).
+     * @param motorPort        Port number the motor is connected to.
+     * @param motorDirection   Direction configuration of the motor (e.g. forward or
+     * @param withDefaultCommand false if you don't want the default command (value default is true)
      */
-    public MotorPositionPidSubsystem(double kp, double ki, double kd, CuttleEncoder encoder) {
+    //TODO: decide if default command needs to be here
+    public MotorPositionPidSubsystem(double kp, double ki, double kd,
+                                     int encoderPort, double encoderCPR, Direction encoderDirection,
+                                     int motorPort, Direction motorDirection,
+                                     boolean withDefaultCommand,
+                                     CuttleRevHub revHub) {
         this.pidController = new PIDController(kp, ki, kd);
-        this.encoder = encoder;
+        this.encoder = new CuttleEncoder(revHub, encoderPort, encoderCPR)
+                .setDirection(encoderDirection);
+
+        motorList.add(new CuttleMotor(revHub, motorPort).setDirection(motorDirection));
+
+        if (withDefaultCommand){
+            this.setDefaultCommand(stayAtPoseCommand());
+        }
+    }
+
+
+    /**
+     * Constructs a MotorPositionPidSubsystem with given PID gains and encoder.
+     * @param kp proportional gain
+     * @param ki integral gain
+     * @param kd derivative gain
+     * @param encoderPort      Port number the encoder is connected to.
+     * @param encoderCPR       Counts per revolution (CPR) of the encoder.
+     * @param encoderDirection Direction configuration of the encoder (e.g. forward or reverse).
+     * @param motorPort        Port number the motor is connected to.
+     * @param motorDirection   Direction configuration of the motor (e.g. forward or
+     */
+    public MotorPositionPidSubsystem(double kp, double ki, double kd,
+                                     int encoderPort, double encoderCPR, Direction encoderDirection,
+                                     int motorPort, Direction motorDirection,
+                                     CuttleRevHub revHub) {
+        this(kp, ki, kd, encoderPort, encoderCPR, encoderDirection,
+                motorPort, motorDirection, true, revHub);
     }
 
     /**
@@ -74,6 +114,33 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
             @Override
             public boolean isFinished() {
                 return pidController.atSetpoint(); // check if within tolerance
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                // Declare that this command requires the enclosing subsystem instance
+                return Set.of(MotorPositionPidSubsystem.this);
+            }
+        };
+    }
+
+    /**
+     * Creates a Command that keeps the mechanism in place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    public Command stayAtPoseCommand() {
+        return new Command() {
+            @Override
+            public void initialize() {
+                pidController.reset();             // clear previous errors/integral
+                pidController.setSetpoint(getPose());
+            }
+
+            @Override
+            public void execute() {
+                double output = pidController.calculate(getPose());
+                setPower(output);                 // apply computed power
             }
 
             @Override
@@ -117,13 +184,11 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
     }
 
     /**
-     * Adds a default command that holds the current position using PID.
-     * <p>TODO: implement default command logic using moveToPoseCommand</p>
-     * @return this subsystem for chaining
+     *
+     * @param setpoint the setpoint for the pid to aim for
      */
-    public MotorPositionPidSubsystem withHoldPositionDefaultCommand() {
-        // TODO: set moveToPoseCommand(getPose()) as default
-        return this;
+    public void setSetpoint(double setpoint){
+        pidController.setSetpoint(setpoint);
     }
 
     /**

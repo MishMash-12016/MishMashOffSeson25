@@ -16,6 +16,9 @@ public class CuttleMotor{
     double power;
     public boolean interlaced;
 
+    //TODO: find nominal voltage
+    double nominalVoltage = 12;
+
     /**
      * @param revHub the control/expension hub
      * @param port the port it is connected to on the control/expension hub
@@ -30,11 +33,21 @@ public class CuttleMotor{
      * @param power the power to set the motor to between -1 to 1
      * */
     public void setPower(double power) {
-        this.power = power;
+        this.power = voltageCompensate(power);
+
         if(!interlaced)
         {
             sendPower();
         }
+    }
+
+    /**
+     * compensate for voltage changes of the control hub
+     * @param power the uncompensated power between -1 to 1
+     * @return the compensated value between -1 to 1
+     */
+    public double voltageCompensate(double power){
+        return (power * nominalVoltage) / hub.getBatteryVoltage();
     }
 
     /**

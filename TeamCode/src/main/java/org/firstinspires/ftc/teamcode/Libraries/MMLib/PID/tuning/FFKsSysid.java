@@ -55,7 +55,7 @@ public class FFKsSysid extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Static Characterization output: " + currentInput + " amps");
+        System.out.println("Static Characterization output: " + currentInput);
         inputConsumer.accept(0);
     }
 }
