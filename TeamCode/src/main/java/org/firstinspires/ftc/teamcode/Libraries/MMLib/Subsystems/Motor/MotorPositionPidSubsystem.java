@@ -34,6 +34,8 @@ import java.util.Set;
  *   Command moveArm = arm.moveToPoseCommand(100);
  * </pre>
  */
+
+//TODO: decide if the user should bring a ready to use cuttle motor or the variables and we create the cuttle motor here
 public class MotorPositionPidSubsystem extends SubsystemBase {
 
     // List of motors driven by this subsystem
@@ -55,7 +57,10 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
      * @param motorDirection   Direction configuration of the motor (e.g. forward or
      * @param withDefaultCommand false if you don't want the default command (value default is true)
      */
-    //TODO: decide if default command needs to be here
+    //TODO: decide if all the this needs to be here or not
+    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
+    //and i makes it impossible for the user to not have them
+    //on the other hand, it is a bit annoying
     public MotorPositionPidSubsystem(double kp, double ki, double kd,
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,

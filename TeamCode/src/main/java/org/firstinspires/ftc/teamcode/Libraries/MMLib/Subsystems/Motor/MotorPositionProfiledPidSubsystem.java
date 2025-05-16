@@ -37,6 +37,7 @@ import java.util.Set;
  *   Command moveArm = arm.moveToPoseCommand(100);
  * </pre>
  */
+//TODO: decide if the user should bring a ready to use cuttle motor or the variables and we create the cuttle motor here
 public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
 
     // List of motors driven by this subsystem
@@ -64,7 +65,10 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
      * @param motorDirection   Direction configuration of the motor (e.g. forward or reverse).
      * @param withDefaultCommand false if you don't want the default command (value default is true)
      */
-    //TODO: decide if the default command needs to be here or not
+    //TODO: decide if all the this needs to be here or not
+    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
+    //and i makes it impossible for the user to not have them
+    //on the other hand, it is a bit annoying
     public MotorPositionProfiledPidSubsystem(double kp, double ki, double kd, double kS, double kV,
                                              double maxVelocity, double maxAcceleration,
                                              int encoderPort, double encoderCPR, Direction encoderDirection,
@@ -83,7 +87,9 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
         motorList.add(new CuttleMotor(revHub, motorPort)
                 .setDirection(motorDirection));
 
-        this.setDefaultCommand(stayAtPoseCommand());
+        if(withDefaultCommand){
+            this.setDefaultCommand(stayAtPoseCommand());
+        }
     }
 
     /**
@@ -258,6 +264,19 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
      */
     public MotorPositionProfiledPidSubsystem withPid(double kp, double ki, double kd) {
         profiledPidController.setPID(kp, ki, kd);
+        return this;
+    }
+
+    /**
+     * Updates feedforward gains.
+     *
+     * @param kS feedforward gain
+     * @param kV feedforward gain
+     * @return this subsystem for chaining
+     */
+    public MotorPositionProfiledPidSubsystem withFeedforward(double kS, double kV) {
+        feedforward.setKs(kS);
+        feedforward.setKv(kV);
         return this;
     }
 

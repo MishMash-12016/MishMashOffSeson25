@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+
 /**
  * Cuttlefish compatible servo.
  * Contains a list of preset positions which can be appended to using the addPreset() function.
@@ -12,8 +14,9 @@ public class CuttleServo{
     public int port;
     boolean enabled = false;
     final boolean FTCServo;
+    double offset = 0.0;
 
-    boolean isReverse = false;
+    Direction direction = Direction.FORWARD;
     CuttleRevHub hub;
     com.qualcomm.robotcore.hardware.Servo ftcServoDevice;
 
@@ -45,7 +48,9 @@ public class CuttleServo{
      * @param position Target position
      * */
     public void setPosition(double position) {
-        pos = isReverse? 1 - position : position;
+        double offsetPose = position + pos;
+        pos = direction == Direction.REVERSE ? 1 - offsetPose : offsetPose;
+
         if(!FTCServo)
         {
             hub.setServoPosition(port,pos);
@@ -56,7 +61,7 @@ public class CuttleServo{
         }
         else
         {
-            ftcServoDevice.setPosition(position);
+            ftcServoDevice.setPosition(offsetPose);
         }
     }
 
@@ -82,7 +87,13 @@ public class CuttleServo{
         return pos;
     }
 
-    public void setReverse(boolean isReverse) {
-        this.isReverse = isReverse;
+    public CuttleServo setDirection(Direction direction) {
+        this.direction = direction;
+        return this;
+    }
+
+    public CuttleServo setOffset(double offset) {
+        this.offset = offset;
+        return this;
     }
 }
