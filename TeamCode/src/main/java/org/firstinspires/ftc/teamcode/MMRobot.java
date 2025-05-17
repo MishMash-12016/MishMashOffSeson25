@@ -35,7 +35,7 @@ public class MMRobot extends Robot {
      * if experimenting, then this does nothing.
      * @param type the {@link OpModeType} chosen
      */
-    private void initializeSystems(OpModeType type) {
+    public void initializeSystems(OpModeType type) {
         if(type == OpModeType.Competition.TELEOP) {
             initTele();
         } else if (type == OpModeType.Competition.AUTO) {

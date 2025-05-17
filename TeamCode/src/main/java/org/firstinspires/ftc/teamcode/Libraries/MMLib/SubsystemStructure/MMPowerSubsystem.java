@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.SubsystemStructure;
 
-import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public abstract class MMPowerSubsystem<T>
         extends SubsystemBase

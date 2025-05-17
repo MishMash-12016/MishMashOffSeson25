@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID;
 
-import com.arcrobotics.ftclib.command.CommandBase;
-
-import org.firstinspires.ftc.teamcode.utils.SQPIDController;
+import com.seattlesolvers.solverslib.command.CommandBase;
 
 public class MMPIDCommand extends CommandBase {
 
