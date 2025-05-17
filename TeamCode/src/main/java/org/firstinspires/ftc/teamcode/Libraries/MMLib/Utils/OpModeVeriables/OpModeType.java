@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 

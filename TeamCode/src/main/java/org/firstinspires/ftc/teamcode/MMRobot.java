@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.seattlesolvers.solverslib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
-import org.firstinspires.ftc.teamcode.utils.OpModeType;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 
 public class MMRobot extends Robot {
 
