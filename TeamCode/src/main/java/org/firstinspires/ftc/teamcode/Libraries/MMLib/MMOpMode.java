@@ -11,9 +11,6 @@ import com.seattlesolvers.solverslib.command.Subsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.MMSystems;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
-import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
@@ -69,17 +66,25 @@ public abstract class MMOpMode extends LinearOpMode {
 
     public abstract void onPlay();
 
-    public void onPlayLoop() {
+    /**
+     * Updates the {@link CommandScheduler}, {@link org.firstinspires.ftc.robotcore.external.Telemetry Telemetry}
+     * and {@link org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub Control & Expansion Hub} on Play Loop.
+     */
+    public void onPlayLoopUpdates() {
         CommandScheduler.getInstance().run();                 //runs the scheduler
+        /*
         MMSystems.getInstance().controlHub.pullBulkData();    //updates the controlHub sensors
         MMSystems.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
         telemetry.update();                                   //updates the telemetry
+        */
     }
+
+    public abstract void onPlayLoop();
 
     public abstract void onEnd();
 
     /**
-     * Cancels all previous commands
+     * Cancels all previous commands and deletes the {@link MMRobot Robot Singleton}
      */
     public void reset() {
         CommandScheduler.getInstance().reset();
@@ -134,6 +139,7 @@ public abstract class MMOpMode extends LinearOpMode {
             }
             onPlay();
             while (!isStopRequested() && opModeIsActive()) {
+                onPlayLoopUpdates();
                 onPlayLoop();
             }
         } finally {
