@@ -21,21 +21,17 @@ public class ServoSubsystem extends SubsystemBase {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
 
-    //TODO: decide if all the this needs to be here or not
-    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
-    //and i makes it impossible for the user to not have them
-    //on the other hand, it is a bit annoying
     public ServoSubsystem(CuttleRevHub revHub, int servoPort, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
     }
 
-    //TODO: decide if all the this needs to be here or not
-    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
-    //and i makes it impossible for the user to not have them
-    //on the other hand, it is a bit annoying
     public ServoSubsystem(HardwareMap hardwareMap, String servoName, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
+        servoList.add(servo);
+    }
+
+    public ServoSubsystem(CuttleServo servo){
         servoList.add(servo);
     }
 
@@ -54,7 +50,7 @@ public class ServoSubsystem extends SubsystemBase {
      * @param movementDurationMS the time in milliseconds the servo should take to complete the movement
      * @return the command
      */
-    public Command setPositionWithDuration(double targetPose, double movementDurationMS) {
+    public Command moveToPositionOverTimeCommand(double targetPose, double movementDurationMS) {
         return new Command() {
             ElapsedTime currentTimeMS;
             double difference;
@@ -92,10 +88,10 @@ public class ServoSubsystem extends SubsystemBase {
         };
     }
 
-    public Command setPositionByButton(double defaultPosition,BooleanSupplier button, double position) {
+    public Command setPositionByButton(double defaultPosition, BooleanSupplier button, double buttonPressedPosition) {
         return new RunCommand(()->{
             if (button.getAsBoolean()) {
-                setPosition(position);
+                setPosition(buttonPressedPosition);
             } else {
                 setPosition(defaultPosition);
             }
@@ -121,11 +117,26 @@ public class ServoSubsystem extends SubsystemBase {
     }
 
     public double getPosition() {
-        return servoList.get(0).getPosition();
+        double noOffsetPose = servoList.get(0).getPosition() - servoList.get(0).getOffset();
+        return servoList.get(0).getDirection()==Direction.REVERSE ?
+                1 - noOffsetPose:
+                noOffsetPose;
     }
 
     //TODO: decide if the user should bring a ready to use cuttle servo or the variables and we create the cuttle servo here
     public ServoSubsystem withServo(CuttleServo servo) {
+        servoList.add(servo);
+        return this;
+    }
+
+    public ServoSubsystem withServo(HardwareMap hardwareMap, String servoName, Direction servoDirection, Double offset) {
+        CuttleServo servo = new CuttleServo(hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
+        servoList.add(servo);
+        return this;
+    }
+
+    public ServoSubsystem withServo(CuttleRevHub revHub, int servoPort, Direction servoDirection, Double offset) {
+        CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
     }
