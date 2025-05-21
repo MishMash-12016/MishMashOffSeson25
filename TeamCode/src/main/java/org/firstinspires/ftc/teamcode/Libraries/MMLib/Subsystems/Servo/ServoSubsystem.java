@@ -16,39 +16,66 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
-//TODO: decide if the user should bring a ready to use cuttle servo or the variables and we create the cuttle servo here
+/**
+ * A subsystem that wraps and manages one or more {@link CuttleServo} instances, allowing
+ * for position control and command generation. Supports instant positioning,
+ * gradual movement over time, and conditional positioning based on button input.
+ */
 public class ServoSubsystem extends SubsystemBase {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
 
+    /**
+     * Creates a ServoSubsystem using a {@link CuttleRevHub}-based servo configuration.
+     *
+     * @param revHub         the rev hub to which the servo is connected
+     * @param servoPort      the port number on the hub
+     * @param servoDirection the logical direction of the servo
+     * @param offset         position offset for calibration
+     */
     public ServoSubsystem(CuttleRevHub revHub, int servoPort, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
     }
 
+    /**
+     * Creates a ServoSubsystem using a {@link HardwareMap}-based servo configuration.
+     *
+     * @param hardwareMap    the FTC hardware map
+     * @param servoName      the name of the servo in the hardware configuration
+     * @param servoDirection the logical direction of the servo
+     * @param offset         position offset for calibration
+     */
     public ServoSubsystem(HardwareMap hardwareMap, String servoName, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
     }
 
-    public ServoSubsystem(CuttleServo servo){
+    /**
+     * Creates a ServoSubsystem using an existing {@link CuttleServo}.
+     *
+     * @param servo the servo instance to manage
+     */
+    public ServoSubsystem(CuttleServo servo) {
         servoList.add(servo);
     }
 
     /**
-     * moves the servo's to the target position
-     * @param position the target position
-     * @return instant command
+     * Instantly moves all servos to the given position.
+     *
+     * @param position the target position [0.0, 1.0]
+     * @return an InstantCommand that moves the servos immediately
      */
     public Command setPositionCommand(double position) {
         return new InstantCommand(() -> setPosition(position));
     }
 
     /**
-     * the servo's will not immediately move to the target position it will take timeMS to complete the movement
-     * @param targetPose the target position
-     * @param movementDurationMS the time in milliseconds the servo should take to complete the movement
-     * @return the command
+     * Moves all servos to the target position gradually over a specified time.
+     *
+     * @param targetPose        the final target position [0.0, 1.0]
+     * @param movementDurationMS the total movement duration in milliseconds
+     * @return a Command that performs the motion over time
      */
     public Command moveToPositionOverTimeCommand(double targetPose, double movementDurationMS) {
         return new Command() {
@@ -62,10 +89,8 @@ public class ServoSubsystem extends SubsystemBase {
                 currentTimeMS.reset();
                 startPose = getPosition();
                 difference = targetPose - startPose;
-
             }
 
-            //slowly move the servo's to the target position
             @Override
             public void execute() {
                 setPosition(startPose + (currentTimeMS.milliseconds() / movementDurationMS) * difference);
@@ -88,8 +113,16 @@ public class ServoSubsystem extends SubsystemBase {
         };
     }
 
+    /**
+     * Sets servo position based on a single button state.
+     *
+     * @param defaultPosition       the position to use when the button is not pressed
+     * @param button                a BooleanSupplier providing the button state
+     * @param buttonPressedPosition the position to move to when the button is pressed
+     * @return a RunCommand that sets the position based on the button state
+     */
     public Command setPositionByButton(double defaultPosition, BooleanSupplier button, double buttonPressedPosition) {
-        return new RunCommand(()->{
+        return new RunCommand(() -> {
             if (button.getAsBoolean()) {
                 setPosition(buttonPressedPosition);
             } else {
@@ -98,11 +131,21 @@ public class ServoSubsystem extends SubsystemBase {
         });
     }
 
-    public Command setPositionByButton(double defaultPosition,BooleanSupplier button1, double position1, BooleanSupplier button2, double position2) {
-        return new RunCommand(()->{
+    /**
+     * Sets servo position based on the states of two buttons.
+     *
+     * @param defaultPosition the default position when neither button is pressed
+     * @param button1         the first button
+     * @param position1       the position for the first button
+     * @param button2         the second button
+     * @param position2       the position for the second button
+     * @return a RunCommand that sets the position based on the button states
+     */
+    public Command setPositionByButton(double defaultPosition, BooleanSupplier button1, double position1, BooleanSupplier button2, double position2) {
+        return new RunCommand(() -> {
             if (button1.getAsBoolean()) {
                 setPosition(position1);
-            } else if(button2.getAsBoolean()) {
+            } else if (button2.getAsBoolean()) {
                 setPosition(position2);
             } else {
                 setPosition(defaultPosition);
@@ -110,31 +153,65 @@ public class ServoSubsystem extends SubsystemBase {
         });
     }
 
+    /**
+     * Directly sets all attached servos to the specified position.
+     *
+     * @param position the target position [0.0, 1.0]
+     */
     public void setPosition(double position) {
-        for(CuttleServo servo : servoList) {
+        for (CuttleServo servo : servoList) {
             servo.setPosition(position);
         }
     }
 
+    /**
+     * Gets the logical position of the first servo in the list,
+     * taking into account offset and direction.
+     *
+     * @return the logical position [0.0, 1.0]
+     */
     public double getPosition() {
         double noOffsetPose = servoList.get(0).getPosition() - servoList.get(0).getOffset();
-        return servoList.get(0).getDirection()==Direction.REVERSE ?
-                1 - noOffsetPose:
+        return servoList.get(0).getDirection() == Direction.REVERSE ?
+                1 - noOffsetPose :
                 noOffsetPose;
     }
 
-    //TODO: decide if the user should bring a ready to use cuttle servo or the variables and we create the cuttle servo here
+    /**
+     * Adds a preconfigured {@link CuttleServo} to the subsystem.
+     *
+     * @param servo the servo to add
+     * @return this subsystem instance, for chaining
+     */
     public ServoSubsystem withServo(CuttleServo servo) {
         servoList.add(servo);
         return this;
     }
 
+    /**
+     * Adds a servo to the subsystem using {@link HardwareMap}.
+     *
+     * @param hardwareMap    the hardware map to use
+     * @param servoName      the servo's name
+     * @param servoDirection the logical direction of the servo
+     * @param offset         the offset to apply
+     * @return this subsystem instance, for chaining
+     */
     public ServoSubsystem withServo(HardwareMap hardwareMap, String servoName, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
     }
 
+    /**
+     * Adds a servo to the subsystem using a {@link CuttleRevHub}.
+     *
+     * @param revHub         the rev hub to use
+     * @param servoPort      the port number
+     * @param servoDirection the logical direction
+     * @param offset         the offset to apply
+     * @return this subsystem instance, for chaining
+     */
     public ServoSubsystem withServo(CuttleRevHub revHub, int servoPort, Direction servoDirection, Double offset) {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
