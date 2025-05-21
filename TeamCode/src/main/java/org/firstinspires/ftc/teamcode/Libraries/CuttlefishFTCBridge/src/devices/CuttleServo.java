@@ -40,7 +40,6 @@ public class CuttleServo{
     {
         FTCServo = true;
         ftcServoDevice = hardwareMap.get(com.qualcomm.robotcore.hardware.Servo.class,name);
-
     }
 
     /**
@@ -48,7 +47,7 @@ public class CuttleServo{
      * @param position Target position
      * */
     public void setPosition(double position) {
-        double offsetPose = position + pos;
+        double offsetPose = position + offset;
         pos = direction == Direction.REVERSE ? 1 - offsetPose : offsetPose;
 
         if(!FTCServo)
@@ -92,8 +91,16 @@ public class CuttleServo{
         return this;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     public CuttleServo setOffset(double offset) {
         this.offset = offset;
         return this;
+    }
+
+    public double getOffset(){
+        return offset;
     }
 }
