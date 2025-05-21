@@ -15,7 +15,7 @@ android {
         // you probably don’t need an AndroidManifest for this library
     }
 
-    namespace "org.firstinspires.ftc.teamcode"
+    namespace "Ori.Coval.Logging"
 
 
     // if you want to keep it pure Java for your annotation processor
