@@ -407,13 +407,6 @@ public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmin
       // TODO revHub.sendCommand(cmd);
 
       bulkData.updateData((LynxGetBulkInputDataResponse) sendCommandReceiveSync(cmd));
-      //System.out.println(revHub.getDeviceName());
-
-//      for (int i = 0; i < 4; i++)
-//      {
-//         System.out.println("Port " + i);
-//         System.out.println(bulkData.getAnalogInput(i));
-//      }
    }
 
    /**

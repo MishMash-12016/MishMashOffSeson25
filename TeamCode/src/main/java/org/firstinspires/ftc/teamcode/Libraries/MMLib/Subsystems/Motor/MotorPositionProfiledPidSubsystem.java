@@ -14,8 +14,6 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Di
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.ProfiledPIDController;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.TrapezoidProfile;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBattery;
-import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -37,7 +35,6 @@ import java.util.Set;
  *   Command moveArm = arm.moveToPoseCommand(100);
  * </pre>
  */
-//TODO: decide if the user should bring a ready to use cuttle motor or the variables and we create the cuttle motor here
 public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
 
     // List of motors driven by this subsystem
@@ -65,10 +62,6 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
      * @param motorDirection   Direction configuration of the motor (e.g. forward or reverse).
      * @param withDefaultCommand false if you don't want the default command (value default is true)
      */
-    //TODO: decide if all the this needs to be here or not
-    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
-    //and i makes it impossible for the user to not have them
-    //on the other hand, it is a bit annoying
     public MotorPositionProfiledPidSubsystem(double kp, double ki, double kd, double kS, double kV,
                                              double maxVelocity, double maxAcceleration,
                                              int encoderPort, double encoderCPR, Direction encoderDirection,

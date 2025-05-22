@@ -21,7 +21,6 @@ import java.util.Set;
  * and a PIDController to compute the required power to reach a target velocity setpoint.
  * </p>
  */
-//TODO: decide if the user should bring a ready to use cuttle motor or the variables and we create the cuttle motor here
 public class MotorVelocityPidSubsystem extends SubsystemBase {
 
     private final ArrayList<CuttleMotor> motorList = new ArrayList<>();
@@ -43,10 +42,6 @@ public class MotorVelocityPidSubsystem extends SubsystemBase {
      * @param withDefaultCommand whether to set the default hold command.
      * @param revHub             the REV Hub instance.
      */
-    //TODO: decide if all the this needs to be here or not
-    //on the one hand you must have all of the variables that are in here and the subsystem won't work without them
-    //and i makes it impossible for the user to not have them
-    //on the other hand, it is a bit annoying
     public MotorVelocityPidSubsystem(double kp, double ki, double kd, double kS, double kV,
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,
