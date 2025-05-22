@@ -3,6 +3,8 @@ package Ori.Coval.Logging;
 import android.content.Context;
 import android.os.Environment;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -12,13 +14,17 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * WpiLog: write WPILOG-format files for Advantage Scope.
  * Supports scalar and array data types.
  */
-//TODO: cahnge all the e.printStackTrace() for a better way of logging
+//TODO: change all the e.printStackTrace() for a better way of logging
+@SuppressWarnings("unused")
 public class WpiLog implements Closeable {
     private FileOutputStream fos;
     private final HashMap<String, Integer> recordIDs;
@@ -44,18 +50,21 @@ public class WpiLog implements Closeable {
     /**
      * Set up logging to a file named 'robot.wpilog' in SD or internal.
      */
-    //TODO: replace Context with HardwareMap for use with robot
-    //TODO:change the defult naming to date and time
-    public void setup(Context hardwareMap) {
-        setup(hardwareMap, "robot.wpilog");
+    public void setup(HardwareMap hardwareMap) {
+        // Format: yyyy-MM-dd_HH-mm-ss (example: 2025-05-22_15-42-10)
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
+                .format(new Date());
+
+        String fileName = timeStamp + ".wpilog";
+
+        setup(hardwareMap, fileName);
     }
 
     /**
      * Set up logging to the given filename, choosing SD if present.
      */
-    //TODO: replace Context with HardwareMap for use with robot
-    public void setup(Context hardwareMap, String filename) {
-        File out = chooseLogFile(hardwareMap, filename);
+    public void setup(HardwareMap hardwareMap, String filename) {
+        File out = chooseLogFile(hardwareMap.appContext, filename);
         try {
             fos = new FileOutputStream(out);
         } catch (FileNotFoundException e) {
@@ -72,7 +81,6 @@ public class WpiLog implements Closeable {
     /**
      * Picks removable SD card if mounted, otherwise primary external-files dir.
      */
-    //TODO: replace Context with HardwareMap for use with robot
     private File chooseLogFile(Context hwMap, String filename) {
         File[] extDirs = hwMap.getExternalFilesDirs(null);
         File sd = null;

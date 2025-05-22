@@ -11,15 +11,11 @@ android {
 
     defaultConfig {
         minSdkVersion 24
+        //ignore this error its fine
         targetSdkVersion 28
-        // you probably don’t need an AndroidManifest for this library
     }
 
     namespace "Ori.Coval.Logging"
-
-
-    // if you want to keep it pure Java for your annotation processor
-    // you can put your Android‐dependent classes in src/androidMain/
 }
 
 repositories {
