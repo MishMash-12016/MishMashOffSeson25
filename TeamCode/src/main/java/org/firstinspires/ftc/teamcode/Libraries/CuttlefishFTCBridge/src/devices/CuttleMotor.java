@@ -30,6 +30,16 @@ public class CuttleMotor{
     }
 
     /**
+     * @param revHub the control/expension hub
+     * @param port the port it is connected to on the control/expension hub
+     * */
+    public CuttleMotor(CuttleRevHub revHub, int port, Direction direction)
+    {
+        this(revHub, port);
+        setDirection(direction);
+    }
+
+    /**
      * @param power the power to set the motor to between -1 to 1
      * */
     public void setPower(double power) {

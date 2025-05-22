@@ -26,31 +26,17 @@ import java.util.Locale;
 //TODO: change all the e.printStackTrace() for a better way of logging
 @SuppressWarnings("unused")
 public class WpiLog implements Closeable {
-    private FileOutputStream fos;
-    private final HashMap<String, Integer> recordIDs;
-    private int largestId = 0;
-    private static WpiLog instance = null;
-    private long startTime;
+    private static FileOutputStream fos;
+    private static final HashMap<String, Integer> recordIDs = new HashMap<>();
+    private static int largestId = 0;
+    private static long startTime = System.nanoTime()/1000;
 
-    public static synchronized WpiLog getInstance() {
-        if (instance == null){
-            instance = new WpiLog();
-        }
-
-        return instance;
-    }
-
-    private WpiLog() {
-        recordIDs = new HashMap<>();
-        startTime = System.nanoTime() / 1000;
-    }
-
-    public void register(Logged loggedClass){}
+    public static void register(Logged loggedClass){}
 
     /**
      * Set up logging to a file named 'robot.wpilog' in SD or internal.
      */
-    public void setup(HardwareMap hardwareMap) {
+    public static void setup(HardwareMap hardwareMap) {
         // Format: yyyy-MM-dd_HH-mm-ss (example: 2025-05-22_15-42-10)
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
                 .format(new Date());
@@ -63,7 +49,7 @@ public class WpiLog implements Closeable {
     /**
      * Set up logging to the given filename, choosing SD if present.
      */
-    public void setup(HardwareMap hardwareMap, String filename) {
+    public static void setup(HardwareMap hardwareMap, String filename) {
         File out = chooseLogFile(hardwareMap.appContext, filename);
         try {
             fos = new FileOutputStream(out);
@@ -81,7 +67,7 @@ public class WpiLog implements Closeable {
     /**
      * Picks removable SD card if mounted, otherwise primary external-files dir.
      */
-    private File chooseLogFile(Context hwMap, String filename) {
+    private static File chooseLogFile(Context hwMap, String filename) {
         File[] extDirs = hwMap.getExternalFilesDirs(null);
         File sd = null;
         for (File d : extDirs) {
@@ -94,7 +80,7 @@ public class WpiLog implements Closeable {
         return new File(root, filename);
     }
 
-    private void writeHeader(String extra) throws IOException {
+    private static void writeHeader(String extra) throws IOException {
         fos.write("WPILOG".getBytes(StandardCharsets.US_ASCII));
         fos.write(le16((short) 0x0100));               // version 1.0
         byte[] eb = extra.getBytes(StandardCharsets.UTF_8);
@@ -108,7 +94,7 @@ public class WpiLog implements Closeable {
     }
 
     // ─── Control records ─────────────────────────────────────────────────────
-    private void startEntry(int entryId, String name, String type, long ts) throws IOException {
+    private static void startEntry(int entryId, String name, String type, long ts) throws IOException {
         ByteArrayOutputStream bb = new ByteArrayOutputStream();
         bb.write(0);
         bb.write(le32(entryId));
@@ -121,14 +107,14 @@ public class WpiLog implements Closeable {
         writeRecord(0, bb.toByteArray(), ts);
     }
 
-    private void finishEntry(int entryId, long ts) throws IOException {
+    private static void finishEntry(int entryId, long ts) throws IOException {
         ByteArrayOutputStream bb = new ByteArrayOutputStream();
         bb.write(1);
         bb.write(le32(entryId));
         writeRecord(0, bb.toByteArray(), ts);
     }
 
-    private void setMetadata(int entryId, String metadata, long ts) throws IOException {
+    private static void setMetadata(int entryId, String metadata, long ts) throws IOException {
         ByteArrayOutputStream bb = new ByteArrayOutputStream();
         bb.write(2);
         bb.write(le32(entryId));
@@ -138,7 +124,7 @@ public class WpiLog implements Closeable {
     }
 
     // ─── Low-level record writer ─────────────────────────────────────────────
-    private void writeRecord(int entryId, byte[] payload, long ts) throws IOException {
+    private static void writeRecord(int entryId, byte[] payload, long ts) throws IOException {
         fos.write(0x7F);               // header: 4B id,4B size,8B timestamp
         fos.write(le32(entryId));
         fos.write(le32(payload.length));
@@ -146,10 +132,10 @@ public class WpiLog implements Closeable {
         fos.write(payload);
     }
 
-    // ─── public logging ──────────────────────────────────────────────────────
-// ─── Public Logging API ──────────────────────────────────────────────────
+    // ─── public static logging ──────────────────────────────────────────────────────
+// ─── public static Logging API ──────────────────────────────────────────────────
 
-    public boolean log(String name, boolean value) {
+    public static boolean log(String name, boolean value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "boolean", nowMicros());
@@ -167,11 +153,11 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public Object log(String name, Object obj) {
+    public static Object log(String name, Object obj) {
         return obj;
     }
 
-    public long log(String name, long value) {
+    public static long log(String name, long value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "int64", nowMicros());
@@ -189,7 +175,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public float log(String name, float value) {
+    public static float log(String name, float value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "float", nowMicros());
@@ -207,7 +193,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public double log(String name, double value) {
+    public static double log(String name, double value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "double", nowMicros());
@@ -225,7 +211,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public String log(String name, String value) {
+    public static String log(String name, String value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "string", nowMicros());
@@ -243,7 +229,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public boolean[] log(String name, boolean[] value) {
+    public static boolean[] log(String name, boolean[] value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "boolean[]", nowMicros());
@@ -261,7 +247,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public long[] log(String name, long[] value) {
+    public static long[] log(String name, long[] value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "int64[]", nowMicros());
@@ -279,7 +265,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public float[] log(String name, float[] value) {
+    public static float[] log(String name, float[] value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "float[]", nowMicros());
@@ -297,7 +283,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public double[] log(String name, double[] value) {
+    public static double[] log(String name, double[] value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "double[]", nowMicros());
@@ -315,7 +301,7 @@ public class WpiLog implements Closeable {
         return value;
     }
 
-    public String[] log(String name, String[] value) {
+    public static String[] log(String name, String[] value) {
         if (!recordIDs.containsKey(name)) {
             try {
                 startEntry(getID(name), name, "String[]", nowMicros());
@@ -335,56 +321,56 @@ public class WpiLog implements Closeable {
 
     // ─── INTERNAL LOGGING ────────────────────────────────────────────────────
     // ─── Scalar logging ──────────────────────────────────────────────────────
-    private void logBoolean(int id, boolean v, long ts) throws IOException {
+    private static void logBoolean(int id, boolean v, long ts) throws IOException {
         writeRecord(id, new byte[]{(byte) (v ? 1 : 0)}, ts);
     }
 
-    private void logInt64(int id, long v, long ts) throws IOException {
+    private static void logInt64(int id, long v, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logFloat(int id, float v, long ts) throws IOException {
+    private static void logFloat(int id, float v, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logDouble(int id, double v, long ts) throws IOException {
+    private static void logDouble(int id, double v, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putDouble(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logString(int id, String s, long ts) throws IOException {
+    private static void logString(int id, String s, long ts) throws IOException {
         byte[] data = s.getBytes(StandardCharsets.UTF_8);
         writeRecord(id, data, ts);
     }
 
     // ─── Array logging ───────────────────────────────────────────────────────
-    private void logBooleanArray(int id, boolean[] arr, long ts) throws IOException {
+    private static void logBooleanArray(int id, boolean[] arr, long ts) throws IOException {
         byte[] data = new byte[arr.length];
         for (int i = 0; i < arr.length; i++) data[i] = (byte) (arr[i] ? 1 : 0);
         writeRecord(id, data, ts);
     }
 
-    private void logInt64Array(int id, long[] arr, long ts) throws IOException {
+    private static void logInt64Array(int id, long[] arr, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(arr.length * 8).order(ByteOrder.LITTLE_ENDIAN);
         for (long v : arr) b.putLong(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logFloatArray(int id, float[] arr, long ts) throws IOException {
+    private static void logFloatArray(int id, float[] arr, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(arr.length * 4).order(ByteOrder.LITTLE_ENDIAN);
         for (float v : arr) b.putFloat(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logDoubleArray(int id, double[] arr, long ts) throws IOException {
+    private static void logDoubleArray(int id, double[] arr, long ts) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(arr.length * 8).order(ByteOrder.LITTLE_ENDIAN);
         for (double v : arr) b.putDouble(v);
         writeRecord(id, b.array(), ts);
     }
 
-    private void logStringArray(int id, String[] arr, long ts) throws IOException {
+    private static void logStringArray(int id, String[] arr, long ts) throws IOException {
         ByteArrayOutputStream bb = new ByteArrayOutputStream();
         bb.write(le32(arr.length));
         for (String s : arr) {
@@ -396,7 +382,7 @@ public class WpiLog implements Closeable {
     }
 
     // ─── Utils ───────────────────────────────────────────────────────────────
-    private int getID(String logName) {
+    private static int getID(String logName) {
         if (recordIDs.containsKey(logName)) {
             return recordIDs.get(logName);
         }
@@ -406,15 +392,15 @@ public class WpiLog implements Closeable {
         return largestId;
     }
 
-    private long nowMicros() {
+    private static long nowMicros() {
         return System.nanoTime() / 1000 - startTime;
     }
 
-    private byte[] le16(short v) {
+    private static byte[] le16(short v) {
         return new byte[]{(byte) v, (byte) (v >> 8)};
     }
 
-    private byte[] le32(int v) {
+    private static byte[] le32(int v) {
         return new byte[]{
                 (byte) v,
                 (byte) (v >> 8),
@@ -423,7 +409,7 @@ public class WpiLog implements Closeable {
         };
     }
 
-    private byte[] le64(long v) {
+    private static byte[] le64(long v) {
         return new byte[]{
                 (byte) v,
                 (byte) (v >> 8),

@@ -1,352 +1,106 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils;
 
 
-
 /**
- * Implements a PID control loop whose setpoint is constrained by a trapezoid profile. Users should
- * call reset() when they first start running the controller to avoid unwanted behavior.
+ * Implements a PID control loop whose setpoint is constrained by a trapezoid profile.
+ * Extends PIDController so that “goal → setpoint” is automatic (with zero velocity).
  */
-public class ProfiledPIDController{
-  private static int instances;
-
-  private PIDController m_controller;
-  private double m_minimumInput;
-  private double m_maximumInput;
-
+public class ProfiledPIDController extends PIDController {
   private TrapezoidProfile.Constraints m_constraints;
   private TrapezoidProfile m_profile;
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
   /**
-   * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd.
+   * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd,
+   * using a default update period of 0.02 seconds.
    *
-   * @param Kp The proportional coefficient.
-   * @param Ki The integral coefficient.
-   * @param Kd The derivative coefficient.
-   * @param constraints Velocity and acceleration constraints for goal.
-   * @throws IllegalArgumentException if kp &lt; 0
-   * @throws IllegalArgumentException if ki &lt; 0
-   * @throws IllegalArgumentException if kd &lt; 0
+   * @param Kp The proportional coefficient. Must be >= 0.
+   * @param Ki The integral coefficient. Must be >= 0.
+   * @param Kd The derivative coefficient. Must be >= 0.
+   * @param constraints Velocity and acceleration constraints for the trapezoid profile.
+   * @throws IllegalArgumentException if Kp, Ki, Kd < 0
    */
   public ProfiledPIDController(
-      double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints) {
-    this(Kp, Ki, Kd, constraints, 0.02);
+          double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints) {
+    super(Kp, Ki, Kd);
+    m_constraints = constraints;
+    m_profile = new TrapezoidProfile(m_constraints);
   }
 
   /**
-   * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd.
+   * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd,
+   * and a custom update period.
    *
-   * @param Kp The proportional coefficient.
-   * @param Ki The integral coefficient.
-   * @param Kd The derivative coefficient.
-   * @param constraints Velocity and acceleration constraints for goal.
-   * @param period The period between controller updates in seconds. The default is 0.02 seconds.
-   * @throws IllegalArgumentException if kp &lt; 0
-   * @throws IllegalArgumentException if ki &lt; 0
-   * @throws IllegalArgumentException if kd &lt; 0
-   * @throws IllegalArgumentException if period &lt;= 0
+   * @param Kp The proportional coefficient. Must be >= 0.
+   * @param Ki The integral coefficient. Must be >= 0.
+   * @param Kd The derivative coefficient. Must be >= 0.
+   * @param constraints Velocity and acceleration constraints for the trapezoid profile.
+   * @param period The loop period (in seconds). Must be > 0.
+   * @throws IllegalArgumentException if Kp, Ki, Kd < 0 or period <= 0
    */
   @SuppressWarnings("this-escape")
   public ProfiledPIDController(
-      double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints, double period) {
-    m_controller = new PIDController(Kp, Ki, Kd, period);
+          double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints, double period) {
+    super(Kp, Ki, Kd, period);
     m_constraints = constraints;
     m_profile = new TrapezoidProfile(m_constraints);
-    instances++;
   }
 
   /**
-   * Sets the PID Controller gain parameters.
+   * Sets the trapezoid‐profile goal position (velocity = 0 implicitly). Immediately calls
+   * super.setSetpoint(goal).
    *
-   * <p>Sets the proportional, integral, and differential coefficients.
-   *
-   * @param Kp The proportional coefficient. Must be &gt;= 0.
-   * @param Ki The integral coefficient. Must be &gt;= 0.
-   * @param Kd The differential coefficient. Must be &gt;= 0.
+   * @param setpoint The desired position
    */
-  public void setPID(double Kp, double Ki, double Kd) {
-    m_controller.setPID(Kp, Ki, Kd);
+  @Override
+  public void setSetpoint(double setpoint) {
+    m_goal = new TrapezoidProfile.State(setpoint, 0.0);
+    super.setSetpoint(m_goal.position);
   }
 
   /**
-   * Sets the proportional coefficient of the PID controller gain.
-   *
-   * @param Kp The proportional coefficient. Must be &gt;= 0.
+   * Returns true if both:
+   *   1) the underlying PIDController is “at setpoint” (pos‐error < tolerance, vel‐error < tolerance), and
+   *   2) the profile’s current setpoint state equals the goal state.
    */
-  public void setP(double Kp) {
-    m_controller.setP(Kp);
+  @Override
+  public boolean atSetpoint() {
+    return super.atSetpoint() && m_goal.equals(m_setpoint);
   }
 
   /**
-   * Sets the integral coefficient of the PID controller gain.
+   * Updates the velocity/acceleration constraints and rebuilds the internal profile.
    *
-   * @param Ki The integral coefficient. Must be &gt;= 0.
-   */
-  public void setI(double Ki) {
-    m_controller.setI(Ki);
-  }
-
-  /**
-   * Sets the differential coefficient of the PID controller gain.
-   *
-   * @param Kd The differential coefficient. Must be &gt;= 0.
-   */
-  public void setD(double Kd) {
-    m_controller.setD(Kd);
-  }
-
-  /**
-   * Sets the IZone range. When the absolute value of the position error is greater than IZone, the
-   * total accumulated error will reset to zero, disabling integral gain until the absolute value of
-   * the position error is less than IZone. This is used to prevent integral windup. Must be
-   * non-negative. Passing a value of zero will effectively disable integral gain. Passing a value
-   * of {@link Double#POSITIVE_INFINITY} disables IZone functionality.
-   *
-   * @param iZone Maximum magnitude of error to allow integral control.
-   * @throws IllegalArgumentException if iZone &lt;= 0
-   */
-  public void setIZone(double iZone) {
-    m_controller.setIZone(iZone);
-  }
-
-  /**
-   * Gets the proportional coefficient.
-   *
-   * @return proportional coefficient
-   */
-  public double getP() {
-    return m_controller.getP();
-  }
-
-  /**
-   * Gets the integral coefficient.
-   *
-   * @return integral coefficient
-   */
-  public double getI() {
-    return m_controller.getI();
-  }
-
-  /**
-   * Gets the differential coefficient.
-   *
-   * @return differential coefficient
-   */
-  public double getD() {
-    return m_controller.getD();
-  }
-
-  /**
-   * Get the IZone range.
-   *
-   * @return Maximum magnitude of error to allow integral control.
-   */
-  public double getIZone() {
-    return m_controller.getIZone();
-  }
-
-  /**
-   * Gets the period of this controller.
-   *
-   * @return The period of the controller.
-   */
-  public double getPeriod() {
-    return m_controller.getPeriod();
-  }
-
-  /**
-   * Returns the position tolerance of this controller.
-   *
-   * @return the position tolerance of the controller.
-   */
-  public double getPositionTolerance() {
-    return m_controller.getErrorTolerance();
-  }
-
-  /**
-   * Returns the velocity tolerance of this controller.
-   *
-   * @return the velocity tolerance of the controller.
-   */
-  public double getVelocityTolerance() {
-    return m_controller.getErrorDerivativeTolerance();
-  }
-
-  /**
-   * Returns the accumulated error used in the integral calculation of this controller.
-   *
-   * @return The accumulated error of this controller.
-   */
-  public double getAccumulatedError() {
-    return m_controller.getAccumulatedError();
-  }
-
-  /**
-   * Sets the goal for the ProfiledPIDController.
-   *
-   * @param goal The desired goal state.
-   */
-  public void setGoal(TrapezoidProfile.State goal) {
-    m_goal = goal;
-  }
-
-  /**
-   * Sets the goal for the ProfiledPIDController.
-   *
-   * @param goal The desired goal position.
-   */
-  public void setGoal(double goal) {
-    m_goal = new TrapezoidProfile.State(goal, 0);
-  }
-
-  /**
-   * Gets the goal for the ProfiledPIDController.
-   *
-   * @return The goal.
-   */
-  public TrapezoidProfile.State getGoal() {
-    return m_goal;
-  }
-
-  /**
-   * Returns true if the error is within the tolerance of the error.
-   *
-   * <p>This will return false until at least one input value has been computed.
-   *
-   * @return True if the error is within the tolerance of the error.
-   */
-  public boolean atGoal() {
-    return atSetpoint() && m_goal.equals(m_setpoint);
-  }
-
-  /**
-   * Set velocity and acceleration constraints for goal.
-   *
-   * @param constraints Velocity and acceleration constraints for goal.
+   * @param constraints New velocity & acceleration constraints.
    */
   public void setConstraints(TrapezoidProfile.Constraints constraints) {
     m_constraints = constraints;
     m_profile = new TrapezoidProfile(m_constraints);
   }
 
-  /**
-   * Get the velocity and acceleration constraints for this controller.
-   *
-   * @return Velocity and acceleration constraints.
-   */
+  /** Returns the current velocity/acceleration constraints. */
   public TrapezoidProfile.Constraints getConstraints() {
     return m_constraints;
   }
 
   /**
-   * Returns the current setpoint of the ProfiledPIDController.
+   * Overrides PIDController.calculate(measurement):
+   *  1) Advances the trapezoid profile (from m_setpoint → m_goal) for one period
+   *  2) Calls super.calculate(measurement, m_setpoint.position)
    *
-   * @return The current setpoint.
+   * @param measurement The current measured process variable.
+   * @return the raw PID output (based on position‐only error to m_setpoint.position).
    */
-  public TrapezoidProfile.State getSetpoint() {
-    return m_setpoint;
-  }
-
-  /**
-   * Returns true if the error is within the tolerance of the error.
-   *
-   * <p>This will return false until at least one input value has been computed.
-   *
-   * @return True if the error is within the tolerance of the error.
-   */
-  public boolean atSetpoint() {
-    return m_controller.atSetpoint();
-  }
-
-  /**
-   * Enables continuous input.
-   *
-   * <p>Rather then using the max and min input range as constraints, it considers them to be the
-   * same point and automatically calculates the shortest route to the setpoint.
-   *
-   * @param minimumInput The minimum value expected from the input.
-   * @param maximumInput The maximum value expected from the input.
-   */
-  public void enableContinuousInput(double minimumInput, double maximumInput) {
-    m_controller.enableContinuousInput(minimumInput, maximumInput);
-    m_minimumInput = minimumInput;
-    m_maximumInput = maximumInput;
-  }
-
-  /** Disables continuous input. */
-  public void disableContinuousInput() {
-    m_controller.disableContinuousInput();
-  }
-
-  /**
-   * Sets the minimum and maximum contributions of the integral term.
-   *
-   * <p>The internal integrator is clamped so that the integral term's contribution to the output
-   * stays between minimumIntegral and maximumIntegral. This prevents integral windup.
-   *
-   * @param minimumIntegral The minimum contribution of the integral term.
-   * @param maximumIntegral The maximum contribution of the integral term.
-   */
-  public void setIntegratorRange(double minimumIntegral, double maximumIntegral) {
-    m_controller.setIntegratorRange(minimumIntegral, maximumIntegral);
-  }
-
-  /**
-   * Sets the error which is considered tolerable for use with atSetpoint().
-   *
-   * @param positionTolerance Position error which is tolerable.
-   */
-  public void setTolerance(double positionTolerance) {
-    setTolerance(positionTolerance, Double.POSITIVE_INFINITY);
-  }
-
-  /**
-   * Sets the error which is considered tolerable for use with atSetpoint().
-   *
-   * @param positionTolerance Position error which is tolerable.
-   * @param velocityTolerance Velocity error which is tolerable.
-   */
-  public void setTolerance(double positionTolerance, double velocityTolerance) {
-    m_controller.setTolerance(positionTolerance, velocityTolerance);
-  }
-
-  /**
-   * Returns the difference between the setpoint and the measurement.
-   *
-   * @return The error.
-   */
-  public double getPositionError() {
-    return m_controller.getError();
-  }
-
-  /**
-   * Returns the change in error per second.
-   *
-   * @return The change in error per second.
-   */
-  public double getVelocityError() {
-    return m_controller.getErrorDerivative();
-  }
-
-  /**
-   * Returns the next output of the PID controller.
-   *
-   * @param measurement The current measurement of the process variable.
-   * @return The controller's next output.
-   */
+  @Override
   public double calculate(double measurement) {
-    if (m_controller.isContinuousInputEnabled()) {
+    if (isContinuousInputEnabled()) {
       // Get error which is the smallest distance between goal and measurement
       double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
       double goalMinDistance =
-          inputModulus(m_goal.position - measurement, -errorBound, errorBound);
+              inputModulus(m_goal.position - measurement, -errorBound, errorBound);
       double setpointMinDistance =
-          inputModulus(m_setpoint.position - measurement, -errorBound, errorBound);
+              inputModulus(m_setpoint.position - measurement, -errorBound, errorBound);
 
       // Recompute the profile goal with the smallest error, thus giving the shortest path. The goal
       // may be outside the input range after this operation, but that's OK because the controller
@@ -357,97 +111,66 @@ public class ProfiledPIDController{
     }
 
     m_setpoint = m_profile.calculate(getPeriod(), m_setpoint, m_goal);
-    return m_controller.calculate(measurement, m_setpoint.position);
+    return super.calculate(measurement, m_setpoint.position);
   }
 
   /**
-   * Returns the next output of the PID controller.
-   *
-   * @param measurement The current measurement of the process variable.
-   * @param goal The new goal of the controller.
-   * @return The controller's next output.
+   * Overload: “calculate” + a new goalPosition (double) in one shot.
+   * Equivalent to setGoal(goal) and then calculate(measurement).
    */
-  public double calculate(double measurement, TrapezoidProfile.State goal) {
-    setGoal(goal);
+  @Override
+  public double calculate(double measurement, double setpoint) {
+    setSetpoint(setpoint);
     return calculate(measurement);
   }
 
   /**
-   * Returns the next output of the PIDController.
-   *
-   * @param measurement The current measurement of the process variable.
-   * @param goal The new goal of the controller.
-   * @return The controller's next output.
+   * Overload: “calculate” + a new goal state + new constraints in one shot.
    */
-  public double calculate(double measurement, double goal) {
-    setGoal(goal);
-    return calculate(measurement);
-  }
-
-  /**
-   * Returns the next output of the PID controller.
-   *
-   * @param measurement The current measurement of the process variable.
-   * @param goal The new goal of the controller.
-   * @param constraints Velocity and acceleration constraints for goal.
-   * @return The controller's next output.
-   */
+  //TODO: add calculate with custom constraints that doesn't change the constraint forever but just for this movement
   public double calculate(
-      double measurement, TrapezoidProfile.State goal, TrapezoidProfile.Constraints constraints) {
+          double measurement,
+          double setpoint,
+          TrapezoidProfile.Constraints constraints) {
     setConstraints(constraints);
-    return calculate(measurement, goal);
+    return calculate(measurement, setpoint);
   }
 
   /**
-   * Reset the previous error and the integral term.
-   *
-   * @param measurement The current measured State of the system.
+   * Returns the current setpoint State of the trapezoid profile (position, velocity).
+   * Note: this is *not* the same as PIDController.getSetpoint(). PIDController.getSetpoint()
+   * returns only the position‐only setpoint that was last passed. Here, we give you both pos+vel.
    */
-  public void reset(TrapezoidProfile.State measurement) {
-    m_controller.reset();
-    m_setpoint = measurement;
+  public TrapezoidProfile.State getSetpointState() {
+    return m_setpoint;
   }
 
   /**
-   * Reset the previous error and the integral term.
+   * Resets both:
+   *   1) the internal trapezoid profile (so m_setpoint = measuredState)
+   *   2) the PID integrator and previous error (via super.reset())
    *
-   * @param measuredPosition The current measured position of the system.
-   * @param measuredVelocity The current measured velocity of the system.
+   * @param measuredState The current measured position/velocity.
+   */
+  public void reset(TrapezoidProfile.State measuredState) {
+    super.reset();                 // clears PID’s error, integral, etc.
+    m_setpoint = new TrapezoidProfile.State(
+            measuredState.position,
+            measuredState.velocity
+    );
+  }
+
+  /**
+   * Overload: Reset using (position, velocity) in two doubles.
    */
   public void reset(double measuredPosition, double measuredVelocity) {
     reset(new TrapezoidProfile.State(measuredPosition, measuredVelocity));
   }
 
   /**
-   * Reset the previous error and the integral term.
-   *
-   * @param measuredPosition The current measured position of the system. The velocity is assumed to
-   *     be zero.
+   * Overload: Reset using only position (velocity assumed zero).
    */
   public void reset(double measuredPosition) {
     reset(measuredPosition, 0.0);
-  }
-
-
-  /**
-   * Returns modulus of input.
-   *
-   * @param input Input value to wrap.
-   * @param minimumInput The minimum value expected from the input.
-   * @param maximumInput The maximum value expected from the input.
-   * @return The wrapped value.
-   */
-  private double inputModulus(double input, double minimumInput, double maximumInput) {
-    double modulus = maximumInput - minimumInput;
-
-    // Wrap input if it's above the maximum input
-    int numMax = (int) ((input - minimumInput) / modulus);
-    input -= numMax * modulus;
-
-    // Wrap input if it's below the minimum input
-    int numMin = (int) ((input - maximumInput) / modulus);
-    input -= numMin * modulus;
-
-    return input;
   }
 }

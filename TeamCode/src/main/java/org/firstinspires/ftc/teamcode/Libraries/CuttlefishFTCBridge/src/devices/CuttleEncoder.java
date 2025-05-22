@@ -11,7 +11,6 @@ public class CuttleEncoder
     private int direction = 1;
     public int mPort;
     private double offsetTicks = 0;
-    double home = 0.0;
 
     /**
      * @param revHub
@@ -22,17 +21,18 @@ public class CuttleEncoder
         hub = revHub;
         encTicks = countsPerRevolution;
         mPort = port;
-        home += getRotation()*direction;
+        offsetTicks = getCounts();
     }
 
     /**
-     * Get the rotation of the encoder in radians
+     * @param revHub
+     * @param port Motor port of the encoder
+     * @param countsPerRevolution Number of counts per revolution of the encoder
      * */
-    public double getRotation()
-    {
-        return (2*Math.PI*getCounts()/encTicks - home)*direction;
+    public CuttleEncoder(CuttleRevHub revHub, int port, double countsPerRevolution, Direction direction) {
+        this(revHub, port, countsPerRevolution);
+        setDirection(direction);
     }
-
 
     /**
      *

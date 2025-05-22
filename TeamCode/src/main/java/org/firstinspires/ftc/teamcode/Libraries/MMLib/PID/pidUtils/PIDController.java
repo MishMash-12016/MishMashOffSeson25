@@ -6,53 +6,52 @@ package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils;
 
 /** Implements a PID control loop. */
 public class PIDController implements AutoCloseable {
-  private static int instances;
 
   // Factor for "proportional" control
-  private double m_kp;
+  public double m_kp;
 
   // Factor for "integral" control
-  private double m_ki;
+  public double m_ki;
 
   // Factor for "derivative" control
-  private double m_kd;
+  public double m_kd;
 
   // The error range where "integral" control applies
-  private double m_iZone = Double.POSITIVE_INFINITY;
+  public double m_iZone = Double.POSITIVE_INFINITY;
 
   // The period (in seconds) of the loop that calls the controller
-  private final double m_period;
+  public final double m_period;
 
-  private double m_maximumIntegral = 1.0;
+  public double m_maximumIntegral = 1.0;
 
-  private double m_minimumIntegral = -1.0;
+  public double m_minimumIntegral = -1.0;
 
-  private double m_maximumInput;
+  public double m_maximumInput;
 
-  private double m_minimumInput;
+  public double m_minimumInput;
 
   // Do the endpoints wrap around? e.g. Absolute encoder
-  private boolean m_continuous;
+  public boolean m_continuous;
 
   // The error at the time of the most recent call to calculate()
-  private double m_error;
-  private double m_errorDerivative;
+  public double m_error;
+  public double m_errorDerivative;
 
   // The error at the time of the second-most-recent call to calculate() (used to compute velocity)
-  private double m_prevError;
+  public double m_prevError;
 
   // The sum of the errors for use in the integral calc
-  private double m_totalError;
+  public double m_totalError;
 
   // The error that is considered at setpoint.
-  private double m_errorTolerance = 0.05;
-  private double m_errorDerivativeTolerance = Double.POSITIVE_INFINITY;
+  public double m_errorTolerance = 0.05;
+  public double m_errorDerivativeTolerance = Double.POSITIVE_INFINITY;
 
-  private double m_setpoint;
-  private double m_measurement;
+  public double m_setpoint;
+  public double m_measurement;
 
-  private boolean m_haveMeasurement;
-  private boolean m_haveSetpoint;
+  public boolean m_haveMeasurement;
+  public boolean m_haveSetpoint;
 
   /**
    * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
@@ -100,8 +99,6 @@ public class PIDController implements AutoCloseable {
       throw new IllegalArgumentException("Controller period must be a positive number!");
     }
     m_period = period;
-
-    instances++;
   }
 
   @Override
@@ -472,7 +469,7 @@ public class PIDController implements AutoCloseable {
    * @param maximumInput The maximum value expected from the input.
    * @return The wrapped value.
    */
-  private double inputModulus(double input, double minimumInput, double maximumInput) {
+  public double inputModulus(double input, double minimumInput, double maximumInput) {
     double modulus = maximumInput - minimumInput;
 
     // Wrap input if it's above the maximum input
@@ -494,7 +491,7 @@ public class PIDController implements AutoCloseable {
    * @param high The higher boundary to which to clamp value.
    * @return The clamped value.
    */
-  private double clamp(double value, double low, double high) {
+  public double clamp(double value, double low, double high) {
     return Math.max(low, Math.min(value, high));
   }
 }

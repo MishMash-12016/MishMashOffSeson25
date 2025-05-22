@@ -14,7 +14,7 @@ public class SupplierLog {
             if(postToFtcDashboard){
                 FtcDashboard.getInstance().getTelemetry().addData(name,v);
             }
-            WpiLog.getInstance().log(name, v);
+            WpiLog.log(name, v);
             return v;
         };
     }
@@ -24,7 +24,7 @@ public class SupplierLog {
             if(postToFtcDashboard){
                 FtcDashboard.getInstance().getTelemetry().addData(name,v);
             }
-            WpiLog.getInstance().log(name, (long)v);
+            WpiLog.log(name, (long)v);
             return v;
         };
     }
@@ -34,7 +34,7 @@ public class SupplierLog {
             if(postToFtcDashboard){
                 FtcDashboard.getInstance().getTelemetry().addData(name,v);
             }
-            WpiLog.getInstance().log(name, v);
+            WpiLog.log(name, v);
             return v;
         };
     }
@@ -44,7 +44,7 @@ public class SupplierLog {
             if(postToFtcDashboard){
                 FtcDashboard.getInstance().getTelemetry().addData(name,v);
             }
-            WpiLog.getInstance().log(name, v);
+            WpiLog.log(name, v);
             return v;
         };
     }
