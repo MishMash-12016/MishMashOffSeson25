@@ -21,9 +21,21 @@ import java.util.function.BooleanSupplier;
  * for position control and command generation. Supports instant positioning,
  * gradual movement over time, and conditional positioning based on button input.
  */
+//TODO: add manual logging using the subsystemName
 public class ServoSubsystem extends SubsystemBase {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
+    private final String subsystemName;
+
+    /**
+     * Creates a ServoSubsystem using an existing {@link CuttleServo}.
+     *
+     * @param servo the servo instance to manage
+     */
+    public ServoSubsystem(CuttleServo servo, String subsystemName) {
+        servoList.add(servo);
+        this.subsystemName = subsystemName;
+    }
 
     /**
      * Creates a ServoSubsystem using a {@link CuttleRevHub}-based servo configuration.
@@ -33,9 +45,10 @@ public class ServoSubsystem extends SubsystemBase {
      * @param servoDirection the logical direction of the servo
      * @param offset         position offset for calibration
      */
-    public ServoSubsystem(CuttleRevHub revHub, int servoPort, Direction servoDirection, Double offset) {
-        CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
-        servoList.add(servo);
+    public ServoSubsystem(CuttleRevHub revHub, int servoPort,
+                          Direction servoDirection, Double offset, String subsystemName) {
+        this(new CuttleServo(revHub, servoPort).setOffset(offset)
+                .setDirection(servoDirection), subsystemName);
     }
 
     /**
@@ -46,18 +59,10 @@ public class ServoSubsystem extends SubsystemBase {
      * @param servoDirection the logical direction of the servo
      * @param offset         position offset for calibration
      */
-    public ServoSubsystem(HardwareMap hardwareMap, String servoName, Direction servoDirection, Double offset) {
-        CuttleServo servo = new CuttleServo(hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
-        servoList.add(servo);
-    }
-
-    /**
-     * Creates a ServoSubsystem using an existing {@link CuttleServo}.
-     *
-     * @param servo the servo instance to manage
-     */
-    public ServoSubsystem(CuttleServo servo) {
-        servoList.add(servo);
+    public ServoSubsystem(HardwareMap hardwareMap, String servoName,
+                          Direction servoDirection, Double offset, String subsystemName) {
+        this(new CuttleServo(hardwareMap, servoName).setOffset(offset)
+                .setDirection(servoDirection), subsystemName);
     }
 
     /**
@@ -73,7 +78,7 @@ public class ServoSubsystem extends SubsystemBase {
     /**
      * Moves all servos to the target position gradually over a specified time.
      *
-     * @param targetPose        the final target position [0.0, 1.0]
+     * @param targetPose         the final target position [0.0, 1.0]
      * @param movementDurationMS the total movement duration in milliseconds
      * @return a Command that performs the motion over time
      */

@@ -12,10 +12,12 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PIDController;
-import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.ArrayList;
 import java.util.Set;
+
+import Ori.Coval.Logging.Logged;
+import Ori.Coval.Logging.WpiLog;
 
 
 /**
@@ -34,8 +36,8 @@ import java.util.Set;
  *   Command moveArm = arm.moveToPoseCommand(100);
  * </pre>
  */
-
-public class MotorPositionPidSubsystem extends SubsystemBase {
+//TODO: add manual logging using the subsystemName
+public class MotorPositionPidSubsystem extends SubsystemBase{
 
     // List of motors driven by this subsystem
     private final ArrayList<CuttleMotor> motorList = new ArrayList<>();
@@ -43,6 +45,22 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
     private final CuttleEncoder encoder;
     // PID controller for calculating output power
     private final PIDController pidController;
+    private final String subsystemName;
+
+
+    //TODO: javadoc
+    public MotorPositionPidSubsystem(PIDController pidController, CuttleEncoder encoder,
+                                     CuttleMotor motor, boolean withDefaultCommand,
+                                     String subsystemName){
+        this.pidController = pidController;
+        this.encoder = encoder;
+        this.subsystemName = subsystemName;
+        motorList.add(motor);
+
+        if (withDefaultCommand){
+            this.setDefaultCommand(stayAtPoseCommand());
+        }
+    }
 
     /**
      * Constructs a MotorPositionPidSubsystem with given PID gains and encoder.
@@ -60,16 +78,12 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,
                                      boolean withDefaultCommand,
-                                     CuttleRevHub revHub) {
-        this.pidController = new PIDController(kp, ki, kd);
-        this.encoder = new CuttleEncoder(revHub, encoderPort, encoderCPR)
-                .setDirection(encoderDirection);
-
-        motorList.add(new CuttleMotor(revHub, motorPort).setDirection(motorDirection));
-
-        if (withDefaultCommand){
-            this.setDefaultCommand(stayAtPoseCommand());
-        }
+                                     CuttleRevHub revHub,
+                                     String subsystemName) {
+        this(new PIDController(kp, ki, kd),
+                new CuttleEncoder(revHub, encoderPort, encoderCPR).setDirection(encoderDirection),
+                new CuttleMotor(revHub, motorPort).setDirection(motorDirection),
+                withDefaultCommand, subsystemName);
     }
 
 
@@ -87,9 +101,10 @@ public class MotorPositionPidSubsystem extends SubsystemBase {
     public MotorPositionPidSubsystem(double kp, double ki, double kd,
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,
-                                     CuttleRevHub revHub) {
+                                     CuttleRevHub revHub,
+                                     String subsystemName) {
         this(kp, ki, kd, encoderPort, encoderCPR, encoderDirection,
-                motorPort, motorDirection, true, revHub);
+                motorPort, motorDirection, true, revHub, subsystemName);
     }
 
     /**

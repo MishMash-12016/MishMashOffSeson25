@@ -35,6 +35,7 @@ import java.util.Set;
  *   Command moveArm = arm.moveToPoseCommand(100);
  * </pre>
  */
+//TODO: add manual logging using the subsystemName
 public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
 
     // List of motors driven by this subsystem
@@ -44,22 +45,39 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
     // PID controller for calculating output power
     private final ProfiledPIDController profiledPidController;
     private final SimpleMotorFeedforward feedforward;
+    private final String subsystemName;
+
+    //TODO: javadoc
+    public MotorPositionProfiledPidSubsystem(ProfiledPIDController profiledPidController,
+                                             SimpleMotorFeedforward feedforward,
+                                             CuttleEncoder encoder, CuttleMotor motor,
+                                             Boolean withDefaultCommand, String subsystemName) {
+
+        this.profiledPidController = profiledPidController;
+        this.feedforward = feedforward;
+        this.encoder = encoder;
+        motorList.add(motor);
+        if (withDefaultCommand) {
+            this.setDefaultCommand(stayAtPoseCommand());
+        }
+        this.subsystemName = subsystemName;
+    }
 
     /**
      * Constructs a MotorPositionProfiledPidSubsystem with given PID gains, feedforward constants, motion constraints, encoder, and motor configurations.
      *
-     * @param kp               Proportional gain for the PID controller.
-     * @param ki               Integral gain for the PID controller.
-     * @param kd               Derivative gain for the PID controller.
-     * @param kS               Static feedforward gain used in motor modeling.
-     * @param kV               Velocity feedforward gain used to compensate for steady-state speed.
-     * @param maxVelocity      Maximum velocity constraint for motion profiling.
-     * @param maxAcceleration  Maximum acceleration constraint for motion profiling.
-     * @param encoderPort      Port number the encoder is connected to.
-     * @param encoderCPR       Counts per revolution (CPR) of the encoder.
-     * @param encoderDirection Direction configuration of the encoder (e.g. forward or reverse).
-     * @param motorPort        Port number the motor is connected to.
-     * @param motorDirection   Direction configuration of the motor (e.g. forward or reverse).
+     * @param kp                 Proportional gain for the PID controller.
+     * @param ki                 Integral gain for the PID controller.
+     * @param kd                 Derivative gain for the PID controller.
+     * @param kS                 Static feedforward gain used in motor modeling.
+     * @param kV                 Velocity feedforward gain used to compensate for steady-state speed.
+     * @param maxVelocity        Maximum velocity constraint for motion profiling.
+     * @param maxAcceleration    Maximum acceleration constraint for motion profiling.
+     * @param encoderPort        Port number the encoder is connected to.
+     * @param encoderCPR         Counts per revolution (CPR) of the encoder.
+     * @param encoderDirection   Direction configuration of the encoder (e.g. forward or reverse).
+     * @param motorPort          Port number the motor is connected to.
+     * @param motorDirection     Direction configuration of the motor (e.g. forward or reverse).
      * @param withDefaultCommand false if you don't want the default command (value default is true)
      */
     public MotorPositionProfiledPidSubsystem(double kp, double ki, double kd, double kS, double kV,
@@ -67,22 +85,15 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
                                              int encoderPort, double encoderCPR, Direction encoderDirection,
                                              int motorPort, Direction motorDirection,
                                              boolean withDefaultCommand,
-                                             CuttleRevHub revHub) {
+                                             CuttleRevHub revHub,
+                                             String subsystemName) {
 
-        this.profiledPidController = new ProfiledPIDController(kp, ki, kd,
-                new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
-
-        feedforward = new SimpleMotorFeedforward(kS, kV);
-
-        this.encoder = new CuttleEncoder(revHub, encoderPort, encoderCPR)
-                .setDirection(encoderDirection);
-
-        motorList.add(new CuttleMotor(revHub, motorPort)
-                .setDirection(motorDirection));
-
-        if(withDefaultCommand){
-            this.setDefaultCommand(stayAtPoseCommand());
-        }
+        this(new ProfiledPIDController(kp, ki, kd,
+                        new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)),
+                new SimpleMotorFeedforward(kS, kV),
+                new CuttleEncoder(revHub, encoderPort, encoderCPR).setDirection(encoderDirection),
+                new CuttleMotor(revHub, motorPort).setDirection(motorDirection),
+                withDefaultCommand, subsystemName);
     }
 
     /**
@@ -105,11 +116,11 @@ public class MotorPositionProfiledPidSubsystem extends SubsystemBase {
                                              double maxVelocity, double maxAcceleration,
                                              int encoderPort, double encoderCPR, Direction encoderDirection,
                                              int motorPort, Direction motorDirection,
-                                             CuttleRevHub revHub) {
+                                             CuttleRevHub revHub, String subsystemName) {
 
         this(kp, ki, kd, kS, kV, maxVelocity, maxAcceleration,
                 encoderPort, encoderCPR, encoderDirection,
-                motorPort, motorDirection, true, revHub);
+                motorPort, motorDirection, true, revHub, subsystemName);
     }
 
     /**

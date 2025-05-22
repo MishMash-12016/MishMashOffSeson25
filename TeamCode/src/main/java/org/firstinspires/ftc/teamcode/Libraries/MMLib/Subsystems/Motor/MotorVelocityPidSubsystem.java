@@ -21,12 +21,30 @@ import java.util.Set;
  * and a PIDController to compute the required power to reach a target velocity setpoint.
  * </p>
  */
+//TODO: add manual logging using the subsystemName
 public class MotorVelocityPidSubsystem extends SubsystemBase {
 
     private final ArrayList<CuttleMotor> motorList = new ArrayList<>();
     private final CuttleEncoder encoder;
     private final PIDController pidController;
     private final SimpleMotorFeedforward feedforward;
+    private final String subsystemName;
+
+
+    //TODO: javadoc
+    public MotorVelocityPidSubsystem(PIDController pidController, SimpleMotorFeedforward feedforward,
+                                     CuttleEncoder encoder, CuttleMotor motor,
+                                     Boolean withDefaultCommand, String subsystemName) {
+
+        this.pidController = pidController;
+        this.feedforward = feedforward;
+        this.encoder = encoder;
+        motorList.add(motor);
+        if (withDefaultCommand) {
+            this.setDefaultCommand(holdVelocityCommand());
+        }
+        this.subsystemName = subsystemName;
+    }
 
     /**
      * Constructs a MotorVelocityPidSubsystem with given PID gains and encoder.
@@ -46,18 +64,12 @@ public class MotorVelocityPidSubsystem extends SubsystemBase {
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,
                                      boolean withDefaultCommand,
-                                     CuttleRevHub revHub) {
+                                     CuttleRevHub revHub, String subsystemName) {
 
-        this.pidController = new PIDController(kp, ki, kd);
-        this.feedforward = new SimpleMotorFeedforward(kS, kV);
-
-        this.encoder = new CuttleEncoder(revHub, encoderPort, encoderCPR)
-                .setDirection(encoderDirection);
-        motorList.add(new CuttleMotor(revHub, motorPort).setDirection(motorDirection));
-
-        if (withDefaultCommand) {
-            setDefaultCommand(holdVelocityCommand());
-        }
+        this(new PIDController(kp, ki, kd), new SimpleMotorFeedforward(kS, kV),
+                new CuttleEncoder(revHub, encoderPort, encoderCPR).setDirection(encoderDirection),
+                new CuttleMotor(revHub, motorPort).setDirection(motorDirection),
+                withDefaultCommand, subsystemName);
     }
 
     /**
@@ -66,9 +78,10 @@ public class MotorVelocityPidSubsystem extends SubsystemBase {
     public MotorVelocityPidSubsystem(double kp, double ki, double kd, double kS, double kV,
                                      int encoderPort, double encoderCPR, Direction encoderDirection,
                                      int motorPort, Direction motorDirection,
-                                     CuttleRevHub revHub) {
+                                     CuttleRevHub revHub, String subsystemName) {
 
-        this(kp, ki, kd, kS, kV, encoderPort, encoderCPR, encoderDirection, motorPort, motorDirection, true, revHub);
+        this(kp, ki, kd, kS, kV, encoderPort, encoderCPR, encoderDirection,
+                motorPort, motorDirection, true, revHub, subsystemName);
     }
 
     /**

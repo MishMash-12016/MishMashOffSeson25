@@ -15,9 +15,21 @@ import java.util.ArrayList;
  * A subsystem for managing one or more continuous rotation servos (CRServos).
  * Wraps {@link CuttleCrServo} instances to simplify control and command creation.
  */
+//TODO: add manual logging using the subsystemName
 public class CrServoSubsystem extends SubsystemBase {
 
     ArrayList<CuttleCrServo> servoList = new ArrayList<>();
+    private final String subsystemName;
+
+    /**
+     * Constructs a subsystem from a preconfigured {@link CuttleCrServo}.
+     *
+     * @param servo the CRServo to manage
+     */
+    public CrServoSubsystem(CuttleCrServo servo, String subsystemName) {
+        servoList.add(servo);
+        this.subsystemName = subsystemName;
+    }
 
     /**
      * Constructs a subsystem using a {@link CuttleRevHub}-based CRServo.
@@ -26,9 +38,9 @@ public class CrServoSubsystem extends SubsystemBase {
      * @param servoPort      the port on the hub
      * @param servoDirection the logical direction of the CRServo
      */
-    public CrServoSubsystem(CuttleRevHub revHub, int servoPort, Direction servoDirection) {
-        CuttleCrServo servo = new CuttleCrServo(revHub, servoPort).setDirection(servoDirection);
-        servoList.add(servo);
+    public CrServoSubsystem(CuttleRevHub revHub, int servoPort,
+                            Direction servoDirection, String subsystemName) {
+        this(new CuttleCrServo(revHub, servoPort).setDirection(servoDirection), subsystemName);
     }
 
     /**
@@ -38,18 +50,9 @@ public class CrServoSubsystem extends SubsystemBase {
      * @param servoName      the name of the CRServo in the configuration
      * @param servoDirection the logical direction of the CRServo
      */
-    public CrServoSubsystem(HardwareMap hardwareMap, String servoName, Direction servoDirection) {
-        CuttleCrServo servo = new CuttleCrServo(hardwareMap, servoName).setDirection(servoDirection);
-        servoList.add(servo);
-    }
-
-    /**
-     * Constructs a subsystem from a preconfigured {@link CuttleCrServo}.
-     *
-     * @param servo the CRServo to manage
-     */
-    public CrServoSubsystem(CuttleCrServo servo){
-        servoList.add(servo);
+    public CrServoSubsystem(HardwareMap hardwareMap, String servoName,
+                            Direction servoDirection, String subsystemName) {
+        this(new CuttleCrServo(hardwareMap, servoName).setDirection(servoDirection), subsystemName);
     }
 
     /**
@@ -58,7 +61,7 @@ public class CrServoSubsystem extends SubsystemBase {
      * @param power the power to set [-1.0, 1.0]
      * @return an {@link InstantCommand} that sets the power
      */
-    public Command setPowerCommand(double power){
+    public Command setPowerCommand(double power) {
         return new InstantCommand(() -> setPower(power), this);
     }
 
@@ -67,7 +70,7 @@ public class CrServoSubsystem extends SubsystemBase {
      *
      * @param power the power to set [-1.0, 1.0]
      */
-    public void setPower(double power){
+    public void setPower(double power) {
         for (CuttleCrServo servo : servoList) {
             servo.setPower(power);
         }
@@ -79,7 +82,7 @@ public class CrServoSubsystem extends SubsystemBase {
      *
      * @return the power level [-1.0, 1.0]
      */
-    public double getPower(){
+    public double getPower() {
         return servoList.get(0).getPower();
     }
 
@@ -117,7 +120,7 @@ public class CrServoSubsystem extends SubsystemBase {
      * @param servo the CRServo to add
      * @return this subsystem instance
      */
-    public CrServoSubsystem withServo(CuttleCrServo servo){
+    public CrServoSubsystem withServo(CuttleCrServo servo) {
         servoList.add(servo);
         return this;
     }
