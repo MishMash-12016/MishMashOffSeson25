@@ -84,7 +84,7 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
             if (fe.getKind() != ElementKind.FIELD) continue;
             VariableElement field = (VariableElement) fe;
             Set<Modifier> mods = field.getModifiers();
-            if (mods.contains(Modifier.PRIVATE) || mods.contains(Modifier.STATIC)) continue;
+            if (mods.contains(Modifier.PRIVATE)) continue;
             String fname = field.getSimpleName().toString();
             TypeMirror t = field.asType();
             TypeKind k = t.getKind();
@@ -97,12 +97,12 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
             if (!(k.isPrimitive() || (k == TypeKind.DECLARED && t.toString().equals("java.lang.String")) || k == TypeKind.ARRAY || isSupplier))
                 continue;
 
-            String key = orig + "." + fname;
+            String key = orig + "/" + fname;
             if (isSupplier) {
                 supplierFields.add(fname);
                 supplierKeys.add(key);
             } else {
-                toLog.addStatement("$T.getInstance().log($S, this.$L)", WPILOG, key, fname);
+                toLog.addStatement("$T.log($S, this.$L)", WPILOG, key, fname);
                 if (postToFtcDashBoard){
                     toLog.addStatement("$T.getInstance().getTelemetry().addData($S, this.$L)", FTC_DASHBOARD, key, fname);
                 }
@@ -155,7 +155,7 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
             if (me.getKind() != ElementKind.METHOD) continue;
             ExecutableElement method = (ExecutableElement) me;
             Set<Modifier> mmods = method.getModifiers();
-            if (!mmods.contains(Modifier.PUBLIC) || mmods.contains(Modifier.STATIC)) continue;
+            if (!mmods.contains(Modifier.PUBLIC)) continue;
 //            if (!method.getParameters().isEmpty()) continue;
             TypeMirror rt = method.getReturnType();
             TypeKind rtk = rt.getKind();
@@ -163,7 +163,7 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
                 continue;
             String mname = method.getSimpleName().toString();
             TypeName rtn = TypeName.get(rt);
-            String key = orig + "." + mname;
+            String key = orig + "/" + mname;
             StringBuilder params = new StringBuilder();
             List<ParameterSpec> paramList = new ArrayList<>();
             for (VariableElement parameter : method.getParameters()) {
@@ -187,7 +187,7 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
                 overrideBuilder.addStatement("$T.getInstance().getTelemetry().addData($S, result)", FTC_DASHBOARD, key);
             }
 
-            overrideBuilder.addStatement("return $T.getInstance().log($S, result)", WPILOG, key);
+            overrideBuilder.addStatement("return $T.log($S, result)", WPILOG, key);
 
             MethodSpec override  = overrideBuilder.build();
 
