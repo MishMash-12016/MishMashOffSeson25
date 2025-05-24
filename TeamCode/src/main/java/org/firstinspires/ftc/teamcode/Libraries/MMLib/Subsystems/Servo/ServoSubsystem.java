@@ -28,41 +28,10 @@ public class ServoSubsystem extends SubsystemBase {
     private final String subsystemName;
 
     /**
-     * Creates a ServoSubsystem using an existing {@link CuttleServo}.
-     *
-     * @param servo the servo instance to manage
+     * Creates a ServoSubsystem
      */
-    public ServoSubsystem(CuttleServo servo, String subsystemName) {
-        servoList.add(servo);
+    public ServoSubsystem(String subsystemName) {
         this.subsystemName = subsystemName;
-    }
-
-    /**
-     * Creates a ServoSubsystem using a {@link CuttleRevHub}-based servo configuration.
-     *
-     * @param revHub         the rev hub to which the servo is connected
-     * @param servoPort      the port number on the hub
-     * @param servoDirection the logical direction of the servo
-     * @param offset         position offset for calibration
-     */
-    public ServoSubsystem(CuttleRevHub revHub, int servoPort,
-                          Direction servoDirection, Double offset, String subsystemName) {
-        this(new CuttleServo(revHub, servoPort).setOffset(offset)
-                .setDirection(servoDirection), subsystemName);
-    }
-
-    /**
-     * Creates a ServoSubsystem using a {@link HardwareMap}-based servo configuration.
-     *
-     * @param hardwareMap    the FTC hardware map
-     * @param servoName      the name of the servo in the hardware configuration
-     * @param servoDirection the logical direction of the servo
-     * @param offset         position offset for calibration
-     */
-    public ServoSubsystem(HardwareMap hardwareMap, String servoName,
-                          Direction servoDirection, Double offset, String subsystemName) {
-        this(new CuttleServo(hardwareMap, servoName).setOffset(offset)
-                .setDirection(servoDirection), subsystemName);
     }
 
     /**
@@ -72,7 +41,7 @@ public class ServoSubsystem extends SubsystemBase {
      * @return an InstantCommand that moves the servos immediately
      */
     public Command setPositionCommand(double position) {
-        return new InstantCommand(() -> setPosition(position));
+        return new InstantCommand(() -> setPosition(position), this);
     }
 
     /**
@@ -180,17 +149,6 @@ public class ServoSubsystem extends SubsystemBase {
         return servoList.get(0).getDirection() == Direction.REVERSE ?
                 1 - noOffsetPose :
                 noOffsetPose;
-    }
-
-    /**
-     * Adds a preconfigured {@link CuttleServo} to the subsystem.
-     *
-     * @param servo the servo to add
-     * @return this subsystem instance, for chaining
-     */
-    public ServoSubsystem withServo(CuttleServo servo) {
-        servoList.add(servo);
-        return this;
     }
 
     /**

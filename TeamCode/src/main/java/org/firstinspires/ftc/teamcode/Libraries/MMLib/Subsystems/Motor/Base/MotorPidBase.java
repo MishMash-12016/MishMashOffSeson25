@@ -106,6 +106,41 @@ public class MotorPidBase extends MotorSubsystem{
         };
     }
 
+
+    /**
+     * Creates a Command that keeps the mechanism in its current setpoint place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    public Command holdCurrentSetPointCommand() {
+        return new Command() {
+            @Override
+            public void initialize() {
+                // clear previous errors/integral
+                pidController.reset();
+                pidController.setSetpoint(getPose());
+            }
+
+            @Override
+            public void execute() {
+                double pidOutput = pidController.calculate(getPose());
+                double feedforwardOutput = 0;
+
+
+                if (feedforward != null) {
+                    feedforwardOutput = feedforward.calculate(pidController.getSetpoint());
+                }
+                setPower(pidOutput + feedforwardOutput);// apply computed power
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                // Declare that this command requires the enclosing subsystem instance
+                return Set.of(MotorPidBase.this);
+            }
+        };
+    }
+
     /**
      * Returns the current position (pose) provided by the encoder.
      *

@@ -54,7 +54,7 @@ public class MotorPositionProfiledPidSubsystem extends MotorPidBase {
     }
 
     /**
-     * Creates a Command that keeps the mechanism in place using PID control.
+     * Creates a Command that keeps the mechanism in its exact current place (not the setpoint) using PID control.
      *
      * @return a Command requiring this subsystem
      */
@@ -86,6 +86,16 @@ public class MotorPositionProfiledPidSubsystem extends MotorPidBase {
                 return Set.of(MotorPositionProfiledPidSubsystem.this);
             }
         };
+    }
+
+    /**
+     * Creates a Command that keeps the mechanism in its current setpoint place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    @Override
+    public Command holdCurrentSetPointCommand() {
+        return holdSetPointCommand(pidController.getSetpoint());
     }
 
     /**

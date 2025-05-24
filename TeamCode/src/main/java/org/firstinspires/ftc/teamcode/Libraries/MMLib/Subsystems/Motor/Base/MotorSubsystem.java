@@ -42,7 +42,7 @@ public class MotorSubsystem extends SubsystemBase {
     }
 
     public Command stopCommand(){
-        return new InstantCommand(this::stop);
+        return new InstantCommand(this::stop, this);
     }
 
     /**
@@ -61,23 +61,14 @@ public class MotorSubsystem extends SubsystemBase {
         setPower(0);
     }
 
-    /**
-     * Adds a motor to the subsystem.
-     *
-     * @param motor a CuttleMotor instance
-     * @return this subsystem for chaining
-     */
-    public MotorSubsystem withMotor(CuttleMotor motor) {
-        motorList.add(motor);
-        return this;
-    }
-
     public MotorSubsystem withMotor(CuttleRevHub revHub, int port, Direction direction){
         CuttleMotor motor = new CuttleMotor(revHub, port, direction);
         if(zeroPowerBehavior != null){
             motor.setZeroPowerBehaviour(zeroPowerBehavior);
         }
-        return withMotor(motor);
+
+        motorList.add(motor);
+        return this;
     }
 
     public MotorSubsystem withZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior){
