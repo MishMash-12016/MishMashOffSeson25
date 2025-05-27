@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Di
 /**
  * Cuttlefish compatible cr servo.
  */
-//TODO: needs to be tested but should work
 public class CuttleCrServo{
 
     private double power = 0.0;
