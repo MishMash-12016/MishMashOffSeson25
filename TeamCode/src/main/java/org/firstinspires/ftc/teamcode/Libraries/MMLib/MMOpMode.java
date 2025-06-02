@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
+import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +31,6 @@ import java.util.List;
  * there is the {@link OpModeType.NonCompetition#DEBUG Debug},
  * {@link OpModeType.NonCompetition#EXPERIMENTING Experimenting},
  * {@link OpModeType.NonCompetition#EXPERIMENTING_NO_EXPANSION Experimenting Without Expansion}.
- *
  */
 public abstract class MMOpMode extends LinearOpMode {
 
@@ -45,11 +46,13 @@ public abstract class MMOpMode extends LinearOpMode {
 
     /**
      * use this to choose a {@link OpModeType.NonCompetition NonComp} opmode.
+     *
      * @param opModeType which non-competition opmode to activate
      */
     public MMOpMode(OpModeType.NonCompetition opModeType) {
         this.opModeType = opModeType;
     }
+
 
     public MMOpMode() {
     }
@@ -71,11 +74,13 @@ public abstract class MMOpMode extends LinearOpMode {
      */
     public void onPlayLoopUpdates() {
         CommandScheduler.getInstance().run();                 //runs the scheduler
-        /*
+
         MMSystems.getInstance().controlHub.pullBulkData();    //updates the controlHub sensors
-        MMSystems.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
+        if (MMSystems.getInstance().expansionHub != null) {
+            MMSystems.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
+        }
         telemetry.update();                                   //updates the telemetry
-        */
+        FtcDashboard.getInstance().getTelemetry().update();     //updates the dashboard
     }
 
     public abstract void onPlayLoop();
@@ -101,29 +106,14 @@ public abstract class MMOpMode extends LinearOpMode {
     }
 
     private void scheduleCommandsAndRun() {
-        for(Runnable runnable : runOnInit) {
+        for (Runnable runnable : runOnInit) {
             runnable.run();
         }
 
-        for(Command command : commandsOnRun) {
-            schedule(command);
+        for (Command command : commandsOnRun) {
+            command.schedule();
         }
     }
-
-    /**
-     * Schedules {@link com.seattlesolvers.solverslib.command.Command} objects to the scheduler
-     */
-    public void schedule(Command... commands) {
-        CommandScheduler.getInstance().schedule(commands);
-    }
-
-    /**
-     * Registers {@link com.seattlesolvers.solverslib.command.Subsystem} objects to the scheduler
-     */
-    public void register(Subsystem... subsystems) {
-        CommandScheduler.getInstance().registerSubsystem(subsystems);
-    }
-
 
     @Override
     public void runOpMode() throws InterruptedException {
