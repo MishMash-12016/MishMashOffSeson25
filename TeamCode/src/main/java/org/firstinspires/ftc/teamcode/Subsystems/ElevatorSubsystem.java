@@ -146,7 +146,7 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
      * Example:
      * elevator.moveToState(ElevatorState.HIGH_BASKET);
      */
-    public Command moveToState(ElevatorState state) {
+    public Command moveToStateCommand(ElevatorState state) {
         return getToSetpointCommand(state.getPosition());
     }
 }

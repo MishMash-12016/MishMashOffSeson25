@@ -64,7 +64,7 @@ public class IntakeArmSubsystem extends ServoSubsystem {
         withServo(mmSystems.controlHub, SERVO_PORT_2, SERVO_DIRECTION_2, SERVO_OFFSET_2);
     }
 
-    public Command setIntakeArmState(IntakeArmState state) {
+    public Command setStateCommand(IntakeArmState state) {
         return setPositionCommand(state.position.get());
     }
 }
