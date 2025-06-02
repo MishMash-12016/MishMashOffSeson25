@@ -85,22 +85,28 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
     // Instance fields
     //–––––––––––––––––––––––––––––––––
 
-    public MMSystems mmSystems;
 
     // Singleton instance
-    public static ElevatorSubsystem instance;
+    public static ElevatorSubsystemAutoLogged instance;
 
-    //–––––––––––––––––––––––––––––––––
-    // Constructor & Singleton
-    //–––––––––––––––––––––––––––––––––
+    /**
+     * Get the singleton instance of ElevatorSubsystem.
+     */
+    public static synchronized ElevatorSubsystemAutoLogged getInstance() {
+        if (instance == null) {
+            instance = new ElevatorSubsystemAutoLogged("ElevatorSubsystem");
+        }
+        return instance;
+    }
+
 
     /**
      * public constructor; use getInstance() for singleton access.
      */
-    public ElevatorSubsystem(String subsystemName) {
+    private ElevatorSubsystem(String subsystemName) {
         super(subsystemName);
 
-        this.mmSystems = MMSystems.getInstance();
+        MMSystems mmSystems = MMSystems.getInstance();
 
         // Encoder setup (reverse direction so 1 → up, as mounted on lift)
         withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
@@ -128,16 +134,6 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
 
         // By default, hold whatever setpoint we’re at
         withSetDefaultCommand(holdCurrentSetPointCommand());
-    }
-
-    /**
-     * Get the singleton instance of ElevatorSubsystem.
-     */
-    public static synchronized ElevatorSubsystem getInstance() {
-        if (instance == null) {
-            instance = new ElevatorSubsystemAutoLogged("ElevatorSubsystem");
-        }
-        return instance;
     }
 
     //–––––––––––––––––––––––––––––––––

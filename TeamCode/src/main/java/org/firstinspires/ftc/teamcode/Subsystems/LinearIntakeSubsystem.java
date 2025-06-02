@@ -22,10 +22,23 @@ public class LinearIntakeSubsystem extends ServoSubsystem {
     public static double OPEN_POSITION = 0.75;
     public static double CLOSE_POSITION = 0.0;
 
-    MMSystems mmSystems = MMSystems.getInstance();
 
-    public LinearIntakeSubsystem(String subsystemName) {
+    // Singleton instance
+    public static LinearIntakeSubsystemAutoLogged instance;
+    /**
+     * Get the singleton instance of LinearIntakeSubsystem.
+     */
+    public static synchronized LinearIntakeSubsystemAutoLogged getInstance() {
+        if (instance == null) {
+            instance = new LinearIntakeSubsystemAutoLogged("LinearIntakeSubsystem");
+        }
+        return instance;
+    }
+
+    private LinearIntakeSubsystem(String subsystemName) {
         super(subsystemName);
+
+        MMSystems mmSystems = MMSystems.getInstance();
         withServo(mmSystems.controlHub, SERVO_PORT_1, SERVO_DIRECTION_1, SERVO_OFFSET_1);
         withServo(mmSystems.controlHub, SERVO_PORT_2, SERVO_DIRECTION_2, SERVO_OFFSET_2);
     }
