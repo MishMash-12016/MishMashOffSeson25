@@ -104,13 +104,13 @@ public class MotorPidBase extends MotorSubsystem{
         return encoder.getVelocity();
     }
 
-    public MotorPidBase withEncoder(CuttleEncoder encoder) {
-        this.encoder = encoder;
-        return this;
+    public void setPose(double pose) {
+        encoder.setPose(pose);
     }
 
     public MotorPidBase withEncoder(CuttleRevHub revHub, int encoderPort, double cpr, Direction direction) {
-        return withEncoder(new CuttleEncoder(revHub, encoderPort, cpr, direction));
+        encoder = new CuttleEncoder(revHub, encoderPort, cpr, direction);
+        return this;
     }
 
     /**
