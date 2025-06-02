@@ -47,19 +47,15 @@ public abstract class MMOpMode extends LinearOpMode {
     /**
      * use this to choose a {@link OpModeType.NonCompetition NonComp} opmode.
      *
-     * @param opModeType which non-competition opmode to activate
+     * @param opModeType which opmode to activate
      */
-    public MMOpMode(OpModeType.NonCompetition opModeType) {
+    public MMOpMode(OpModeType opModeType) {
         this.opModeType = opModeType;
-    }
-
-
-    public MMOpMode() {
     }
 
     private void robotInit() {
         mmRobot.currentOpMode = this;
-        MMRobot.getInstance().initializeSystems(opModeType.getOpModeType());
+        MMRobot.getInstance().initializeSystems(opModeType);
     }
 
     public abstract void onInit();

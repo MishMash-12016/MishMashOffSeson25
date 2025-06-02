@@ -40,12 +40,5 @@ public interface OpModeType {
         EXPERIMENTING,
         EXPERIMENTING_NO_EXPANSION
     }
-
-    default OpModeType getOpModeType() {
-        OpModeType opModeType = MMRobot.getInstance().currentOpMode.opModeType;
-        return opModeType != null ? opModeType :
-                (MMRobot.getInstance().currentOpMode.getClass().isAnnotationPresent(Autonomous.class) ? Competition.AUTO : Competition.TELEOP);
-    }
-
 }
 

@@ -51,7 +51,7 @@ public class MMSystems {
     public void initBasics() {
         HardwareMap hardwareMap = MMRobot.getInstance().currentOpMode.hardwareMap;
         controlHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.CONTROL_HUB);
-        if (MMRobot.getInstance().currentOpMode.opModeType.getOpModeType() != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
+        if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
             expansionHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.EXPANSION_HUB);
         }
         battery = new MMBattery(hardwareMap);
