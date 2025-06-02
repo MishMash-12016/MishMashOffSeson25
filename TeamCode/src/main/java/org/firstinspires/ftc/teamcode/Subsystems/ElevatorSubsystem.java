@@ -103,7 +103,7 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
     /**
      * public constructor; use getInstance() for singleton access.
      */
-    private ElevatorSubsystem(String subsystemName) {
+    public ElevatorSubsystem(String subsystemName) {
         super(subsystemName);
 
         MMSystems mmSystems = MMSystems.getInstance();

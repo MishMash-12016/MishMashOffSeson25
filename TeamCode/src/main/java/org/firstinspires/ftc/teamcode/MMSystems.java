@@ -40,6 +40,10 @@ public class MMSystems {
         return instance;
     }
 
+    private MMSystems() {
+        initBasics();
+    }
+
 
     //pre made init for pedro and robot basics because they shouldn't change and be the same every year
     //!!!!do not create here init for subsystems or other robot things do that in MMRobot
@@ -56,7 +60,7 @@ public class MMSystems {
         gamepadEx2 = new GamepadEx(MMRobot.getInstance().currentOpMode.gamepad2);
     }
 
-    public Follower initializeFollower(Pose pose) {
+    public Follower initFollower(Pose pose) {
         pathTimer = new Timer();
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap);

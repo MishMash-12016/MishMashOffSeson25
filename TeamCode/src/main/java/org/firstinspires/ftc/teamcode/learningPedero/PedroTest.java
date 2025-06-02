@@ -10,6 +10,7 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
@@ -36,7 +37,7 @@ public class PedroTest extends MMOpMode {
 
     @Override
     public void onInit() {
-        follower = MMSystems.getInstance().initializeFollower(startPose);
+        follower = MMSystems.getInstance().initFollower(startPose);
         builder = follower.pathBuilder();
     }
 
@@ -45,8 +46,22 @@ public class PedroTest extends MMOpMode {
 
     @Override
     public void onPlay() {
-        schedule(
-                new FollowPathCommand(follower,
+
+        new FollowPathCommand(follower,
+                builder.addPath(
+                        new BezierCurve(
+                                new Point(startPose),
+                                new Point(12, 105),
+                                new Point(basketPose)
+                        )
+                ).setLinearHeadingInterpolation(
+                        startPose.getHeading(),
+                        basketPose.getHeading()
+                ).build()
+        ).schedule();
+
+
+        new SequentialCommandGroup(new FollowPathCommand(follower,
                         builder.addPath(
                                 new BezierCurve(
                                         new Point(startPose),
@@ -70,8 +85,7 @@ public class PedroTest extends MMOpMode {
                                 basketPose.getHeading(),
                                 yellowSampleClose.getHeading()
                         ).build()
-                )
-        );
+                )).schedule();
     }
 
     @Override

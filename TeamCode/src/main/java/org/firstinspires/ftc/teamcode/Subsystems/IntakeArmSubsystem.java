@@ -56,7 +56,7 @@ public class IntakeArmSubsystem extends ServoSubsystem {
         return instance;
     }
 
-    private IntakeArmSubsystem(String subsystemName) {
+    public IntakeArmSubsystem(String subsystemName) {
         super(subsystemName);
 
         MMSystems mmSystems = MMSystems.getInstance();

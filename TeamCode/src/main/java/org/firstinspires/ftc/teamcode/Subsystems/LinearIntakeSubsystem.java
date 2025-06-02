@@ -35,7 +35,7 @@ public class LinearIntakeSubsystem extends ServoSubsystem {
         return instance;
     }
 
-    private LinearIntakeSubsystem(String subsystemName) {
+    public LinearIntakeSubsystem(String subsystemName) {
         super(subsystemName);
 
         MMSystems mmSystems = MMSystems.getInstance();
