@@ -58,6 +58,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
     public static double ELEVATOR_HIGH_BASKET = 48.0;
     public static double ELEVATOR_DOWN_POSITION = 0.0;
     public static double ELEVATOR_CLIMB_HIGH_BAR = 64.0;
+    public static double ELEVATOR_ZERO = 64.0;
     public static double ELEVATOR_CLIMB_POSITION = 40.0;
 
     //–––––––––––––––––––––––––––––––––
@@ -68,6 +69,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         HIGH_BASKET(() -> ELEVATOR_HIGH_BASKET),
         ELEVATOR_DOWN(() -> ELEVATOR_DOWN_POSITION),
         ELEVATOR_HIGH_CHAMBER(() -> ELEVATOR_CLIMB_HIGH_BAR),
+        ELEVATOR_ZERO_POSE(() -> ELEVATOR_ZERO),
         ELEVATOR_CLIMB(() -> ELEVATOR_CLIMB_POSITION);
 
         public final Supplier<Double> positionSupplier;

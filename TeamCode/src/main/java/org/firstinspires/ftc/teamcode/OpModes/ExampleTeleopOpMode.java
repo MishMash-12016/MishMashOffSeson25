@@ -40,7 +40,7 @@ public class ExampleTeleopOpMode extends MMOpMode {
 
         //using second gamepad to manually reset elevator pose
         gamepadEx2.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(()-> ElevatorSubsystem.getInstance().setPose(0.0));
+                .whenPressed(()->ElevatorSubsystem.getInstance().setPose(ElevatorSubsystem.ElevatorState.ELEVATOR_ZERO_POSE.getPosition()));
 
     }
 
