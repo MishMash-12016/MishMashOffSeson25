@@ -22,11 +22,12 @@ public class CuttleCrServo{
      * @param revHub
      * @param servoPort
      * */
-    public CuttleCrServo(CuttleRevHub revHub, int servoPort)
+    public CuttleCrServo(CuttleRevHub revHub, int servoPort, Direction direction)
     {
         port = servoPort;
         hub = revHub;
         FTCServo = false;
+        this.direction = direction;
     }
     
     /**
@@ -34,10 +35,11 @@ public class CuttleCrServo{
      * @param hardwareMap hardwareMap object
      * @param name Name of the servo in the config
      * */
-    public CuttleCrServo(HardwareMap hardwareMap, String name)
+    public CuttleCrServo(HardwareMap hardwareMap, String name, Direction direction)
     {
         FTCServo = true;
         ftcServoDevice = hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class,name);
+        this.direction = direction;
     }
 
     /**

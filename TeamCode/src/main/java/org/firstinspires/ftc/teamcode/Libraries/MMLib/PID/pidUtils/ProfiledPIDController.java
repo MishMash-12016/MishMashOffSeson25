@@ -79,6 +79,14 @@ public class ProfiledPIDController extends PIDController {
     m_profile = new TrapezoidProfile(m_constraints);
   }
 
+  public void setMaxVelocity(Double maxVelocity) {
+      setConstraints(new TrapezoidProfile.Constraints(maxVelocity, m_constraints.maxAcceleration));
+  }
+
+  public void setMaxAcceleration(double maxAcceleration) {
+      setConstraints(new TrapezoidProfile.Constraints(m_constraints.maxVelocity, maxAcceleration));
+  }
+
   /** Returns the current velocity/acceleration constraints. */
   public TrapezoidProfile.Constraints getConstraints() {
     return m_constraints;

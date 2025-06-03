@@ -65,6 +65,16 @@ public class TrapezoidProfile {
       this.maxVelocity = maxVelocity;
       this.maxAcceleration = maxAcceleration;
     }
+
+    /** Gets the maximum velocity. */
+    public double getMaxVelocity() {
+      return maxVelocity;
+    }
+
+    /** Gets the maximum acceleration. */
+    public double getMaxAcceleration() {
+      return maxAcceleration;
+    }
   }
 
   /** Profile state. */

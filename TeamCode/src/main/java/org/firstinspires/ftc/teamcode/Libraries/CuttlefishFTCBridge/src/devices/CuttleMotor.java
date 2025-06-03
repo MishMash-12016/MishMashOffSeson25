@@ -56,7 +56,7 @@ public class CuttleMotor{
      * @param power the uncompensated power between -1 to 1
      * @return the compensated value between -1 to 1
      */
-    public double voltageCompensate(double power){
+    private double voltageCompensate(double power){
         return (power * nominalVoltage) / hub.getBatteryVoltage();
     }
 

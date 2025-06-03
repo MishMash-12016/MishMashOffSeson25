@@ -5,24 +5,29 @@ import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleCrServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleMotor;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMMotorOrCrServo;
 
 import java.util.ArrayList;
 
-public class MotorSubsystem extends SubsystemBase {
-    // List of motors driven by this subsystem
-    private final ArrayList<CuttleMotor> motorList = new ArrayList<>();
+import Ori.Coval.Logging.WpiLog;
+
+public class MotorOrCrServoSubsystem extends SubsystemBase {
+    // List of motors or crServos driven by this subsystem
+    private final ArrayList<MMMotorOrCrServo> motorOrCrServoList = new ArrayList<>();
     public final String subsystemName;
     public ZeroPowerBehavior zeroPowerBehavior;
 
-    public MotorSubsystem(String subsystemName){
+    public MotorOrCrServoSubsystem(String subsystemName){
         this.subsystemName = subsystemName;
     }
 
     /**
-     * Creates a Command that sets the motor power directly.
+     * Creates a Command that sets the motor or crServos power directly.
      *
      * @param power motor power (-1.0 to 1.0)
      * @return a RunCommand requiring this subsystem
@@ -32,7 +37,7 @@ public class MotorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Creates a Command that sets the motor power directly.
+     * Creates a Command that sets the motor or crServos power directly.
      *
      * @param power motor power (-1.0 to 1.0)
      * @return a RunCommand requiring this subsystem
@@ -41,6 +46,9 @@ public class MotorSubsystem extends SubsystemBase {
         return new InstantCommand(() -> setPower(power), this);
     }
 
+    /**
+     * a command that stops the motors
+     */
     public Command stopCommand(){
         return new InstantCommand(this::stop, this);
     }
@@ -52,7 +60,9 @@ public class MotorSubsystem extends SubsystemBase {
      * is installed, as this method does not manage command requirements.</p>
      */
     public void setPower(double power) {
-        for (CuttleMotor motor : motorList) {
+        WpiLog.log(subsystemName + "motor power: ", power);
+
+        for (MMMotorOrCrServo motor : motorOrCrServoList) {
             motor.setPower(power);
         }
     }
@@ -61,25 +71,39 @@ public class MotorSubsystem extends SubsystemBase {
         setPower(0);
     }
 
-    public MotorSubsystem withMotor(CuttleRevHub revHub, int port, Direction direction){
-        CuttleMotor motor = new CuttleMotor(revHub, port, direction);
+    /**
+     * adds a motor to this subsystem
+     * @param revHub
+     * @param port
+     * @param direction
+     */
+    public MotorOrCrServoSubsystem withMotor(CuttleRevHub revHub, int port, Direction direction){
+        MMMotorOrCrServo motor = new MMMotorOrCrServo(new CuttleMotor(revHub, port, direction));
         if(zeroPowerBehavior != null){
-            motor.setZeroPowerBehaviour(zeroPowerBehavior);
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
         }
 
-        motorList.add(motor);
+        motorOrCrServoList.add(motor);
         return this;
     }
 
-    public MotorSubsystem withZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior){
-        for (CuttleMotor motor:motorList){
-            motor.setZeroPowerBehaviour(zeroPowerBehavior);
+    public MotorOrCrServoSubsystem withCrServo(CuttleRevHub revHub, int port, Direction direction){
+        MMMotorOrCrServo crServo = new MMMotorOrCrServo(new CuttleCrServo(revHub, port, direction));
+
+        motorOrCrServoList.add(crServo);
+
+        return this;
+    }
+
+    public MotorOrCrServoSubsystem withZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior){
+        for (MMMotorOrCrServo motor: motorOrCrServoList){
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
         }
         this.zeroPowerBehavior = zeroPowerBehavior;
         return this;
     }
 
-    public MotorSubsystem withSetDefaultCommand(Command defaultCommand){
+    public MotorOrCrServoSubsystem withSetDefaultCommand(Command defaultCommand){
         setDefaultCommand(defaultCommand);
         return this;
     }

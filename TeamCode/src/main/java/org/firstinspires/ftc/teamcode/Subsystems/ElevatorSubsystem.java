@@ -7,7 +7,7 @@ import com.seattlesolvers.solverslib.command.Command;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.MotorPositionProfiledPidSubsystem;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionProfiledPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 @Config
 @AutoLogAndPostToFtcDashboard
-public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
+public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
     //–––––––––––––––––––––––––––––––––
     // Constants
@@ -108,7 +108,6 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
 
         MMSystems mmSystems = MMSystems.getInstance();
 
-        // Encoder setup (reverse direction so 1 → up, as mounted on lift)
         withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
@@ -134,6 +133,10 @@ public class ElevatorSubsystem extends MotorPositionProfiledPidSubsystem {
 
         // By default, hold whatever setpoint we’re at
         withSetDefaultCommand(holdCurrentSetPointCommand());
+
+        withDebugPidSuppliers(() -> PID_P, () -> PID_I, () -> PID_D, () -> I_ZONE, () -> POSITION_TOLERANCE, () -> VELOCITY_TOLERANCE,
+                null, null, () -> FF_KS, () -> FF_KV, () -> FF_KA,
+                () -> CONSTRAINT_MAX_VELOCITY, () -> CONSTRAINT_MAX_ACCELERATION);
     }
 
     //–––––––––––––––––––––––––––––––––
