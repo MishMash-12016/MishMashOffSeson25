@@ -46,12 +46,12 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
      * Sets tolerance for velocity error.
      */
     public VelocityPidSubsystem withVelocityTolerance(double tolerance) {
-        withErrorTolerance(tolerance);
+        pidController.setTolerance(tolerance);
         return this;
     }
 
     public VelocityPidSubsystem withAccelerationTolerance(double tolerance) {
-        withDerivativeTolerance(tolerance);
+        pidController.setTolerance(pidController.getErrorTolerance(), tolerance);
         return this;
     }
 
@@ -141,12 +141,12 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
             MMUtils.updateIfChanged(
                     debugPositionToleranceSupplier,
                     pidController::getErrorTolerance,
-                    this::withErrorTolerance
+                    this::withVelocityTolerance
             );
             MMUtils.updateIfChanged(
                     debugVelocityToleranceSupplier,
                     pidController::getErrorDerivativeTolerance,
-                    this::withDerivativeTolerance
+                    this::withAccelerationTolerance
             );
 
             MMUtils.updateIfChanged(

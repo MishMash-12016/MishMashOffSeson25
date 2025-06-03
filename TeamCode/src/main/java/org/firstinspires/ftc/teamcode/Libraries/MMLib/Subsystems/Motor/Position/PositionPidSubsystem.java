@@ -23,7 +23,7 @@ public class PositionPidSubsystem extends PidBaseSubsystem {
      * @return this subsystem for chaining
      */
     public PositionPidSubsystem withPositionTolerance(double tolerance) {
-        withErrorTolerance(tolerance);
+        pidController.setTolerance(tolerance);
         return this;
     }
 
@@ -34,10 +34,9 @@ public class PositionPidSubsystem extends PidBaseSubsystem {
      * @return this subsystem for chaining
      */
     public PositionPidSubsystem withVelocityTolerance(double tolerance) {
-        withDerivativeTolerance(tolerance);
+        pidController.setTolerance(pidController.getErrorTolerance(), tolerance);
         return this;
     }
-
 
     private DoubleSupplier debugKpSupplier;
     private DoubleSupplier debugKiSupplier;
@@ -112,12 +111,12 @@ public class PositionPidSubsystem extends PidBaseSubsystem {
             MMUtils.updateIfChanged(
                     debugPositionToleranceSupplier,
                     pidController::getErrorTolerance,
-                    this::withErrorTolerance
+                    this::withPositionTolerance
             );
             MMUtils.updateIfChanged(
                     debugVelocityToleranceSupplier,
                     pidController::getErrorDerivativeTolerance,
-                    this::withDerivativeTolerance
+                    this::withVelocityTolerance
             );
 
             MMUtils.updateIfChanged(

@@ -141,7 +141,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
      * @return this subsystem for chaining
      */
     public PositionProfiledPidSubsystem withPositionTolerance(double tolerance) {
-        withErrorTolerance(tolerance);
+        pidController.setTolerance(tolerance);
         return this;
     }
 
@@ -152,7 +152,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
      * @return this subsystem for chaining
      */
     public PositionProfiledPidSubsystem withVelocityTolerance(double tolerance) {
-        withDerivativeTolerance(tolerance);
+        pidController.setTolerance(pidController.getErrorTolerance(), tolerance);
         return this;
     }
 
@@ -161,8 +161,8 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
     private DoubleSupplier debugKiSupplier;
     private DoubleSupplier debugKdSupplier;
     private DoubleSupplier debugIZoneSupplier;
-    private DoubleSupplier debugErrorToleranceSupplier;
-    private DoubleSupplier debugDerivativeToleranceSupplier;
+    private DoubleSupplier debugPositionToleranceSupplier;
+    private DoubleSupplier debugVelocityToleranceSupplier;
     private DoubleSupplier debugIntegralMinRangeSupplier;
     private DoubleSupplier debugIntegralMaxRangeSupplier;
     private DoubleSupplier debugKsSupplier;
@@ -179,8 +179,8 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
      * @param debugKiSupplier                  Kd
      * @param debugKdSupplier                  Ki
      * @param debugIZoneSupplier               iZone
-     * @param debugErrorToleranceSupplier      error tolerance
-     * @param debugDerivativeToleranceSupplier derivative tolerance
+     * @param debugPositionToleranceSupplier position tolerance
+     * @param debugVelocityToleranceSupplier velocity tolerance
      * @param debugIntegralMinRangeSupplier    integral min range
      * @param debugIntegralMaxRangeSupplier    integral max range
      * @param debugKsSupplier                  static gain
@@ -194,8 +194,8 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
                                                   DoubleSupplier debugKiSupplier,
                                                   DoubleSupplier debugKdSupplier,
                                                   DoubleSupplier debugIZoneSupplier,
-                                                  DoubleSupplier debugErrorToleranceSupplier,
-                                                  DoubleSupplier debugDerivativeToleranceSupplier,
+                                                  DoubleSupplier debugPositionToleranceSupplier,
+                                                  DoubleSupplier debugVelocityToleranceSupplier,
                                                   DoubleSupplier debugIntegralMinRangeSupplier,
                                                   DoubleSupplier debugIntegralMaxRangeSupplier,
                                                   DoubleSupplier debugKsSupplier,
@@ -208,8 +208,8 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
         this.debugKiSupplier = debugKiSupplier;
         this.debugKdSupplier = debugKdSupplier;
         this.debugIZoneSupplier = debugIZoneSupplier;
-        this.debugErrorToleranceSupplier = debugErrorToleranceSupplier;
-        this.debugDerivativeToleranceSupplier = debugDerivativeToleranceSupplier;
+        this.debugPositionToleranceSupplier = debugPositionToleranceSupplier;
+        this.debugVelocityToleranceSupplier = debugVelocityToleranceSupplier;
         this.debugIntegralMinRangeSupplier = debugIntegralMinRangeSupplier;
         this.debugIntegralMaxRangeSupplier = debugIntegralMaxRangeSupplier;
         this.debugKsSupplier = debugKsSupplier;
@@ -248,14 +248,14 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
                     pidController::setIZone
             );
             MMUtils.updateIfChanged(
-                    debugErrorToleranceSupplier,
+                    debugPositionToleranceSupplier,
                     pidController::getErrorTolerance,
-                    pidController::setTolerance
+                    this::withPositionTolerance
             );
             MMUtils.updateIfChanged(
-                    debugDerivativeToleranceSupplier,
+                    debugVelocityToleranceSupplier,
                     pidController::getErrorDerivativeTolerance,
-                    this::withDerivativeTolerance
+                    this::withVelocityTolerance
             );
 
             MMUtils.updateIfChanged(

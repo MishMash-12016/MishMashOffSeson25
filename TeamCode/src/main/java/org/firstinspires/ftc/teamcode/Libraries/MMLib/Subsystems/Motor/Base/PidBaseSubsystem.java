@@ -140,27 +140,6 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
         return this;
     }
 
-    /**
-     * Sets the acceptable error tolerance for the PID setpoint.
-     *
-     * @param tolerance allowable error range
-     * @return this subsystem for chaining
-     */
-    public PidBaseSubsystem withErrorTolerance(double tolerance) {
-        pidController.setTolerance(tolerance);
-        return this;
-    }
-
-    /**
-     * Sets the acceptable derivative tolerance for the PID setpoint.
-     *
-     * @param tolerance allowable error range
-     * @return this subsystem for chaining
-     */
-    public PidBaseSubsystem withDerivativeTolerance(double tolerance) {
-        pidController.setTolerance(pidController.getErrorTolerance(), tolerance);
-        return this;
-    }
 
     /**
      * Defines the Integral Zone (I-Zone) for the PID controller.

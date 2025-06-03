@@ -30,29 +30,38 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
     //–––––––––––––––––––––––––––––––––
 
     public static int ENCODER_PORT = 1;
+    public static int ENCODER_TICKS_PER_REV = 400;
+
     public static int MOTOR_PORT_0 = 0;
     public static int MOTOR_PORT_1 = 1;
     public static int MOTOR_PORT_2 = 2;
     public static int MOTOR_PORT_3 = 3;
-    public static int ENCODER_TICKS_PER_REV = 400;
 
-    public static double PID_P = 0.08;
-    public static double PID_I = 0.001;
-    public static double PID_D = 0.0;
+    public static Direction MOTOR_DIRECTION_0 = Direction.FORWARD;
+    public static Direction MOTOR_DIRECTION_1 = Direction.FORWARD;
+    public static Direction MOTOR_DIRECTION_2 = Direction.REVERSE;
+    public static Direction MOTOR_DIRECTION_3 = Direction.REVERSE;
 
-    public static double FF_KS = 0.1005;
-    public static double FF_KV = 0.1;
-    public static double FF_KA = 0.0;
+
+    public static DcMotor.ZeroPowerBehavior ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.BRAKE;
+
+    public static double KP = 0.08;
+    public static double KI = 0.001;
+    public static double KD = 0.0;
+
+    public static double KS = 0.1005;
+    public static double KV = 0.1;
+    public static double KA = 0.0;
 
     public static double CONSTRAINT_MAX_VELOCITY = 0.5;
     public static double CONSTRAINT_MAX_ACCELERATION = 5.0;
 
     public static double I_ZONE = 0.5;
     public static double POSITION_TOLERANCE = 0.05;
-    public static double VELOCITY_TOLERANCE = 0.005;
+    public static double VELOCITY_TOLERANCE = 0.0;
 
     public static int ZERO_SWITCH_PORT = 0;
-    public static int ZERO_SWITCH_CHANNEL = 0;
+    public static int ZERO_POSE = 0;
 
     // Predefined elevator setpoint positions (in inches)
     public static double ELEVATOR_HIGH_BASKET = 48.0;
@@ -113,16 +122,16 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
-        withMotor(mmSystems.controlHub, MOTOR_PORT_0, Direction.REVERSE);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_1, Direction.REVERSE);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_2, Direction.REVERSE);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_3, Direction.REVERSE);
+        withMotor(mmSystems.controlHub, MOTOR_PORT_0, MOTOR_DIRECTION_0);
+        withMotor(mmSystems.controlHub, MOTOR_PORT_1, MOTOR_DIRECTION_1);
+        withMotor(mmSystems.controlHub, MOTOR_PORT_2, MOTOR_DIRECTION_2);
+        withMotor(mmSystems.controlHub, MOTOR_PORT_3, MOTOR_DIRECTION_3);
 
-        withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        withZeroPowerBehavior(zeroPowerBehavior);
 
         // PIDF & Constraints
-        withPid(PID_P, PID_I, PID_D);
-        withFeedforward(FF_KS, FF_KV, FF_KA);
+        withPid(KP, KI, KD);
+        withFeedforward(KS, KV, KA);
         withConstraints(CONSTRAINT_MAX_VELOCITY, CONSTRAINT_MAX_ACCELERATION);
         withIZone(I_ZONE);
 
@@ -131,13 +140,13 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withVelocityTolerance(VELOCITY_TOLERANCE);
 
         // Zeroing limit switch on encoder
-        withZeroSwitch(new CuttleDigital(mmSystems.controlHub, ZERO_SWITCH_PORT), ZERO_SWITCH_CHANNEL);
+        withZeroSwitch(new CuttleDigital(mmSystems.controlHub, ZERO_SWITCH_PORT), ZERO_POSE);
 
         // By default, hold whatever setpoint we’re at
         withSetDefaultCommand(holdCurrentSetPointCommand());
 
-        withDebugPidSuppliers(() -> PID_P, () -> PID_I, () -> PID_D, () -> I_ZONE, () -> POSITION_TOLERANCE, () -> VELOCITY_TOLERANCE,
-                null, null, () -> FF_KS, () -> FF_KV, () -> FF_KA,
+        withDebugPidSuppliers(() -> KP, () -> KI, () -> KD, () -> I_ZONE, () -> POSITION_TOLERANCE, () -> VELOCITY_TOLERANCE,
+                null, null, () -> KS, () -> KV, () -> KA,
                 () -> CONSTRAINT_MAX_VELOCITY, () -> CONSTRAINT_MAX_ACCELERATION);
     }
 

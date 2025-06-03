@@ -332,7 +332,7 @@ public class PIDController implements AutoCloseable {
      * @param errorTolerance Error which is tolerable.
      */
     public void setTolerance(double errorTolerance) {
-        setTolerance(errorTolerance, Double.POSITIVE_INFINITY);
+        setTolerance(errorTolerance, Math.min(m_errorDerivativeTolerance, Double.POSITIVE_INFINITY));
     }
 
     /**
