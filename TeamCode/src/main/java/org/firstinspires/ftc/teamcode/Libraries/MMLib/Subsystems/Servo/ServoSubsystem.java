@@ -16,12 +16,13 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
+import Ori.Coval.Logging.WpiLog;
+
 /**
  * A subsystem that wraps and manages one or more {@link CuttleServo} instances, allowing
  * for position control and command generation. Supports instant positioning,
  * gradual movement over time, and conditional positioning based on button input.
  */
-//TODO: add manual logging using the subsystemName
 public class ServoSubsystem extends SubsystemBase {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
@@ -133,6 +134,7 @@ public class ServoSubsystem extends SubsystemBase {
      * @param position the target position [0.0, 1.0]
      */
     public void setPosition(double position) {
+        WpiLog.log(subsystemName + "/position", position, true);
         for (CuttleServo servo : servoList) {
             servo.setPosition(position);
         }
@@ -146,9 +148,9 @@ public class ServoSubsystem extends SubsystemBase {
      */
     public double getPosition() {
         double noOffsetPose = servoList.get(0).getPosition() - servoList.get(0).getOffset();
-        return servoList.get(0).getDirection() == Direction.REVERSE ?
-                1 - noOffsetPose :
-                noOffsetPose;
+        return WpiLog.log(subsystemName + "/position",
+                servoList.get(0).getDirection() == Direction.REVERSE ? 1 - noOffsetPose : noOffsetPose
+                , true);
     }
 
     /**

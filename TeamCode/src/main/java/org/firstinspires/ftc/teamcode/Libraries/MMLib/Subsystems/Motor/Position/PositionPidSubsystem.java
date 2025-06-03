@@ -11,8 +11,9 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import Ori.Coval.Logging.WpiLog;
 
-//TODO: add manual logging using the subsystemName
+
 public class PositionPidSubsystem extends PidBaseSubsystem {
 
     public PositionPidSubsystem(String subsystemName) {
@@ -34,11 +35,12 @@ public class PositionPidSubsystem extends PidBaseSubsystem {
                 pidController.reset();
                 pidController.setSetpoint(setPoint);
 
+                WpiLog.log(subsystemName + "/pid setpoint", setPoint, true);
             }
 
             @Override
             public void execute() {
-                double pidOutput = pidController.calculate(getPose());
+                double pidOutput = WpiLog.log(subsystemName + "/pid output", pidController.calculate(getPose()), true);
                 setPower(pidOutput);// apply computed power
             }
 

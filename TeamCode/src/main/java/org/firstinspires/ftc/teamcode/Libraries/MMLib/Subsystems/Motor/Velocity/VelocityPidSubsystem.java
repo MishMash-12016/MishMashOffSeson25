@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import Ori.Coval.Logging.WpiLog;
+
 /**
  * MotorVelocityPidSubsystem provides PID-controlled velocity for a motor-driven mechanism.
  *
@@ -19,7 +21,6 @@ import java.util.function.DoubleSupplier;
  * and a PIDController to compute the required power to reach a target velocity setpoint.
  * </p>
  */
-//TODO: add manual logging using the subsystemName
 public class VelocityPidSubsystem extends PidBaseSubsystem {
 
 
@@ -49,17 +50,20 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
                 pidController.reset();
                 pidController.setSetpoint(setPoint);
 
+                WpiLog.log(subsystemName + "/pid setpoint", setPoint, true);
             }
 
             @Override
             public void execute() {
-                double pidOutput = pidController.calculate(getPose());
+                double pidOutput = WpiLog.log(subsystemName + "/pid output", pidController.calculate(getVelocity()), true);
                 double feedforwardOutput = 0;
 
 
                 if (feedforward != null) {
                     feedforwardOutput = feedforward.calculate(pidController.getSetpoint());
                 }
+                WpiLog.log(subsystemName + "/pid feedforward", feedforwardOutput, true);
+
                 setPower(pidOutput + feedforwardOutput);// apply computed power
             }
 

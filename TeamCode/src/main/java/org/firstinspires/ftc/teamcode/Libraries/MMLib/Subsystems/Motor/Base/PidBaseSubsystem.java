@@ -37,7 +37,7 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
     //this command is the base for all the other pid commands
     public Command holdSetPointCommand(double setPoint) {
         return new RunCommand(()-> {
-            WpiLog.log(subsystemName + " ERROR ", "pid holdSetPointCommand is not implemented", true);
+            WpiLog.log(subsystemName + "/ERROR ", "pid holdSetPointCommand is not implemented", true);
             setPower(0);});
     }
 
@@ -48,7 +48,7 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return a Command requiring this subsystem
      */
     public Command getToSetpointCommand(double setPoint) {
-        return holdSetPointCommand(setPoint).interruptOn(pidController::atSetpoint);
+        return holdSetPointCommand(setPoint).interruptOn(()->WpiLog.log(subsystemName + "/atSetpoint", pidController.atSetpoint(), true));
     }
 
     /**
@@ -66,11 +66,11 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return current pose in encoder units (divided by ratio)
      */
     public double getPose() {
-        return encoder.getPose();
+        return WpiLog.log(subsystemName + "/pose", encoder.getPose(), true);
     }
 
     public double getVelocity() {
-        return encoder.getVelocity();
+        return WpiLog.log(subsystemName + "/velocity", encoder.getVelocity(), true);
     }
 
     public void setPose(double pose) {

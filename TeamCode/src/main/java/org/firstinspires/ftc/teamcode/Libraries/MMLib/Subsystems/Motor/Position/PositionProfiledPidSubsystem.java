@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import Ori.Coval.Logging.WpiLog;
+
 public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
 
     public PositionProfiledPidSubsystem(String subsystemName) {
@@ -34,17 +36,21 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
                 // clear previous errors/integral
                 ((ProfiledPIDController) pidController).reset(getPose(), getVelocity());
                 pidController.setSetpoint(setPoint);
+
+                WpiLog.log(subsystemName + "/pid setpoint", setPoint, true);
             }
 
             @Override
             public void execute() {
-                double pidOutput = pidController.calculate(getPose());
+                double pidOutput = WpiLog.log(subsystemName + "/pid output", pidController.calculate(getPose()), true);
                 double feedforwardOutput = 0;
 
 
                 if (feedforward != null) {
                     feedforwardOutput = feedforward.calculate(((ProfiledPIDController) pidController).getSetpointState().velocity);
                 }
+                WpiLog.log(subsystemName + "/pid feedforward", feedforwardOutput, true);
+
                 setPower(pidOutput + feedforwardOutput);// apply computed power
             }
 
