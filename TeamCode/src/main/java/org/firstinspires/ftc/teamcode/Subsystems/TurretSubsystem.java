@@ -7,6 +7,10 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Di
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMSystems;
 
+import Ori.Coval.Logging.AutoLog;
+import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+
+@AutoLogAndPostToFtcDashboard
 public class TurretSubsystem extends PositionPidSubsystem {
 
     //–––––––––––––––––––––––––––––––––
@@ -42,8 +46,8 @@ public class TurretSubsystem extends PositionPidSubsystem {
         withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
-        withMotor(mmSystems.controlHub, RIGHT_SERVO_PORT, RIGHT_SERVO_DIRECTION);
-        withMotor(mmSystems.controlHub, LEFT_SERVO_PORT, LEFT_SERVO__DIRECTION);
+        withCrServo(mmSystems.controlHub, RIGHT_SERVO_PORT, RIGHT_SERVO_DIRECTION);
+        withCrServo(mmSystems.controlHub, LEFT_SERVO_PORT, LEFT_SERVO__DIRECTION);
 
         // PIDF & Constraints
         withPid(KP, KI, KD);

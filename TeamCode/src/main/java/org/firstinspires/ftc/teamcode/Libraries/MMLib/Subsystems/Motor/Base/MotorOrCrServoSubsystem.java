@@ -60,7 +60,7 @@ public class MotorOrCrServoSubsystem extends SubsystemBase {
      * is installed, as this method does not manage command requirements.</p>
      */
     public void setPower(double power) {
-        WpiLog.log(subsystemName + "motor power: ", power);
+        WpiLog.log(subsystemName + "/power: ", power, true);
 
         for (MMMotorOrCrServo motor : motorOrCrServoList) {
             motor.setPower(power);

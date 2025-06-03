@@ -37,7 +37,6 @@ import java.util.Set;
 public class AutoLogAnnotationProcessor extends AbstractProcessor {
     // Adjust this to your WpiLog package
     private static final ClassName WPILOG = ClassName.get("Ori.Coval.Logging", "WpiLog");
-    private static final ClassName FTC_DASHBOARD = ClassName.get("com.acmerobotics.dashboard", "FtcDashboard");
     private static final ClassName LOGGED = ClassName.get("Ori.Coval.Logging", "Logged");
     private static final ClassName AUTO_LOG_MANAGER = ClassName.get("Ori.Coval.Logging", "AutoLogManager");
     private static final ClassName SUPPLIER_LOG = ClassName.get("Ori.Coval.Logging", "SupplierLog");
@@ -102,10 +101,7 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
                 supplierFields.add(fname);
                 supplierKeys.add(key);
             } else {
-                toLog.addStatement("$T.log($S, this.$L)", WPILOG, key, fname);
-                if (postToFtcDashBoard){
-                    toLog.addStatement("$T.getInstance().getTelemetry().addData($S, this.$L)", FTC_DASHBOARD, key, fname);
-                }
+                toLog.addStatement("$T.log($S, this.$L, $L)", WPILOG, key, fname, postToFtcDashBoard);
             }
         }
 
@@ -181,13 +177,8 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
                     .addModifiers(Modifier.PUBLIC)
                     .returns(rtn)
                     .addStatement("$T result = super.$L($L)", rtn, mname, params.toString())
-                    .addParameters(paramList);
-
-            if(postToFtcDashBoard){
-                overrideBuilder.addStatement("$T.getInstance().getTelemetry().addData($S, result)", FTC_DASHBOARD, key);
-            }
-
-            overrideBuilder.addStatement("return $T.log($S, result)", WPILOG, key);
+                    .addParameters(paramList)
+                    .addStatement("return $T.log($S, result, $L)", WPILOG, key, postToFtcDashBoard);
 
             MethodSpec override  = overrideBuilder.build();
 

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base;
 
 import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.Subsystem;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 
@@ -13,6 +15,8 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFe
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+
+import Ori.Coval.Logging.WpiLog;
 
 public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
     // Encoder that measures current position and velocity (ticks converted via ratio)
@@ -32,32 +36,9 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      */
     //this command is the base for all the other pid commands
     public Command holdSetPointCommand(double setPoint) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                // clear previous errors/integral
-                pidController.reset();
-                pidController.setSetpoint(setPoint);
-            }
-
-            @Override
-            public void execute() {
-                double pidOutput = pidController.calculate(getPose());
-                double feedforwardOutput = 0;
-
-
-                if (feedforward != null) {
-                    feedforwardOutput = feedforward.calculate(pidController.getSetpoint());
-                }
-                setPower(pidOutput + feedforwardOutput);// apply computed power
-            }
-
-            @Override
-            public Set<Subsystem> getRequirements() {
-                // Declare that this command requires the enclosing subsystem instance
-                return Set.of(PidBaseSubsystem.this);
-            }
-        };
+        return new RunCommand(()-> {
+            WpiLog.log(subsystemName + " ERROR ", "pid holdSetPointCommand is not implemented", true);
+            setPower(0);});
     }
 
     /**

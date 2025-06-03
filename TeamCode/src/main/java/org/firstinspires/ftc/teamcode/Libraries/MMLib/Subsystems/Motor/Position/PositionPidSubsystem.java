@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position;
 
+import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.Subsystem;
+
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base.PidBaseSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 
@@ -15,6 +19,36 @@ public class PositionPidSubsystem extends PidBaseSubsystem {
         super(subsystemName);
     }
 
+
+    /**
+     * Creates a Command that keeps the mechanism in place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    @Override
+    public Command holdSetPointCommand(double setPoint) {
+        return new Command() {
+            @Override
+            public void initialize() {
+                // clear previous errors/integral
+                pidController.reset();
+                pidController.setSetpoint(setPoint);
+
+            }
+
+            @Override
+            public void execute() {
+                double pidOutput = pidController.calculate(getPose());
+                setPower(pidOutput);// apply computed power
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                // Declare that this command requires the enclosing subsystem instance
+                return Set.of(PositionPidSubsystem.this);
+            }
+        };
+    }
 
     /**
      * Sets the acceptable position error tolerance for the PID setpoint.
