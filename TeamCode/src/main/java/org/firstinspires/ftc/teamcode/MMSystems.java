@@ -37,6 +37,10 @@ public class MMSystems {
         return instance;
     }
 
+    public synchronized void resetSystems(){
+        instance = null;
+    }
+
     private MMSystems() {
         initBasics();
     }
@@ -47,14 +51,16 @@ public class MMSystems {
 
     public void initBasics() {
         HardwareMap hardwareMap = MMRobot.getInstance().currentOpMode.hardwareMap;
-        controlHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.CONTROL_HUB);
-        if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
-            expansionHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.EXPANSION_HUB);
-        }
-        battery = new MMBattery(hardwareMap);
-
         gamepadEx1 = new GamepadEx(MMRobot.getInstance().currentOpMode.gamepad1);
         gamepadEx2 = new GamepadEx(MMRobot.getInstance().currentOpMode.gamepad2);
+
+        if(controlHub == null || MMRobot.getInstance().currentOpMode.opModeType != OpModeType.Competition.TELEOP) {
+            controlHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.CONTROL_HUB);
+            if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
+                expansionHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.EXPANSION_HUB);
+            }
+            battery = new MMBattery(hardwareMap);
+        }
     }
 
     public Follower initFollower(Pose pose) {
@@ -63,6 +69,15 @@ public class MMSystems {
         follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap);
         follower.setStartingPose(pose);
         return follower;
+    }
+
+    public void initTeleopFollower() {
+        if(follower == null){
+            follower = initFollower(new Pose(0, 0, 0));
+        }
+
+        follower.startTeleopDrive();
+//        new FollowPathCommand()
     }
 
 }

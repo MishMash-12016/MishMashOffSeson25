@@ -15,20 +15,21 @@ public class MMRobot extends MMRobotInternals{
 
     public synchronized void resetRobot(){
         instance = null;
+        MMSystems.getInstance().resetSystems();
     }
 
     @Override
     public void initAuto() {
-
+        MMSystems.getInstance().initBasics();
     }
 
     @Override
     public void initTele() {
-
+        MMSystems.getInstance().initBasics();
+        MMSystems.getInstance().initTeleopFollower();
     }
 
     @Override
     public void initDebug() {
-
     }
 }
