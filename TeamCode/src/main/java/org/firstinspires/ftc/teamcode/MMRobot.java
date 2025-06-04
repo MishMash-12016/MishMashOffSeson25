@@ -26,7 +26,6 @@ public class MMRobot extends MMRobotInternals{
     @Override
     public void initTele() {
         MMSystems.getInstance().initBasics();
-        MMSystems.getInstance().initTeleopFollower();
     }
 
     @Override
