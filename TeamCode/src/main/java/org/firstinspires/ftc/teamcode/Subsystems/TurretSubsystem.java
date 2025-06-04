@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMSystems;
 
-import Ori.Coval.Logging.AutoLog;
 import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 
 @AutoLogAndPostToFtcDashboard
