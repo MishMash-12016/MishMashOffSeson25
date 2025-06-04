@@ -5,6 +5,7 @@ import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMSystems;
@@ -25,6 +26,8 @@ public class ExampleTeleopOpMode extends MMOpMode {
         mmSystems = MMSystems.getInstance();
         GamepadEx gamepadEx1 = mmSystems.gamepadEx1;
         GamepadEx gamepadEx2 = mmSystems.gamepadEx2;
+
+        MMDrivetrain.getInstance().enableDefaultCommand();
 
         //prepare score HIGH_BASKET
         gamepadEx1.getGamepadButton(GamepadKeys.Button.B)

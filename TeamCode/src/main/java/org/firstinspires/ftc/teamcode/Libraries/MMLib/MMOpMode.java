@@ -69,19 +69,15 @@ public abstract class MMOpMode extends LinearOpMode {
      * and {@link org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub Control & Expansion Hub} on Play Loop.
      */
     public void onPlayLoopUpdates() {
-        CommandScheduler.getInstance().run();                 //runs the scheduler
+        CommandScheduler.getInstance().run();                     //runs the scheduler
 
-        MMSystems.getInstance().controlHub.pullBulkData();    //updates the controlHub sensors
+        MMSystems.getInstance().controlHub.pullBulkData();        //updates the controlHub sensors
         if (MMSystems.getInstance().expansionHub != null) {
             MMSystems.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
         }
-        telemetry.update();                                   //updates the telemetry
-        FtcDashboard.getInstance().getTelemetry().update();     //updates the dashboard
-
-        if(MMRobot.getInstance().currentOpMode.opModeType.getClass().isAnnotationPresent(TeleOp.class)){
-            MMSystems.getInstance().follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-            MMSystems.getInstance().follower.update();
-        }
+        telemetry.update();                                       //updates the telemetry
+        FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
+        MMDrivetrain.getInstance().follower.update();             //updates the follower
     }
 
     public abstract void onPlayLoop();

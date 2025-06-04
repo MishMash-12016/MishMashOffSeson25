@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.util.Constants;
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBattery;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
-import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
 
 //TODO:everything(to build a class you first need to invent the entire universe)
 public class MMSystems {
@@ -22,11 +16,6 @@ public class MMSystems {
     public MMBattery battery;
     public GamepadEx gamepadEx1;
     public GamepadEx gamepadEx2;
-
-    //pedroPathing
-    public Timer pathTimer;
-    public Follower follower;
-
 
     private static MMSystems instance;
 
@@ -62,22 +51,4 @@ public class MMSystems {
             battery = new MMBattery(hardwareMap);
         }
     }
-
-    public Follower initFollower(Pose pose) {
-        pathTimer = new Timer();
-        Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap);
-        follower.setStartingPose(pose);
-        return follower;
-    }
-
-    public void initTeleopFollower() {
-        if(follower == null){
-            follower = initFollower(new Pose(0, 0, 0));
-        }
-
-        follower.startTeleopDrive();
-//        new FollowPathCommand()
-    }
-
 }
