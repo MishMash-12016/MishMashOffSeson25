@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Libraries.MMLib;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -76,6 +77,11 @@ public abstract class MMOpMode extends LinearOpMode {
         }
         telemetry.update();                                   //updates the telemetry
         FtcDashboard.getInstance().getTelemetry().update();     //updates the dashboard
+
+        if(MMRobot.getInstance().currentOpMode.opModeType.getClass().isAnnotationPresent(TeleOp.class)){
+            MMSystems.getInstance().follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+            MMSystems.getInstance().follower.update();
+        }
     }
 
     public abstract void onPlayLoop();

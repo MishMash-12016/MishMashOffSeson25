@@ -17,7 +17,7 @@ public class ExampleTeleopOpMode extends MMOpMode {
     MMSystems mmSystems;
 
     public ExampleTeleopOpMode() {
-        super(OpModeType.Competition.TELEOP);
+        super(OpModeType.NonCompetition.DEBUG);
     }
 
     @Override
