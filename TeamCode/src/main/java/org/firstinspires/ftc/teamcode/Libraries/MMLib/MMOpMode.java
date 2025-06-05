@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Libraries.MMLib;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
-import org.firstinspires.ftc.teamcode.MMSystems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,9 +69,9 @@ public abstract class MMOpMode extends LinearOpMode {
     public void onPlayLoopUpdates() {
         CommandScheduler.getInstance().run();                     //runs the scheduler
 
-        MMSystems.getInstance().controlHub.pullBulkData();        //updates the controlHub sensors
-        if (MMSystems.getInstance().expansionHub != null) {
-            MMSystems.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
+        MMRobot.getInstance().controlHub.pullBulkData();        //updates the controlHub sensors
+        if (MMRobot.getInstance().expansionHub != null) {
+            MMRobot.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
         }
         telemetry.update();                                       //updates the telemetry
         FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard

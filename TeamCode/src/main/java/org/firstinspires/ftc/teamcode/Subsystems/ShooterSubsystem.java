@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Velocity.VelocityPidSubsystem;
-import org.firstinspires.ftc.teamcode.MMSystems;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 
@@ -38,12 +38,12 @@ public class ShooterSubsystem extends VelocityPidSubsystem {
     public ShooterSubsystem(String subsystemName) {
         super(subsystemName);
 
-        MMSystems mmSystems = MMSystems.getInstance();
+        MMRobot mmRobot = MMRobot.getInstance();
 
-        withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
+        withEncoder(mmRobot.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
-        withMotor(mmSystems.controlHub, MOTOR_PORT, MOTOR_DIRECTION);
+        withMotor(mmRobot.controlHub, MOTOR_PORT, MOTOR_DIRECTION);
 
         // PIDF & Constraints
         withPid(KP, KI, KD);

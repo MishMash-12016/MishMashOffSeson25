@@ -5,7 +5,7 @@ import com.seattlesolvers.solverslib.command.Command;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Servo.ServoSubsystem;
-import org.firstinspires.ftc.teamcode.MMSystems;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 
@@ -38,9 +38,9 @@ public class LinearIntakeSubsystem extends ServoSubsystem {
     public LinearIntakeSubsystem(String subsystemName) {
         super(subsystemName);
 
-        MMSystems mmSystems = MMSystems.getInstance();
-        withServo(mmSystems.controlHub, SERVO_PORT_1, SERVO_DIRECTION_1, SERVO_OFFSET_1);
-        withServo(mmSystems.controlHub, SERVO_PORT_2, SERVO_DIRECTION_2, SERVO_OFFSET_2);
+        MMRobot mmRobot = MMRobot.getInstance();
+        withServo(mmRobot.controlHub, SERVO_PORT_1, SERVO_DIRECTION_1, SERVO_OFFSET_1);
+        withServo(mmRobot.controlHub, SERVO_PORT_2, SERVO_DIRECTION_2, SERVO_OFFSET_2);
     }
 
     public Command openCommand() {

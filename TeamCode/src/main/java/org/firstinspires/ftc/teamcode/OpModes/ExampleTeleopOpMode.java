@@ -8,14 +8,14 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
-import org.firstinspires.ftc.teamcode.MMSystems;
+import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArmSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.LinearIntakeSubsystem;
 
 @TeleOp
 public class ExampleTeleopOpMode extends MMOpMode {
-    MMSystems mmSystems;
+    MMRobot mmRobot;
 
     public ExampleTeleopOpMode() {
         super(OpModeType.NonCompetition.DEBUG);
@@ -23,9 +23,9 @@ public class ExampleTeleopOpMode extends MMOpMode {
 
     @Override
     public void onInit() {
-        mmSystems = MMSystems.getInstance();
-        GamepadEx gamepadEx1 = mmSystems.gamepadEx1;
-        GamepadEx gamepadEx2 = mmSystems.gamepadEx2;
+        mmRobot = MMRobot.getInstance();
+        GamepadEx gamepadEx1 = mmRobot.gamepadEx1;
+        GamepadEx gamepadEx2 = mmRobot.gamepadEx2;
 
         MMDrivetrain.getInstance().enableDefaultCommand();
 

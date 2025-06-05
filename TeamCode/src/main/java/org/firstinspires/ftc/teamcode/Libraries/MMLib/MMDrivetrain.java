@@ -6,7 +6,6 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.util.Constants;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -16,7 +15,6 @@ import com.seattlesolvers.solverslib.pedroCommand.HoldPointCommand;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.MMRobot;
-import org.firstinspires.ftc.teamcode.MMSystems;
 
 public class MMDrivetrain extends SubsystemBase {
     Follower follower;
@@ -93,8 +91,8 @@ public class MMDrivetrain extends SubsystemBase {
      * enables the Default Command(the default command is the drive field centric command)
      */
     public void enableDefaultCommand() {
-        MMSystems mmSystems = MMSystems.getInstance();
-        setDefaultCommand(driveCommand(-mmSystems.gamepadEx1.getLeftY(), -mmSystems.gamepadEx1.getLeftX(), -mmSystems.gamepadEx1.getRightX()));
+        MMRobot mmRobot = MMRobot.getInstance();
+        setDefaultCommand(driveCommand(-mmRobot.gamepadEx1.getLeftY(), -mmRobot.gamepadEx1.getLeftX(), -mmRobot.gamepadEx1.getRightX()));
     }
 
     /**

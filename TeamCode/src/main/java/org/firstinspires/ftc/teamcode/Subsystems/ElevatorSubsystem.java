@@ -8,7 +8,7 @@ import com.seattlesolvers.solverslib.command.Command;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionProfiledPidSubsystem;
-import org.firstinspires.ftc.teamcode.MMSystems;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.function.Supplier;
 
@@ -117,15 +117,15 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
     public ElevatorSubsystem(String subsystemName) {
         super(subsystemName);
 
-        MMSystems mmSystems = MMSystems.getInstance();
+        MMRobot mmRobot = MMRobot.getInstance();
 
-        withEncoder(mmSystems.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
+        withEncoder(mmRobot.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
-        withMotor(mmSystems.controlHub, MOTOR_PORT_0, MOTOR_DIRECTION_0);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_1, MOTOR_DIRECTION_1);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_2, MOTOR_DIRECTION_2);
-        withMotor(mmSystems.controlHub, MOTOR_PORT_3, MOTOR_DIRECTION_3);
+        withMotor(mmRobot.controlHub, MOTOR_PORT_0, MOTOR_DIRECTION_0);
+        withMotor(mmRobot.controlHub, MOTOR_PORT_1, MOTOR_DIRECTION_1);
+        withMotor(mmRobot.controlHub, MOTOR_PORT_2, MOTOR_DIRECTION_2);
+        withMotor(mmRobot.controlHub, MOTOR_PORT_3, MOTOR_DIRECTION_3);
 
         withZeroPowerBehavior(zeroPowerBehavior);
 
@@ -140,7 +140,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withVelocityTolerance(VELOCITY_TOLERANCE);
 
         // Zeroing limit switch on encoder
-        withZeroSwitch(new CuttleDigital(mmSystems.controlHub, ZERO_SWITCH_PORT), ZERO_POSE);
+        withZeroSwitch(new CuttleDigital(mmRobot.controlHub, ZERO_SWITCH_PORT), ZERO_POSE);
 
         // By default, hold whatever setpoint we’re at
         withSetDefaultCommand(holdCurrentSetPointCommand());
