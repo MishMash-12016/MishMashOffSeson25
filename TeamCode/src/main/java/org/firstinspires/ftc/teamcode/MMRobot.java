@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBattery;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
+import org.firstinspires.ftc.teamcode.Subsystems.MMDrivetrain;
 
 public class MMRobot extends Robot {
     public MMOpMode currentOpMode;
@@ -37,6 +38,9 @@ public class MMRobot extends Robot {
      * @param type the {@link OpModeType} chosen
      */
     public void initializeSystems(OpModeType type) {
+        initBasics();
+        MMDrivetrain.getInstance().follower.initialize();
+
         if(type == OpModeType.Competition.TELEOP) {
             initTele();
         } else if (type == OpModeType.Competition.AUTO) {

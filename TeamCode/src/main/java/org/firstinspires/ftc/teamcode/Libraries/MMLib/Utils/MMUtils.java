@@ -94,6 +94,18 @@ public abstract class MMUtils {
     }
 
     /**
+     * Returns value clamped between min and max boundaries.
+     *
+     * @param value value to clamp
+     * @param min   minimum valueq
+     * @param max   maximum value
+     * @return clamped value
+     */
+    public static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    /**
      * If supplier != null, compares supplier.getAsDouble() to getter.getAsDouble().
      * If they differ, calls setter.accept(newValue).
      *

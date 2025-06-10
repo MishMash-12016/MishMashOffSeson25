@@ -1,97 +1,135 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning;
 
-import com.acmerobotics.dashboard.FtcDashboard;
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.Subsystem;
 
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PolynomialRegression;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
+import Ori.Coval.Logging.WpiLog;
 
 public class FFKvSysid extends CommandBase {
-    private static final double START_DELAY_SECS = 2.0;
-    private static final double RAMP_VOLTS_PER_SEC = 0.1;
+    private final double rampRate;       // volts per second (e.g. 0.1)
+    private final double kS;             // previously measured static‐friction voltage
+    private final double runDuration;    // how long to ramp (seconds)
 
-    private FeedForwardCharacterizationData data;
-    private final Consumer<Double> powerConsumer;
-    private final Supplier<Double> velocitySupplier;
+    private final DoubleConsumer setVoltage;
+    private final DoubleSupplier velocitySupplier;
 
     private final ElapsedTime timer = new ElapsedTime();
+    private final List<Double> velocityData = new ArrayList<>();
+    private final List<Double> voltageMinusKs = new ArrayList<>();
 
     /**
-     * Creates a new FeedForwardCharacterization command.
+     * @param rampRate         How quickly to ramp voltage (V/sec).
+     * @param kS               Static‐friction voltage, measured from a separate static test.
+     * @param runDuration      Total time to run this command (e.g. 5.0 seconds).
+     * @param driveSubsystem   The subsystem this command requires.
+     * @param setVoltage       A DoubleConsumer that applies the desired voltage to the motor.
+     * @param velocitySupplier A DoubleSupplier that returns the current (absolute) velocity.
      */
-    public FFKvSysid(
-            Subsystem subsystem, Consumer<Double> powerConsumer, Supplier<Double> velocitySupplier) {
-        addRequirements(subsystem);
-        this.powerConsumer = powerConsumer;
+    public FFKvSysid(double rampRate, double kS, double runDuration, Subsystem driveSubsystem, DoubleConsumer setVoltage, DoubleSupplier velocitySupplier) {
+        this.rampRate = rampRate;
+        this.kS = kS;
+        this.runDuration = runDuration;
+        this.setVoltage = setVoltage;
         this.velocitySupplier = velocitySupplier;
+        addRequirements(driveSubsystem);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        data = new FeedForwardCharacterizationData();
         timer.reset();
+        velocityData.clear();
+        voltageMinusKs.clear();
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (timer.seconds() < START_DELAY_SECS) {
-            powerConsumer.accept(0.0);
-        } else {
-            double power = (timer.seconds() - START_DELAY_SECS) * RAMP_VOLTS_PER_SEC;
-            powerConsumer.accept(power);
-            data.add(velocitySupplier.get(), power);
+        // Ramp voltage linearly: V_raw = t * rampRate
+        double elapsed = timer.seconds();
+        double rawV = elapsed * rampRate;
+        setVoltage.accept(rawV);
+
+        // Read current absolute velocity
+        double v = Math.abs(velocitySupplier.getAsDouble());
+
+        // Only record points once we're above a tiny noise floor:
+        if (v > 1e-3) {
+            velocityData.add(v);
+            voltageMinusKs.add(rawV - kS);
         }
     }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        powerConsumer.accept(0.0);
-        data.print();
-    }
-
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        // Run for the specified duration (or you could also check if rawV exceeds some max).
+        return timer.seconds() >= runDuration;
     }
 
-    public static class FeedForwardCharacterizationData {
-        private final List<Double> velocityData = new LinkedList<>();
-        private final List<Double> powerData = new LinkedList<>();
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void end(boolean interrupted) {
+        // Stop the motor
+        setVoltage.accept(0.0);
 
-        public void add(double velocity, double power) {
-            if (Math.abs(velocity) > 1E-4) {
-                velocityData.add(Math.abs(velocity));
-                powerData.add(Math.abs(power));
-            }
+        // If we have insufficient data, bail out
+        if (velocityData.isEmpty() || voltageMinusKs.isEmpty()) {
+            System.out.println("KV SysId: Not enough data points to perform regression.");
+            return;
         }
 
-        public void print() {
-            if (velocityData.isEmpty() || powerData.isEmpty()) {
-                return;
-            }
-
-            PolynomialRegression regression =
-                    new PolynomialRegression(
-                            velocityData.stream().mapToDouble(Double::doubleValue).toArray(),
-                            powerData.stream().mapToDouble(Double::doubleValue).toArray(),
-                            1);
-
-            //between 0-1 how good are the results (the higher the better)
-            FtcDashboard.getInstance().getTelemetry().addData("FF Characterization Results:" ,regression.R2());
-            //how many data points were used (the higher the better)
-            FtcDashboard.getInstance().getTelemetry().addData("amount of data points", Integer.toString(velocityData.size()));
-            //the KS value of the feedforward
-            FtcDashboard.getInstance().getTelemetry().addData("ks", regression.beta(1));
+        // Convert Lists to primitive arrays
+        int n = velocityData.size();
+        double[] vArray = new double[n];
+        double[] vmkArray = new double[n];
+        for (int i = 0; i < n; i++) {
+            vArray[i] = velocityData.get(i);
+            vmkArray[i] = voltageMinusKs.get(i);
         }
+
+        // Perform a first‐order polynomial regression: vmk = β0 + β1 * v
+        // Since we passed in “voltage – kS,” the true intercept should be ≈ 0,
+        // and β1 = kV.
+        PolynomialRegression regression = new PolynomialRegression(vArray, vmkArray, 1);
+
+        double intercept = regression.beta(0); // should be ≈ 0 if kS was perfect
+        double slope = regression.beta(1); // this is our kV
+
+        String r2Quality;
+        if(regression.R2()>0.98) {
+            r2Quality = "very good";
+        } else if(regression.R2()>0.97) {
+            r2Quality = "good";
+        } else if(regression.R2()>0.96) {
+            r2Quality = "ok";
+        } else {
+            r2Quality = "bad";
+        }
+
+        String interceptQuality;
+        if (Math.abs(intercept) <= 0.02) {
+            interceptQuality = "excellent";
+        } else if (Math.abs(intercept) <= 0.05) {
+            interceptQuality = "good";
+        } else if (Math.abs(intercept) <= 0.10) {
+            interceptQuality = "marginal recheck ks";
+        } else {
+            interceptQuality = "poor recheck ks";
+        }
+
+
+        WpiLog.log("KV SysId Results:",
+                String.format("  intercept (need to be close to 0) = %.6f intercept quality = %s," +
+                        "kV = %.6f,  " +
+                        "R² (need to be very very close to 1) = %.4f R² quality level = %s", intercept, interceptQuality, slope, regression.R2(), r2Quality), true);
+
     }
 }

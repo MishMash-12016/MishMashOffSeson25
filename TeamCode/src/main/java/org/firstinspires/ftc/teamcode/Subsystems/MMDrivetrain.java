@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Libraries.MMLib;
+package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.consta
 import org.firstinspires.ftc.teamcode.MMRobot;
 
 public class MMDrivetrain extends SubsystemBase {
-    Follower follower;
+    public Follower follower;
 
     private static MMDrivetrain instance;
 

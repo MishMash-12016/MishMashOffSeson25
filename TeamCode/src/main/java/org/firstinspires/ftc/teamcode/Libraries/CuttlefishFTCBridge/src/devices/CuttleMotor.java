@@ -3,7 +3,8 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.MathUtils;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
 
 
 /**
@@ -51,14 +52,41 @@ public class CuttleMotor{
         }
     }
 
+
+    // Tweak α to control smoothing (0.0 = full freeze, 1.0 = no smoothing)
+    private static final double EMA_ALPHA = 0.1;
+
+    // Holds the “last” filtered voltage. Initialize it once (e.g. in init()).
+    private double filteredVoltage = 0.0;
+
     /**
-     * compensate for voltage changes of the control hub
-     * @param power the uncompensated power between -1 to 1
-     * @return the compensated value between -1 to 1
+     * compensates for battery voltage
+     *
+     * @param uncompensatedPower  The “ideal” power you want (–1.0…+1.0),
+     *                            as if battery were always at nominalVoltage.
+     * @return                    The scaled/clamped power (–1.0…+1.0) that compensates
+     *                            for batterys̈ag.
      */
-    private double voltageCompensate(double power){
-        return (power * nominalVoltage) / hub.getBatteryVoltage();
+    private double voltageCompensate(double uncompensatedPower) {
+        // 1) Read the raw battery voltage once per loop
+        double rawVoltage = hub.getBatteryVoltage();
+
+        // 2) Initialize filteredVoltage on first call (if still 0.0).
+        //    You could also set filteredVoltage = hub.getBatteryVoltage() in init().
+        if (filteredVoltage <= 0.0) {
+            filteredVoltage = rawVoltage;
+        }
+
+        // 3) EMA update: filteredVoltage = α·(new reading) + (1–α)·(old filtered)
+        filteredVoltage = EMA_ALPHA * rawVoltage + (1.0 - EMA_ALPHA) * filteredVoltage;
+
+        // 4) Compute the “ideal” fraction: (uncompensatedPower·nominalVoltage)/filteredVoltage
+        double scaled = (uncompensatedPower * nominalVoltage) / filteredVoltage;
+
+        // 5) Explicitly clamp to ±1.0 so we never request more than 100% from the controller\
+        return MMUtils.clamp(scaled, -1.0, 1.0);
     }
+
 
     /**
      * MishMash added

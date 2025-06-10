@@ -59,8 +59,8 @@ public class IntakeArmSubsystem extends ServoSubsystem {
         super(subsystemName);
 
         MMRobot mmRobot = MMRobot.getInstance();
-        withServo(mmRobot.controlHub, SERVO_PORT_1, SERVO_DIRECTION_1, SERVO_OFFSET_1);
-        withServo(mmRobot.controlHub, SERVO_PORT_2, SERVO_DIRECTION_2, SERVO_OFFSET_2);
+        withServo(SERVO_PORT_1, mmRobot.controlHub, SERVO_DIRECTION_1, SERVO_OFFSET_1);
+        withServo(SERVO_PORT_2, mmRobot.controlHub, SERVO_DIRECTION_2, SERVO_OFFSET_2);
     }
 
     public Command setStateCommand(IntakeArmState state) {
