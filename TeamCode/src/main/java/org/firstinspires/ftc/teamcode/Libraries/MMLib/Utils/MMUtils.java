@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -92,5 +93,24 @@ public abstract class MMUtils {
         );
     }
 
-
+    /**
+     * If supplier != null, compares supplier.getAsDouble() to getter.getAsDouble().
+     * If they differ, calls setter.accept(newValue).
+     *
+     * @param supplier  supplies the “debug” value
+     * @param getter    a zero‐arg function returning the PID’s current value
+     * @param setter    a one‐arg method that applies a new value to the PID
+     */
+    public static void updateIfChanged(
+            DoubleSupplier supplier,
+            DoubleSupplier getter,
+            Consumer<Double> setter) {
+        if (supplier == null) {
+            return;
+        }
+        double newVal = supplier.getAsDouble();
+        if (getter.getAsDouble() != newVal) {
+            setter.accept(newVal);
+        }
+    }
 }

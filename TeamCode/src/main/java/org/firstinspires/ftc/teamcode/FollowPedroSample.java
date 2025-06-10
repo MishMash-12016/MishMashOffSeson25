@@ -37,7 +37,6 @@ public class FollowPedroSample extends CommandOpMode {
 
     @Override
     public void initialize() {
-        super.reset();
 
         generatePath();
 
@@ -49,11 +48,5 @@ public class FollowPedroSample extends CommandOpMode {
                 new FollowPathCommand(follower, pathChain),
                 new FollowPathCommand(follower, path)
         );
-    }
-
-    @Override
-    public void run() {
-        super.run();
-
     }
 }
