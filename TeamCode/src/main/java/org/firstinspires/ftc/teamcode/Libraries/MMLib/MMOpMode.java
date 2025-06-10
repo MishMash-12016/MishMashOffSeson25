@@ -8,6 +8,7 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 
 
+import org.firstinspires.ftc.teamcode.Subsystems.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
@@ -73,9 +74,13 @@ public abstract class MMOpMode extends LinearOpMode {
         if (MMRobot.getInstance().expansionHub != null) {
             MMRobot.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
         }
+
         telemetry.update();                                       //updates the telemetry
-        FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
+
         MMDrivetrain.getInstance().follower.update();             //updates the follower
+        MMDrivetrain.getInstance().follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+
+        FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
     }
 
     public abstract void onPlayLoop();
