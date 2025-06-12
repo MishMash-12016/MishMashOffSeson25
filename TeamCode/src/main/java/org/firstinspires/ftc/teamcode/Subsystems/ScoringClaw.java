@@ -4,13 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Servo.ServoSubsystem;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 
 @Config
 @AutoLogAndPostToFtcDashboard
 public class ScoringClaw extends ServoSubsystem {
-    public static double scoringClawOpen = 0.48;
+    public static double IntakeClawClosePos = 0.48;
     public static double IntakeClawOpenPos = 0.95;
     private static ScoringClaw instance;
     public static synchronized ScoringClaw getInstance(){
