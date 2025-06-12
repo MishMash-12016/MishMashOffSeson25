@@ -162,7 +162,7 @@ public class ServoSubsystem extends SubsystemBase {
      * @param offset         the offset to apply
      * @return this subsystem instance, for chaining
      */
-    public ServoSubsystem withServo(String servoName, Direction servoDirection, Double offset) {
+    public ServoSubsystem withServo(String servoName, Direction servoDirection, double offset) {
         CuttleServo servo = new CuttleServo(MMRobot.getInstance().currentOpMode.hardwareMap, servoName).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
@@ -177,7 +177,7 @@ public class ServoSubsystem extends SubsystemBase {
      * @param offset         the offset to apply
      * @return this subsystem instance, for chaining
      */
-    public ServoSubsystem withServo(int servoPort, CuttleRevHub revHub, Direction servoDirection, Double offset) {
+    public ServoSubsystem withServo(int servoPort, CuttleRevHub revHub, Direction servoDirection, double offset) {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
