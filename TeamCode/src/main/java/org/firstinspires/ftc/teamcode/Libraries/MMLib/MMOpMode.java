@@ -8,8 +8,6 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 
 
-import org.firstinspires.ftc.teamcode.MMRobot;
-
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
@@ -19,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import Ori.Coval.Logging.WpiLog;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 
 /**

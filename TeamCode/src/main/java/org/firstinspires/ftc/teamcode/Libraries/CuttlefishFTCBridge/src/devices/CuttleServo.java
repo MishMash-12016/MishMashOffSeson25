@@ -3,7 +3,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.MMRobot;
-
 /**
  * Cuttlefish compatible servo.
  * Contains a list of preset positions which can be appended to using the addPreset() function.
