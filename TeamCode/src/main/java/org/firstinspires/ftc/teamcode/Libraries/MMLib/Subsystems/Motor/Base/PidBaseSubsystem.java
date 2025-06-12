@@ -7,9 +7,11 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleEncoder;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PIDController;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.function.BooleanSupplier;
 
@@ -165,6 +167,13 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
     @Override
     public void resetHub() {
         super.resetHub();
-        encoder.resetHub();
+        double pose = getPose();
+        if(encoder.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+            encoder = new CuttleEncoder(MMRobot.getInstance().controlHub, encoder.mPort, encoder.encTicks);
+        }
+        else {
+            encoder = new CuttleEncoder(MMRobot.getInstance().expansionHub, encoder.mPort, encoder.encTicks);
+        }
+        setPose(pose);
     }
 }

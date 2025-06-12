@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.MMRobot;
  * this constructor let's u insert the type of {@link OpModeType.NonCompetition  NonComp} opmode u would like to use.
  * there are explanations in {@link OpModeType} that explains the 3 options u have.
  * there is the {@link OpModeType.NonCompetition#DEBUG Debug},
- * {@link OpModeType.NonCompetition#EXPERIMENTING Experimenting},
  * {@link OpModeType.NonCompetition#EXPERIMENTING_NO_EXPANSION Experimenting Without Expansion}.
  */
 public abstract class MMOpMode extends LinearOpMode {
@@ -90,7 +89,6 @@ public abstract class MMOpMode extends LinearOpMode {
      */
     public void reset() {
         CommandScheduler.getInstance().reset();
-        MMRobot.getInstance().resetRobot();
     }
 
     public void addRunnableOnInit(Runnable... runOnInit) {

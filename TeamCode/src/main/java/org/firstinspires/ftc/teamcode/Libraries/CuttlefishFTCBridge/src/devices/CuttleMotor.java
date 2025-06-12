@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.MMRobot;
  * Cuttlefish DCMotor implementation.
  */
 public class CuttleMotor {
-    CuttleRevHub hub;
-    int mPort;
+    public CuttleRevHub hub;
+    public int mPort;
     int sign = 1;
     double power;
     public boolean interlaced;
@@ -139,13 +139,5 @@ public class CuttleMotor {
      */
     public void setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior behaviour) {
         this.hub.setMotorZeroPowerBehaviour(this.mPort, behaviour);
-    }
-
-    public void resetHub() {
-        if (hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())) {
-            hub = MMRobot.getInstance().controlHub;
-        } else {
-            hub = MMRobot.getInstance().expansionHub;
-        }
     }
 }

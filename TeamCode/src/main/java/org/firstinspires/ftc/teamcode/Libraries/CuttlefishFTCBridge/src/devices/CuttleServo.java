@@ -17,7 +17,7 @@ public class CuttleServo{
     double offset = 0.0;
 
     Direction direction = Direction.FORWARD;
-    CuttleRevHub hub;
+    public CuttleRevHub hub;
     com.qualcomm.robotcore.hardware.Servo ftcServoDevice;
 
     /**
@@ -102,16 +102,5 @@ public class CuttleServo{
 
     public double getOffset(){
         return offset;
-    }
-
-    public void resetHub(){
-        if(!FTCServo){
-            if(hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-                hub = MMRobot.getInstance().controlHub;
-            }
-            else {
-                hub = MMRobot.getInstance().expansionHub;
-            }
-        }
     }
 }

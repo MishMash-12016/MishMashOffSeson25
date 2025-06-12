@@ -5,7 +5,11 @@ import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleCrServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleMotor;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.MMRobot;
+
+import java.util.ArrayList;
 
 /**
  * A class that handles the interaction of motors and crServos as a single object
@@ -63,10 +67,20 @@ public class MMMotorOrCrServo {
 
     public void resetHub(){
         if(motor != null){
-            motor.resetHub();
+            if(motor.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                motor = new CuttleMotor(MMRobot.getInstance().controlHub, motor.mPort);
+            }
+            else {
+                motor = new CuttleMotor(MMRobot.getInstance().expansionHub, motor.mPort);
+            }
         }
         if(crServo != null){
-            crServo.resetHub();
+            if(crServo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                crServo = new CuttleCrServo(MMRobot.getInstance().controlHub, crServo.port);
+            }
+            else {
+                crServo = new CuttleCrServo(MMRobot.getInstance().expansionHub, crServo.port);
+            }
         }
     }
 

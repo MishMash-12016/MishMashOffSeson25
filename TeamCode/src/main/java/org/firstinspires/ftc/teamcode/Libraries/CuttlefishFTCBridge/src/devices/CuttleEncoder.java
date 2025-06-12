@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 public class CuttleEncoder
 {
     public CuttleRevHub hub;
-    private final double encTicks;
+    public final double encTicks;
     private int direction = 1;
     public int mPort;
     private double offsetTicks = 0;
@@ -74,16 +74,5 @@ public class CuttleEncoder
         }
 
         return this;
-    }
-
-    public void resetHub() {
-        double pose = getPose();
-        if (hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())) {
-            hub = MMRobot.getInstance().controlHub;
-        } else {
-            hub = MMRobot.getInstance().expansionHub;
-        }
-
-        setPose(pose);
     }
 }

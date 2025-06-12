@@ -185,8 +185,17 @@ public class ServoSubsystem extends MMSubsystem {
 
     @Override
     public void resetHub(){
+
+        ArrayList<CuttleServo> tempList = new ArrayList<>();
         for(CuttleServo servo : servoList){
-            servo.resetHub();
+            if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
+            }
+            else {
+                tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port));
+            }
         }
+
+        servoList = tempList;
     }
 }

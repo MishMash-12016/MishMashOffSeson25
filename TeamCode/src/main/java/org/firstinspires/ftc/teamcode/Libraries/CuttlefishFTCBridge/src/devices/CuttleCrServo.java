@@ -14,7 +14,7 @@ public class CuttleCrServo{
     final boolean FTCServo;
 
     Direction direction = Direction.FORWARD;
-    CuttleRevHub hub;
+    public CuttleRevHub hub;
     com.qualcomm.robotcore.hardware.CRServo ftcServoDevice;
 
     /**
@@ -29,7 +29,19 @@ public class CuttleCrServo{
         FTCServo = false;
         this.direction = direction;
     }
-    
+
+    /**
+     * Initialize servo using cuttlefish direct access system
+     * @param revHub
+     * @param servoPort
+     * */
+    public CuttleCrServo(CuttleRevHub revHub, int servoPort)
+    {
+        port = servoPort;
+        hub = revHub;
+        FTCServo = false;
+    }
+
     /**
      * Initialize cr servo using hardwareMap
      * @param hardwareMap hardwareMap object
@@ -40,6 +52,17 @@ public class CuttleCrServo{
         FTCServo = true;
         ftcServoDevice = hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class,name);
         this.direction = direction;
+    }
+
+    /**
+     * Initialize cr servo using hardwareMap
+     * @param hardwareMap hardwareMap object
+     * @param name Name of the servo in the config
+     * */
+    public CuttleCrServo(HardwareMap hardwareMap, String name)
+    {
+        FTCServo = true;
+        ftcServoDevice = hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class,name);
     }
 
     /**
@@ -91,16 +114,5 @@ public class CuttleCrServo{
     public CuttleCrServo setDirection(Direction direction) {
         this.direction = direction;
         return this;
-    }
-
-    public void resetHub(){
-        if(!FTCServo){
-            if(hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-                hub = MMRobot.getInstance().controlHub;
-            }
-            else {
-                hub = MMRobot.getInstance().expansionHub;
-            }
-        }
     }
 }
