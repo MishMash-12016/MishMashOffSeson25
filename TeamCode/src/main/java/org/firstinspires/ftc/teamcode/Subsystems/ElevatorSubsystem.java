@@ -25,26 +25,6 @@ import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
 @AutoLogAndPostToFtcDashboard
 public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
-    //–––––––––––––––––––––––––––––––––
-    // Constants
-    //–––––––––––––––––––––––––––––––––
-
-    public static int ENCODER_PORT = 1;
-    public static int ENCODER_TICKS_PER_REV = 400;
-
-    public static int MOTOR_PORT_0 = 0;
-    public static int MOTOR_PORT_1 = 1;
-    public static int MOTOR_PORT_2 = 2;
-    public static int MOTOR_PORT_3 = 3;
-
-    public static Direction MOTOR_DIRECTION_0 = Direction.FORWARD;
-    public static Direction MOTOR_DIRECTION_1 = Direction.FORWARD;
-    public static Direction MOTOR_DIRECTION_2 = Direction.REVERSE;
-    public static Direction MOTOR_DIRECTION_3 = Direction.REVERSE;
-
-
-    public static DcMotor.ZeroPowerBehavior ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.BRAKE;
-
     public static double KP = 0.08;
     public static double KI = 0.001;
     public static double KD = 0.0;
@@ -70,32 +50,6 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
     public static double ELEVATOR_ZERO = 64.0;
     public static double ELEVATOR_CLIMB_POSITION = 40.0;
 
-    //–––––––––––––––––––––––––––––––––
-    // Enum: Named setpoints
-    //–––––––––––––––––––––––––––––––––
-
-    public enum ElevatorState {
-        HIGH_BASKET(() -> ELEVATOR_HIGH_BASKET),
-        ELEVATOR_DOWN(() -> ELEVATOR_DOWN_POSITION),
-        ELEVATOR_HIGH_CHAMBER(() -> ELEVATOR_CLIMB_HIGH_BAR),
-        ELEVATOR_ZERO_POSE(() -> ELEVATOR_ZERO),
-        ELEVATOR_CLIMB(() -> ELEVATOR_CLIMB_POSITION);
-
-        public final Supplier<Double> positionSupplier;
-
-        ElevatorState(Supplier<Double> positionSupplier) {
-            this.positionSupplier = positionSupplier;
-        }
-
-        public double getPosition() {
-            return positionSupplier.get();
-        }
-    }
-
-    //–––––––––––––––––––––––––––––––––
-    // Instance fields
-    //–––––––––––––––––––––––––––––––––
-
 
     // Singleton instance
     public static ElevatorSubsystemAutoLogged instance;
@@ -119,15 +73,15 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
         MMRobot mmRobot = MMRobot.getInstance();
 
-        withEncoder(mmRobot.controlHub, ENCODER_PORT, ENCODER_TICKS_PER_REV, Direction.REVERSE);
+        withEncoder(mmRobot.expansionHub,3,145.1, Direction.FORWARD);
 
         // Four drive motors, all reversed so that “forward” is upwards
-        withMotor(mmRobot.controlHub, MOTOR_PORT_0, MOTOR_DIRECTION_0);
-        withMotor(mmRobot.controlHub, MOTOR_PORT_1, MOTOR_DIRECTION_1);
-        withMotor(mmRobot.controlHub, MOTOR_PORT_2, MOTOR_DIRECTION_2);
-        withMotor(mmRobot.controlHub, MOTOR_PORT_3, MOTOR_DIRECTION_3);
+        withMotor(mmRobot.expansionHub, 0, Direction.REVERSE);
+        withMotor(mmRobot.expansionHub, 1, Direction.REVERSE);
+        withMotor(mmRobot.expansionHub, 2, Direction.REVERSE);
+        withMotor(mmRobot.expansionHub, 3, Direction.REVERSE);
 
-        withZeroPowerBehavior(zeroPowerBehavior);
+        withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // PIDF & Constraints
         withPid(KP, KI, KD);
@@ -148,19 +102,5 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withDebugPidSuppliers(() -> KP, () -> KI, () -> KD, () -> I_ZONE, () -> POSITION_TOLERANCE, () -> VELOCITY_TOLERANCE,
                 null, null, () -> KS, () -> KV, () -> KA,
                 () -> CONSTRAINT_MAX_VELOCITY, () -> CONSTRAINT_MAX_ACCELERATION);
-    }
-
-    //–––––––––––––––––––––––––––––––––
-    // Public Commands
-    //–––––––––––––––––––––––––––––––––
-
-    /**
-     * Returns a command that drives the elevator to one of the named states.
-     * <p>
-     * Example:
-     * elevator.moveToState(ElevatorState.HIGH_BASKET);
-     */
-    public Command moveToStateCommand(ElevatorState state) {
-        return getToSetpointCommand(state.getPosition());
     }
 }

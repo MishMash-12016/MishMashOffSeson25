@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.localization.Pose;
@@ -16,6 +17,10 @@ import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.consta
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
+import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+
+@Config
+@AutoLogAndPostToFtcDashboard
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
 
@@ -23,7 +28,7 @@ public class MMDrivetrain extends SubsystemBase {
 
     public static synchronized MMDrivetrain getInstance() {
         if (instance == null) {
-            instance = new MMDrivetrain();
+            instance = new MMDrivetrainAutoLogged();
         }
         return instance;
     }
