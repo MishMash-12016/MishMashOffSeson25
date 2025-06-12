@@ -22,7 +22,7 @@ public class LinearIntake extends ServoSubsystem {
         return instance;
     }
     public LinearIntake() {
-        super("IntakeRotator");
+        super("LinearIntake");
         withServo("L linear intake ", Direction.FORWARD,0.0);
         withServo("R linear intake ", Direction.REVERSE,0.0);
     }

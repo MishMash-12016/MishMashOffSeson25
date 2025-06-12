@@ -72,7 +72,7 @@ public class MMRobot extends Robot {
         if(controlHub == null || MMRobot.getInstance().currentOpMode.opModeType != OpModeType.Competition.TELEOP) {
             controlHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.CONTROL_HUB);
             if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
-                expansionHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.EXPANSION_HUB);
+                expansionHub = new CuttleRevHub(hardwareMap, "Expansion Hub 1");
             }
             battery = new MMBattery(hardwareMap);
         }

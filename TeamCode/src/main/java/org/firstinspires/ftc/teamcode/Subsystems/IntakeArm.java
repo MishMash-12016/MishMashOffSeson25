@@ -26,7 +26,7 @@ public class IntakeArm extends ServoSubsystem {
         return instance;
     }
     public IntakeArm() {
-        super("ScoringArm");
+        super("IntakeArm");
         withServo(5,MMRobot.getInstance().controlHub, Direction.FORWARD,0.0);
         withServo(1, MMRobot.getInstance().controlHub, Direction.REVERSE,0.015);
     }
