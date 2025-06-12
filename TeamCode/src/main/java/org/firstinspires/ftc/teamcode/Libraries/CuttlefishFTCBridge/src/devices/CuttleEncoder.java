@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-
+import org.firstinspires.ftc.teamcode.MMRobot;
 /**
  * Rotary encoder connected through a motor encoder port
  * */
 public class CuttleEncoder
 {
     public CuttleRevHub hub;
-    private final double encTicks;
+    public final double encTicks;
     private int direction = 1;
     public int mPort;
     private double offsetTicks = 0;

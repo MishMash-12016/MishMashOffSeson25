@@ -6,13 +6,12 @@ import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.Subsystem;
-import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.MMSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
-
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -24,7 +23,7 @@ import Ori.Coval.Logging.WpiLog;
  * for position control and command generation. Supports instant positioning,
  * gradual movement over time, and conditional positioning based on button input.
  */
-public class ServoSubsystem extends SubsystemBase {
+public class ServoSubsystem extends MMSubsystem {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
     private final String subsystemName;
@@ -34,6 +33,7 @@ public class ServoSubsystem extends SubsystemBase {
      */
     public ServoSubsystem(String subsystemName) {
         this.subsystemName = subsystemName;
+        MMRobot.getInstance().subsystems.add(this);
     }
 
     /**
@@ -181,5 +181,21 @@ public class ServoSubsystem extends SubsystemBase {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
+    }
+
+    @Override
+    public void resetHub(){
+
+        ArrayList<CuttleServo> tempList = new ArrayList<>();
+        for(CuttleServo servo : servoList){
+            if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
+            }
+            else {
+                tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port));
+            }
+        }
+
+        servoList = tempList;
     }
 }

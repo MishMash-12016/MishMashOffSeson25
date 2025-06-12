@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables;
 
 import org.firstinspires.ftc.teamcode.MMRobot;
-
 /**
  * this represents the OpMode type that has been activated.
  * <p>
@@ -17,11 +16,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
  * <p>
  * {@link NonCompetition#DEBUG DEBUG} - Special OpMode to control every system independently and make sure everything is working (or tuning servos).
  * <p>
- * {@link NonCompetition#EXPERIMENTING EXPERIMENTING} - This mode activates the Control hub and Expansion hub with all the attributes u might need on the {@link MMRobot}, EXCEPT the subsystems.
- * this mode should be used when u want to make a custom opmode to test a specific subsystem and make sure its working without interacting with the whole robot.
- * for example: this can be used in order to make a custom opmode for tuning the elevator's pid.
- * <p>
- * {@link NonCompetition#EXPERIMENTING_NO_EXPANSION EXPERIMENTING_NO_EXPANSION} - Same thing like {@link NonCompetition#EXPERIMENTING EXPERIMENTING} just without the expansion.
+ * {@link NonCompetition#EXPERIMENTING_NO_EXPANSION EXPERIMENTING_NO_EXPANSION}.
  * this can be used if u don't have an expansion plugged in, and u just want to experiment with the control hub.
  */
 
@@ -35,7 +30,6 @@ public interface OpModeType {
 
     enum NonCompetition implements OpModeType {
         DEBUG,
-        EXPERIMENTING,
         EXPERIMENTING_NO_EXPANSION
     }
 }

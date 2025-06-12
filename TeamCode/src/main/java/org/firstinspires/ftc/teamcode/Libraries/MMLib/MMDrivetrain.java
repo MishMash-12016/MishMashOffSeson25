@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib;
 
-import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.localization.Pose;
@@ -12,25 +12,33 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.seattlesolvers.solverslib.pedroCommand.HoldPointCommand;
-
+import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
-import org.firstinspires.ftc.teamcode.MMRobot;
 
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
-
-@Config
-@AutoLogAndPostToFtcDashboard
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
 
-    private static MMDrivetrain instance;
+    public static MMDrivetrain instance;
 
     public static synchronized MMDrivetrain getInstance() {
         if (instance == null) {
-            instance = new MMDrivetrainAutoLogged();
+            instance = new MMDrivetrain();
         }
         return instance;
+    }
+
+    public static void init(){
+        if(instance!=null){
+            instance.follower.initialize();
+        }
+    }
+
+    public static void update(){
+        if(instance != null){
+            instance.follower.update();             //updates the follower
+            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+        }
     }
 
     public MMDrivetrain() {

@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  * */
 public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmingStateNotifier.Callback {
 
+   private String hubName;
    boolean armed = false;
 
    long last_bulk_pull_time_ns = System.nanoTime();
@@ -80,6 +81,7 @@ public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmin
     */
    public CuttleRevHub(HardwareMap hardwareMap, String hubName)
    {
+      this.hubName = hubName;
       revHub = hardwareMap.get(LynxModule.class,hubName);
       revHub.registerCallback(this,true);
       while(!armed)
@@ -105,9 +107,11 @@ public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmin
       switch(hubType)
       {
          case CONTROL_HUB:
+            this.hubName = "Control Hub";
             revHub = hardwareMap.get(LynxModule.class,"Control Hub");
             break;
          case EXPANSION_HUB:
+            this.hubName = "Expansion Hub";
             revHub = hardwareMap.get(LynxModule.class,"Expansion Hub");
             break;
       }
@@ -479,5 +483,9 @@ public class CuttleRevHub extends LynxCommExceptionHandler implements RobotArmin
       }
 
       return null;
+   }
+
+   public String getHubName(){
+      return hubName;
    }
 }

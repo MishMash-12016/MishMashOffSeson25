@@ -8,8 +8,6 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 
 
-import org.firstinspires.ftc.teamcode.MMRobot;
-
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
@@ -17,6 +15,9 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpMo
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import Ori.Coval.Logging.WpiLog;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 
 /**
@@ -27,7 +28,6 @@ import java.util.List;
  * this constructor let's u insert the type of {@link OpModeType.NonCompetition  NonComp} opmode u would like to use.
  * there are explanations in {@link OpModeType} that explains the 3 options u have.
  * there is the {@link OpModeType.NonCompetition#DEBUG Debug},
- * {@link OpModeType.NonCompetition#EXPERIMENTING Experimenting},
  * {@link OpModeType.NonCompetition#EXPERIMENTING_NO_EXPANSION Experimenting Without Expansion}.
  */
 public abstract class MMOpMode extends LinearOpMode {
@@ -54,6 +54,7 @@ public abstract class MMOpMode extends LinearOpMode {
     private void robotInit() {
         mmRobot.currentOpMode = this;
         MMRobot.getInstance().initializeSystems(opModeType);
+        WpiLog.setup(hardwareMap);//TODO: maybe move this
     }
 
     public abstract void onInit();
@@ -76,9 +77,6 @@ public abstract class MMOpMode extends LinearOpMode {
 
         telemetry.update();                                       //updates the telemetry
 
-        MMDrivetrain.getInstance().follower.update();             //updates the follower
-        MMDrivetrain.getInstance().follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
-
         FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
     }
 
@@ -91,7 +89,6 @@ public abstract class MMOpMode extends LinearOpMode {
      */
     public void reset() {
         CommandScheduler.getInstance().reset();
-        MMRobot.getInstance().resetRobot();
     }
 
     public void addRunnableOnInit(Runnable... runOnInit) {
