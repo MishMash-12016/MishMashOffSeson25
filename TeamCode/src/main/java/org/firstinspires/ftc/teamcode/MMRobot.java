@@ -30,6 +30,9 @@ public class MMRobot extends Robot {
         return instance;
     }
 
+    public MMRobot(){
+        initBasics();
+    }
 
     /**
      * this initializes your subsystems.
@@ -38,8 +41,7 @@ public class MMRobot extends Robot {
      * @param type the {@link OpModeType} chosen
      */
     public void initializeSystems(OpModeType type) {
-        initBasics();
-        MMDrivetrain.getInstance().follower.initialize();
+        MMDrivetrain.init();
 
         if(type == OpModeType.Competition.TELEOP) {
             initTele();

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Ori.Coval.Logging.WpiLog;
+
 
 /**
  * this class represents a wrapper for the default Teleop.
@@ -54,6 +56,7 @@ public abstract class MMOpMode extends LinearOpMode {
     private void robotInit() {
         mmRobot.currentOpMode = this;
         MMRobot.getInstance().initializeSystems(opModeType);
+        WpiLog.setup(hardwareMap);//TODO: maybe move this
     }
 
     public abstract void onInit();
@@ -75,9 +78,6 @@ public abstract class MMOpMode extends LinearOpMode {
         }
 
         telemetry.update();                                       //updates the telemetry
-
-        MMDrivetrain.getInstance().follower.update();             //updates the follower
-        MMDrivetrain.getInstance().follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
 
         FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
     }

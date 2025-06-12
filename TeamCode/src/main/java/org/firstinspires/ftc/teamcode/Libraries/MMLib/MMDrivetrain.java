@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.localization.Pose;
@@ -19,13 +20,26 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
 
-    private static MMDrivetrain instance;
+    public static MMDrivetrain instance;
 
     public static synchronized MMDrivetrain getInstance() {
         if (instance == null) {
             instance = new MMDrivetrain();
         }
         return instance;
+    }
+
+    public static void init(){
+        if(instance!=null){
+            instance.follower.initialize();
+        }
+    }
+
+    public static void update(){
+        if(instance != null){
+            instance.follower.update();             //updates the follower
+            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+        }
     }
 
     public MMDrivetrain() {
