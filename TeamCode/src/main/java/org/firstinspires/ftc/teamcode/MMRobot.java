@@ -6,10 +6,10 @@ import com.seattlesolvers.solverslib.command.Robot;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
+import org.firstinspires.ftc.teamcode.Subsystems.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBattery;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
-import org.firstinspires.ftc.teamcode.Subsystems.MMDrivetrain;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 
 public class MMRobot extends Robot {
     public MMOpMode currentOpMode;
