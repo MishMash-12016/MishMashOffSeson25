@@ -4,6 +4,8 @@ import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.Subsystem;
 
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKsSysid;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKvSysid;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base.PidBaseSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
@@ -73,6 +75,14 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
                 return Set.of(VelocityPidSubsystem.this);
             }
         };
+    }
+
+    public Command tuneKSCommand(double rampRate, double minVelocity){
+        return new FFKsSysid(rampRate,minVelocity,this,this::setPower,this::getVelocity);
+    }
+
+    public Command tuneKVCommand(double rampRate, double kS){
+        return new FFKvSysid(rampRate, kS, 5, this, this::setPower, this::getVelocity);
     }
 
     /**
