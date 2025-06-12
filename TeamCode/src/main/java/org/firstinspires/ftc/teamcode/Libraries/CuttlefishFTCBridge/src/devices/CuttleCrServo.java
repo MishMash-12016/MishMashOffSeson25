@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 /**
  * Cuttlefish compatible cr servo.
@@ -91,5 +92,16 @@ public class CuttleCrServo{
     public CuttleCrServo setDirection(Direction direction) {
         this.direction = direction;
         return this;
+    }
+
+    public void resetHub(){
+        if(!FTCServo){
+            if(hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                hub = MMRobot.getInstance().controlHub;
+            }
+            else {
+                hub = MMRobot.getInstance().expansionHub;
+            }
+        }
     }
 }

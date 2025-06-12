@@ -161,4 +161,10 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
     public PidBaseSubsystem withMaxIntegralRange(double maxIntegralRange) {
         return withIntegralRange(pidController.getMinimumIntegral(), maxIntegralRange);
     }
+
+    @Override
+    public void resetHub() {
+        super.resetHub();
+        encoder.resetHub();
+    }
 }

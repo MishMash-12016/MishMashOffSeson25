@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.MMSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import Ori.Coval.Logging.WpiLog;
  * for position control and command generation. Supports instant positioning,
  * gradual movement over time, and conditional positioning based on button input.
  */
-public class ServoSubsystem extends SubsystemBase {
+public class ServoSubsystem extends MMSubsystem {
 
     ArrayList<CuttleServo> servoList = new ArrayList<>();
     private final String subsystemName;
@@ -34,6 +35,7 @@ public class ServoSubsystem extends SubsystemBase {
      */
     public ServoSubsystem(String subsystemName) {
         this.subsystemName = subsystemName;
+        MMRobot.getInstance().subsystems.add(this);
     }
 
     /**
@@ -181,5 +183,12 @@ public class ServoSubsystem extends SubsystemBase {
         CuttleServo servo = new CuttleServo(revHub, servoPort).setOffset(offset).setDirection(servoDirection);
         servoList.add(servo);
         return this;
+    }
+
+    @Override
+    public void resetHub(){
+        for(CuttleServo servo : servoList){
+            servo.resetHub();
+        }
     }
 }

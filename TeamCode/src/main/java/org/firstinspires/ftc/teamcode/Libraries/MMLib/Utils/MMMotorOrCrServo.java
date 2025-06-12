@@ -60,4 +60,14 @@ public class MMMotorOrCrServo {
             return crServo.getPower();
         }
     }
+
+    public void resetHub(){
+        if(motor != null){
+            motor.resetHub();
+        }
+        if(crServo != null){
+            crServo.resetHub();
+        }
+    }
+
 }

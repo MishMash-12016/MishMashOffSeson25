@@ -9,14 +9,17 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleCrServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleMotor;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.MMSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMMotorOrCrServo;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.ArrayList;
 
 import Ori.Coval.Logging.WpiLog;
 
-public class MotorOrCrServoSubsystem extends SubsystemBase {
+public class MotorOrCrServoSubsystem extends MMSubsystem {
     // List of motors or crServos driven by this subsystem
     private final ArrayList<MMMotorOrCrServo> motorOrCrServoList = new ArrayList<>();
     public final String subsystemName;
@@ -24,6 +27,7 @@ public class MotorOrCrServoSubsystem extends SubsystemBase {
 
     public MotorOrCrServoSubsystem(String subsystemName){
         this.subsystemName = subsystemName;
+        MMRobot.getInstance().subsystems.add(this);
     }
 
     /**
@@ -106,5 +110,12 @@ public class MotorOrCrServoSubsystem extends SubsystemBase {
     public MotorOrCrServoSubsystem withSetDefaultCommand(Command defaultCommand){
         setDefaultCommand(defaultCommand);
         return this;
+    }
+
+    @Override
+    public void resetHub(){
+        for(MMMotorOrCrServo motorOrCrServo : motorOrCrServoList){
+            motorOrCrServo.resetHub();
+        }
     }
 }

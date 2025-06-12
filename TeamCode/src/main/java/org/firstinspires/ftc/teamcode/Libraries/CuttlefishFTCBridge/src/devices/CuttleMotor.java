@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
+
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.MathUtils;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 
 /**
  * Cuttlefish DCMotor implementation.
- * */
-public class CuttleMotor{
+ */
+public class CuttleMotor {
     CuttleRevHub hub;
     int mPort;
     int sign = 1;
@@ -22,32 +25,29 @@ public class CuttleMotor{
 
     /**
      * @param revHub the control/expension hub
-     * @param port the port it is connected to on the control/expension hub
-     * */
-    public CuttleMotor(CuttleRevHub revHub, int port)
-    {
+     * @param port   the port it is connected to on the control/expension hub
+     */
+    public CuttleMotor(CuttleRevHub revHub, int port) {
         hub = revHub;
         mPort = port;
     }
 
     /**
      * @param revHub the control/expension hub
-     * @param port the port it is connected to on the control/expension hub
-     * */
-    public CuttleMotor(CuttleRevHub revHub, int port, Direction direction)
-    {
+     * @param port   the port it is connected to on the control/expension hub
+     */
+    public CuttleMotor(CuttleRevHub revHub, int port, Direction direction) {
         this(revHub, port);
         setDirection(direction);
     }
 
     /**
      * @param power the power to set the motor to between -1 to 1
-     * */
+     */
     public void setPower(double power) {
         this.power = voltageCompensate(power);
 
-        if(!interlaced)
-        {
+        if (!interlaced) {
             sendPower();
         }
     }
@@ -62,10 +62,10 @@ public class CuttleMotor{
     /**
      * compensates for battery voltage
      *
-     * @param uncompensatedPower  The “ideal” power you want (–1.0…+1.0),
-     *                            as if battery were always at nominalVoltage.
-     * @return                    The scaled/clamped power (–1.0…+1.0) that compensates
-     *                            for batterys̈ag.
+     * @param uncompensatedPower The “ideal” power you want (–1.0…+1.0),
+     *                           as if battery were always at nominalVoltage.
+     * @return The scaled/clamped power (–1.0…+1.0) that compensates
+     * for batterys̈ag.
      */
     private double voltageCompensate(double uncompensatedPower) {
         // 1) Read the raw battery voltage once per loop
@@ -90,10 +90,11 @@ public class CuttleMotor{
 
     /**
      * MishMash added
+     *
      * @return power sent to motor
      */
     public double getPower() {
-        return sign*power;
+        return sign * power;
     }
 
 
@@ -101,25 +102,22 @@ public class CuttleMotor{
      * Send cached motor power to the hub.
      * <br>
      * This is not necessary and should not be used under ordinary conditions.
-     * */
-    public void sendPower()
-    {
-        hub.setMotorPower(mPort,sign*power);
+     */
+    public void sendPower() {
+        hub.setMotorPower(mPort, sign * power);
     }
 
 
     /**
      * Set the direction of the motor
+     *
      * @param direction the direction to move the motor
-     * */
+     */
     public CuttleMotor setDirection(@NonNull Direction direction) {
-        if(direction == Direction.FORWARD)
-        {
-            sign=1;
-        }
-        else
-        {
-            sign=-1;
+        if (direction == Direction.FORWARD) {
+            sign = 1;
+        } else {
+            sign = -1;
         }
         return this;
     }
@@ -128,19 +126,27 @@ public class CuttleMotor{
      * Get motor current in milli-amps.
      * <br>
      * WARNING: This will poll the hub an extra time costing about 3ms.
+     *
      * @return Motor current in milli-amps
-     * */
-    public int getCurrent()
-    {
+     */
+    public int getCurrent() {
         return this.hub.getMotorCurrent(this.mPort);
     }
 
     /**
      * Set the zero power behaviour of the motor.
+     *
      * @param behaviour choose if the motor should break or coast
-     * */
-    public void setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior behaviour)
-    {
-        this.hub.setMotorZeroPowerBehaviour(this.mPort,behaviour);
+     */
+    public void setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior behaviour) {
+        this.hub.setMotorZeroPowerBehaviour(this.mPort, behaviour);
+    }
+
+    public void resetHub() {
+        if (hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())) {
+            hub = MMRobot.getInstance().controlHub;
+        } else {
+            hub = MMRobot.getInstance().expansionHub;
+        }
     }
 }

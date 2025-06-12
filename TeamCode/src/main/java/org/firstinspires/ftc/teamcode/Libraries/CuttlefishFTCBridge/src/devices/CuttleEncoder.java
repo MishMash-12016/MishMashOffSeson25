@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 /**
  * Rotary encoder connected through a motor encoder port
@@ -74,5 +75,16 @@ public class CuttleEncoder
         }
 
         return this;
+    }
+
+    public void resetHub() {
+        double pose = getPose();
+        if (hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())) {
+            hub = MMRobot.getInstance().controlHub;
+        } else {
+            hub = MMRobot.getInstance().expansionHub;
+        }
+
+        setPose(pose);
     }
 }
