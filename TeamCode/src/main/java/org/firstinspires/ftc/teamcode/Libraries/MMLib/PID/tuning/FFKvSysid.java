@@ -82,7 +82,7 @@ public class FFKvSysid extends CommandBase {
 
         // If we have insufficient data, bail out
         if (velocityData.isEmpty() || voltageMinusKs.isEmpty()) {
-            System.out.println("KV SysId: Not enough data points to perform regression.");
+            WpiLog.log("KV SysId: Not enough data points to perform regression.", true, true);
             return;
         }
 
