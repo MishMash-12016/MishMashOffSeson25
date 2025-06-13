@@ -12,6 +12,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -25,14 +27,14 @@ import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Annotation processor that generates an AutoLogged subclass which
  * overrides fields and methods to log via WpiLog.
  */
-@SupportedAnnotationTypes({"Ori.Coval.Logging.AutoLog",
-        "Ori.Coval.Logging.AutoLogAndPostToFtcDashboard"})
+@SupportedAnnotationTypes("Ori.Coval.Logging.AutoLog")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AutoLogAnnotationProcessor extends AbstractProcessor {
     // Adjust this to your WpiLog package
@@ -46,14 +48,26 @@ public class AutoLogAnnotationProcessor extends AbstractProcessor {
         for (TypeElement annotation : annotations) {
             for (Element e : roundEnv.getElementsAnnotatedWith(annotation)) {
                 if (e.getKind() == ElementKind.CLASS) {
-                    boolean postToFtc = annotation.getQualifiedName()
-                            .toString()
-                            .equals("Ori.Coval.Logging.AutoLogAndPostToFtcDashboard");
+                    boolean postToFtc = getAnnotationValue(e, "postToFtcDashboard", true);
                     generate((TypeElement) e, postToFtc);
                 }
             }
         }
         return true;
+    }
+
+    private boolean getAnnotationValue(Element element, String key, boolean defaultValue) {
+        for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
+            if (mirror.getAnnotationType().toString().equals("Ori.Coval.Logging.AutoLog")) {
+                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+                        mirror.getElementValues().entrySet()) {
+                    if (entry.getKey().getSimpleName().toString().equals(key)) {
+                        return Boolean.parseBoolean(entry.getValue().getValue().toString());
+                    }
+                }
+            }
+        }
+        return defaultValue;
     }
 
 
