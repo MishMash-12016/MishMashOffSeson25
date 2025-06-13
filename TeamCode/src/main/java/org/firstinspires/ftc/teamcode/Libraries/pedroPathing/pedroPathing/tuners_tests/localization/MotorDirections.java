@@ -38,7 +38,6 @@ public class MotorDirections extends OpMode {
 
     @Override
     public void init() {
-        Constants.setConstants(FConstants.class, LConstants.class);
 
         leftFront = hardwareMap.get(DcMotorEx.class, leftFrontMotorName);
         leftRear = hardwareMap.get(DcMotorEx.class, leftRearMotorName);
@@ -68,7 +67,6 @@ public class MotorDirections extends OpMode {
 
     @Override
     public void loop() {
-        Constants.setConstants(FConstants.class, LConstants.class);
         leftFront.setDirection(leftFrontMotorDirection);
         leftRear.setDirection(leftRearMotorDirection);
         rightFront.setDirection(rightFrontMotorDirection);

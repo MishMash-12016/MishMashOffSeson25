@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Ori.Coval.Logging.AutoLogManager;
 import Ori.Coval.Logging.WpiLog;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
@@ -78,6 +79,8 @@ public abstract class MMOpMode extends LinearOpMode {
         telemetry.update();                                       //updates the telemetry
 
         FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
+
+        AutoLogManager.periodic();
     }
 
     public abstract void onPlayLoop();

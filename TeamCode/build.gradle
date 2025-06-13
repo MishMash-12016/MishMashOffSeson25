@@ -10,10 +10,22 @@
 
 
 // Custom definitions may go here
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url = 'https://www.matthewo.tech/maven/'
+        }
+    }
+    dependencies {
+        classpath 'org.team11260:fast-load-plugin:0.1.2'
+    }
+}
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+apply plugin: 'org.team11260.fast-load-plugin'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -36,6 +48,9 @@ repositories {
     maven {
         url "https://repo.dairy.foundation/snapshots"
     }
+    maven {
+        url = 'https://www.matthewo.tech/maven/'
+    }
 }
 
 dependencies {
@@ -43,12 +58,14 @@ dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     // SolversLib
-    implementation "org.solverslib:core:0.2.5" // core
+    implementation "org.solverslib:core:0.2.7" // core
     implementation "org.solverslib:pedroPathing:0.2.5" // pedroPathing
 
     // Pedro Pathing
-    implementation "com.pedropathing:pedro:1.0.8" // Pedro Pathing Library
+    implementation "com.pedropathing:pedro:1.0.9" // Pedro Pathing Library
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16" // FTC Dashboard
+
+
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
 
@@ -57,4 +74,5 @@ dependencies {
     annotationProcessor project(":Logging-processor")
     annotationProcessor "com.squareup:javapoet:1.13.0"
 
+    implementation 'org.team11260:fast-load:0.1.2'
 }
