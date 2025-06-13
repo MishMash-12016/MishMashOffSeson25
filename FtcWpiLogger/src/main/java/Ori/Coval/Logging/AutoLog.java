@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-public @interface AutoLog {}
+public @interface AutoLog {
+    boolean postToFtcDashboard() default true;
+}
