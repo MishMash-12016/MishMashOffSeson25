@@ -37,6 +37,9 @@ android {
 
 repositories {
     maven {
+        url 'https://jitpack.io'
+    }
+    maven {
         url = 'https://maven.brott.dev/'
     }
     maven {
@@ -70,8 +73,8 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
 
     //Logging
-    implementation project(':FtcWpiLogger')
-    annotationProcessor project(":Logging-processor")
+    implementation         'com.github.ori-coval.ftc-auto-logger:FtcWpiLogger:v1.3.0'
+    annotationProcessor    'com.github.ori-coval.ftc-auto-logger:logging-processor:v1.3.0'
     annotationProcessor "com.squareup:javapoet:1.13.0"
 
     implementation 'org.team11260:fast-load:0.1.2'
