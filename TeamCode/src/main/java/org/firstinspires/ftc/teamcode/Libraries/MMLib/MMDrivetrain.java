@@ -42,8 +42,7 @@ public class MMDrivetrain extends SubsystemBase {
     }
 
     public MMDrivetrain() {
-        Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap);
+        follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap, FConstants.class, LConstants.class);
     }
 
     public CommandBase holdPointCommand(Pose pose) {
