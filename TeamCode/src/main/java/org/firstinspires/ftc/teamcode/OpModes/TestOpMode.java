@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeRotator;
 import org.firstinspires.ftc.teamcode.Subsystems.LinearIntake;
 
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+import Ori.Coval.Logging.AutoLog;
 
 @TeleOp
 @Config
-@AutoLogAndPostToFtcDashboard
+@AutoLog
 public class TestOpMode extends MMOpMode {
 
     public TestOpMode() {

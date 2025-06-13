@@ -7,8 +7,7 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionProfiledPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
-
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+import Ori.Coval.Logging.AutoLog;
 
 /**
  * ElevatorSubsystem
@@ -18,7 +17,7 @@ import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
  */
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 @Config
-@AutoLogAndPostToFtcDashboard
+@AutoLog
 public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
     public static double KP = 0.08;

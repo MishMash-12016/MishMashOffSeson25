@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Di
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Servo.ServoSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+import Ori.Coval.Logging.AutoLog;
 
 @Config
-@AutoLogAndPostToFtcDashboard
+@AutoLog
 public class IntakeClaw extends ServoSubsystem {
     public static double scoringClawOpen = 0.9;
     public static double scoringClawClose = 0.6;

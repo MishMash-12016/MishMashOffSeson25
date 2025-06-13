@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Di
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Servo.ServoSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+import Ori.Coval.Logging.AutoLog;
 
 @Config
-@AutoLogAndPostToFtcDashboard
+@AutoLog
 public class IntakeRotator extends ServoSubsystem {
     public static double defaultPose = 0.33;
     public static double initPose = 0.98;

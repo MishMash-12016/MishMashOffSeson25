@@ -5,10 +5,10 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Servo.ServoSubsystem;
 
-import Ori.Coval.Logging.AutoLogAndPostToFtcDashboard;
+import Ori.Coval.Logging.AutoLog;
 
 @Config
-@AutoLogAndPostToFtcDashboard
+@AutoLog
 public class ScoringElbow extends ServoSubsystem  {
     public static double prepareSampleScorePose = 0.42;
     public static double ElbowScoreSamplePose = 0.78;
