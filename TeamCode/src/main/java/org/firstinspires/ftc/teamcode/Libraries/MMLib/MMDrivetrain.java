@@ -6,7 +6,6 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.util.Constants;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -28,7 +27,7 @@ public class MMDrivetrain extends SubsystemBase {
         return instance;
     }
 
-    public static void init(){
+    public static void resetFollower(){
         if(instance!=null){
             instance.follower.initialize();
         }

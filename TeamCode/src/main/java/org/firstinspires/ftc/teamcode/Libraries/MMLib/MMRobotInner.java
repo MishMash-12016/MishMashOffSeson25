@@ -46,7 +46,7 @@ public class MMRobotInner extends Robot {
      */
     public void initializeSystems(OpModeType type) {
         initBasics();
-        MMDrivetrain.init();
+        MMDrivetrain.resetFollower();
         initSubsystems();
 
         if (type == OpModeType.Competition.TELEOP) {

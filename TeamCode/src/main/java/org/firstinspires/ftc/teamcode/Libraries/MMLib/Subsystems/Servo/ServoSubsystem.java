@@ -53,7 +53,7 @@ public class ServoSubsystem extends MMSubsystem {
      * @param movementDurationMS the total movement duration in milliseconds
      * @return a Command that performs the motion over time
      */
-    public Command moveToPositionOverTimeCommand(double targetPose, double movementDurationMS) {
+    public Command setPositionOverTimeCommand(double targetPose, double movementDurationMS) {
         return new Command() {
             ElapsedTime currentTimeMS;
             double difference;
@@ -97,7 +97,7 @@ public class ServoSubsystem extends MMSubsystem {
      * @param buttonPressedPosition the position to move to when the button is pressed
      * @return a RunCommand that sets the position based on the button state
      */
-    public Command setPositionByButton(double defaultPosition, BooleanSupplier button, double buttonPressedPosition) {
+    public Command setPositionByButtonCommand(double defaultPosition, BooleanSupplier button, double buttonPressedPosition) {
         return new RunCommand(() -> {
             if (button.getAsBoolean()) {
                 setPosition(buttonPressedPosition);
@@ -117,7 +117,7 @@ public class ServoSubsystem extends MMSubsystem {
      * @param position2       the position for the second button
      * @return a RunCommand that sets the position based on the button states
      */
-    public Command setPositionByButton(double defaultPosition, BooleanSupplier button1, double position1, BooleanSupplier button2, double position2) {
+    public Command setPositionByButtonCommand(double defaultPosition, BooleanSupplier button1, double position1, BooleanSupplier button2, double position2) {
         return new RunCommand(() -> {
             if (button1.getAsBoolean()) {
                 setPosition(position1);
