@@ -101,7 +101,7 @@ public class MMDrivetrain extends SubsystemBase {
     /**
      * enables the Default Command(the default command is the drive field centric command)
      */
-    public void enableDefaultCommand() {
+    public void enableTeleopDriveDefaultCommand() {
         MMRobot mmRobot = MMRobot.getInstance();
         setDefaultCommand(driveCommand(-mmRobot.gamepadEx1.getLeftY(), -mmRobot.gamepadEx1.getLeftX(), -mmRobot.gamepadEx1.getRightX()));
     }
@@ -109,7 +109,7 @@ public class MMDrivetrain extends SubsystemBase {
     /**
      * disables the Default Command(the default command is the drive field centric command)
      */
-    public void disableDefaultCommand() {
+    public void disableTeleopDriveDefaultCommand() {
         setDefaultCommand(new RunCommand(()->{}, this));
     }
 }
