@@ -7,13 +7,13 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleEncoder;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
-import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleServo;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PIDController;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import Ori.Coval.Logging.WpiLog;
 
@@ -34,10 +34,20 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return a Command requiring this subsystem
      */
     //this command is the base for all the other pid commands
-    public Command holdSetPointCommand(double setPoint) {
+    public Command getToAndHoldSetPointCommand(double setPoint) {
         return new RunCommand(()-> {
             WpiLog.log(subsystemName + "/ERROR ", "pid holdSetPointCommand is not implemented", true);
             setPower(0);});
+    }
+
+    /**
+     * Creates a Command that keeps the mechanism in place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    public Command getToAndHoldSetPointCommand(DoubleSupplier setPoint) {
+        return getToAndHoldSetPointCommand(setPoint.getAsDouble())
+                .alongWith(new RunCommand(()-> pidController.setSetpoint(setPoint.getAsDouble())));
     }
 
     /**
@@ -47,7 +57,7 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return a Command requiring this subsystem
      */
     public Command getToSetpointCommand(double setPoint) {
-        return holdSetPointCommand(setPoint).interruptOn(()->WpiLog.log(subsystemName + "/atSetpoint", pidController.atSetpoint(), true));
+        return getToAndHoldSetPointCommand(setPoint).interruptOn(()->WpiLog.log(subsystemName + "/atSetpoint", pidController.atSetpoint(), true));
     }
 
     /**
@@ -56,7 +66,7 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return a Command requiring this subsystem
      */
     public Command holdCurrentSetPointCommand() {
-        return holdSetPointCommand(pidController.getSetpoint());
+        return getToAndHoldSetPointCommand(pidController.getSetpoint());
     }
 
     /**

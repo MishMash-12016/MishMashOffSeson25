@@ -43,7 +43,7 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
      * @return a Command requiring this subsystem
      */
     @Override
-    public Command holdSetPointCommand(double setPoint) {
+    public Command getToAndHoldSetPointCommand(double setPoint) {
         return new Command() {
             @Override
             public void initialize() {

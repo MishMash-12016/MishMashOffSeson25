@@ -43,15 +43,22 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
      * @param power motor power (-1.0 to 1.0)
      * @return a RunCommand requiring this subsystem
      */
-    public Command setPowerCommand(double power) {
+    public Command setPowerInstantCommand(double power) {
         return new InstantCommand(() -> setPower(power), this);
     }
 
     /**
      * a command that stops the motors
      */
-    public Command stopCommand(){
+    public Command stopInstantCommand(){
         return new InstantCommand(this::stop, this);
+    }
+
+    /**
+     * a command that stops the motors
+     */
+    public Command stopRunCommand(){
+        return new RunCommand(this::stop, this);
     }
 
     /**

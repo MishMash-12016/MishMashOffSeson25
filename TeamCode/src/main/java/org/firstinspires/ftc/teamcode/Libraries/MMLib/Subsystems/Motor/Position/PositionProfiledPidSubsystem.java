@@ -30,7 +30,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
      * @return a Command requiring this subsystem
      */
     @Override
-    public Command holdSetPointCommand(double setPoint) {
+    public Command getToAndHoldSetPointCommand(double setPoint) {
         return new Command() {
             @Override
             public void initialize() {
@@ -43,6 +43,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
 
             @Override
             public void execute() {
+                WpiLog.log(subsystemName + "/pid setpoint", setPoint, true);
                 double pidOutput = WpiLog.log(subsystemName + "/pid output", pidController.calculate(getPose()), true);
                 double feedforwardOutput = 0;
 
