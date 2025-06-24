@@ -68,13 +68,9 @@ dependencies {
     implementation "com.pedropathing:pedro:1.0.9" // Pedro Pathing Library
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16" // FTC Dashboard
 
-
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
-
     //Logging
-    implementation 'com.github.ori-coval.Koala-Log:KoalaLogger:V1.0.0'
-    annotationProcessor 'com.github.ori-coval.Koala-Log:KoalaLoggingProcessor:V1.0.0'
+    implementation 'com.github.ori-coval.Koala-Log:KoalaLogger:1.0.0'
+    annotationProcessor 'com.github.ori-coval.Koala-Log:KoalaLoggingProcessor:1.0.0'
 
     implementation 'org.team11260:fast-load:0.1.2'
 }
