@@ -24,6 +24,7 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
     public ZeroPowerBehavior zeroPowerBehavior;
 
     public MotorOrCrServoSubsystem(String subsystemName){
+        super();
         this.subsystemName = subsystemName;
         MMRobot.getInstance().subsystems.add(this);
     }
@@ -35,7 +36,7 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
      * @return a RunCommand requiring this subsystem
      */
     public Command setPowerRunCommand(double power) {
-        return new RunCommand(() -> setPower(power), this);
+        return new RunCommand(() -> setPower(power), this).whenFinished(this::stop);
     }
 
     /**
@@ -102,6 +103,10 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
         motorOrCrServoList.add(crServo);
 
         return this;
+    }
+
+    public double getPower(){
+        return motorOrCrServoList.get(0).getPower();
     }
 
     public MotorOrCrServoSubsystem withZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior){
