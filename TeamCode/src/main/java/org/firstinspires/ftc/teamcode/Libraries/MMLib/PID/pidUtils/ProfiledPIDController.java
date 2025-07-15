@@ -56,7 +56,7 @@ public class ProfiledPIDController extends PIDController {
   @Override
   public void setSetpoint(double setpoint) {
     m_goal = new TrapezoidProfile.State(setpoint, 0.0);
-    super.setSetpoint(m_goal.position);
+    super.setSetpoint(setpoint);
   }
 
   /**
@@ -151,8 +151,12 @@ public class ProfiledPIDController extends PIDController {
    * Note: this is *not* the same as PIDController.getSetpoint(). PIDController.getSetpoint()
    * returns only the position‐only setpoint that was last passed. Here, we give you both pos+vel.
    */
-  public TrapezoidProfile.State getSetpointState() {
+  public TrapezoidProfile.State getCurrentSetpointState() {
     return m_setpoint;
+  }
+
+  public TrapezoidProfile.State getGoalState() {
+    return m_goal;
   }
 
   /**

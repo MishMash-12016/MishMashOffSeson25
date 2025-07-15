@@ -52,7 +52,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
 
 
                 if (feedforward != null) {
-                    feedforwardOutput = feedforward.calculate(((ProfiledPIDController) pidController).getSetpointState().velocity);
+                    feedforwardOutput = feedforward.calculate(((ProfiledPIDController) pidController).getCurrentSetpointState().velocity);
                 }
                 KoalaLog.log(subsystemName + "/pid feedforward", feedforwardOutput, true);
 
@@ -65,6 +65,16 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
                 return Set.of(PositionProfiledPidSubsystem.this);
             }
         };
+    }
+
+    /**
+     * Creates a Command that keeps the mechanism in its current setpoint place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    @Override
+    public Command holdCurrentSetPointCommand() {
+        return getToAndHoldSetPointCommand(()->((ProfiledPIDController)pidController).getGoalState().position);
     }
 
     public Command tuneKSCommand(double rampRate, double minVelocity){
