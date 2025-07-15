@@ -119,7 +119,9 @@ public class ProfiledPIDController extends PIDController {
     }
 
     m_setpoint = m_profile.calculate(getPeriod(), m_setpoint, m_goal);
-    return super.calculate(measurement, m_setpoint.position);
+    super.m_setpoint = m_setpoint.position;
+    super.m_haveSetpoint = true;
+    return super.calculate(measurement);
   }
 
   /**
