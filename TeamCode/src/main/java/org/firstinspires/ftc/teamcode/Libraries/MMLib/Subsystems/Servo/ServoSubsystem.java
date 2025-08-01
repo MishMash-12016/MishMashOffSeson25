@@ -137,7 +137,9 @@ public class ServoSubsystem extends MMSubsystem {
     public void setPosition(double position) {
         KoalaLog.log(subsystemName + "/position", position, true);
         for (CuttleServo servo : servoList) {
-            servo.setPosition(position);
+            servo.setPosition(
+                    servo.getDirection() == Direction.REVERSE ? 1 - position : position
+            ); //todo: fix cuttlefish reverse
         }
     }
 
@@ -188,11 +190,16 @@ public class ServoSubsystem extends MMSubsystem {
 
         ArrayList<CuttleServo> tempList = new ArrayList<>();
         for(CuttleServo servo : servoList){
-            if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-                tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
-            }
-            else {
-                tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port));
+            try {
+                if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                    tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
+                }
+                else {
+                    tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port));
+                }
+            } catch (Exception e) {
+                MMRobot.getInstance().currentOpMode.telemetry.speak("SERVO HUB!!");
+                //todo: fix for servo hub's servo
             }
         }
 

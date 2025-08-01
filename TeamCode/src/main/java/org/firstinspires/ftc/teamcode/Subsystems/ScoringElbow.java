@@ -33,7 +33,7 @@ public class ScoringElbow extends ServoSubsystem  {
     }
     public ScoringElbow() {
         super("ScoringElbow");
-        withServo("ScoringElbowServo", Direction.FORWARD, 0.0);
+        withServo("scoring elbow", Direction.FORWARD, 0.0);
     }
 
 }

@@ -20,6 +20,3 @@ public class LConstants {
         PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
     }
 }
-
-
-
