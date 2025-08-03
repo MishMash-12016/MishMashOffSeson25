@@ -11,8 +11,8 @@ import Ori.Coval.Logging.AutoLog;
 @Config
 @AutoLog
 public class IntakeClaw extends ServoSubsystem {
-    public static double scoringClawOpen = 0.9;
-    public static double scoringClawClose = 0.6;
+    public static double scoringClawOpen = 0.6;
+    public static double scoringClawClose = 0.9;
     private static IntakeClaw instance;
 
     public static synchronized IntakeClaw getInstance() {

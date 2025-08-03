@@ -50,7 +50,7 @@ public class IntakeSampleCommend {
                 ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowPrepareSampleTransferPose),
                 ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmPrepareSampleTransferPose),
                 new WaitCommand(200),
-                IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawOpen),
+                IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose),
                 new WaitCommand(200),
                 IntakeArm.getInstance().setPositionCommand(0.43),//TODO:whad dis iz?
                 new ParallelCommandGroup(
