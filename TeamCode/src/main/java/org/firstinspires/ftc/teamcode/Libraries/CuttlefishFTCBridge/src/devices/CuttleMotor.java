@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 
 /**
@@ -63,11 +64,11 @@ public class CuttleMotor {
      * @param uncompensatedPower The “ideal” power you want (–1.0…+1.0),
      *                           as if battery were always at nominalVoltage.
      * @return The scaled/clamped power (–1.0…+1.0) that compensates
-     * for batterys̈ag.
+     * for battery sag.
      */
     private double voltageCompensate(double uncompensatedPower) {
         // 1) Read the raw battery voltage once per loop
-        double rawVoltage = hub.getBatteryVoltage() / 1000.0;
+        double rawVoltage = MMRobot.getInstance().battery.getVoltage();
 
         // 2) Initialize filteredVoltage on first call (if still 0.0).
         //    You could also set filteredVoltage = hub.getBatteryVoltage() in init().

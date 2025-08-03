@@ -126,7 +126,7 @@ public class ServoSubsystem extends MMSubsystem {
             } else {
                 setPosition(defaultPosition);
             }
-        });
+        }, this);
     }
 
     /**
