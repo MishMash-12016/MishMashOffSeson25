@@ -23,6 +23,6 @@ public class IntakeClaw extends ServoSubsystem {
     }
     public IntakeClaw(){
         super("IntakeClaw");
-        withServo(0, MMRobot.getInstance().expansionHub, Direction.FORWARD,0.0);
+        withServo("intake claw", Direction.FORWARD,0.0);
     }
 }

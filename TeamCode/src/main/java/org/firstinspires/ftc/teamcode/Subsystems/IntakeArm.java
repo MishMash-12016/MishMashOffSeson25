@@ -11,11 +11,11 @@ import Ori.Coval.Logging.AutoLog;
 @Config
 @AutoLog
 public class IntakeArm extends ServoSubsystem {
-    public static double intakeArmIntakeSample = 0.57;
-    public static double intakeArmPrepareIntakeSample = 0.5;
-    public static double intakeArmSpecimenIntake = 0.2;
-    public static double intakeArmTransferSample = 0.03;
-    public static double intakeArmInit = 0.05;
+    public static double intakeArmIntakeSample = 0.65;
+    public static double intakeArmPrepareIntakeSample = 0.58;
+    public static double intakeArmSpecimenIntake = 0.28;
+    public static double intakeArmTransferSample = 0.11;
+    public static double intakeArmInit = 0.13;
     private static IntakeArm instance;
 
 
@@ -27,7 +27,7 @@ public class IntakeArm extends ServoSubsystem {
     }
     public IntakeArm() {
         super("IntakeArm");
-        withServo(5,MMRobot.getInstance().controlHub, Direction.FORWARD,0.0);
-        withServo(1, MMRobot.getInstance().controlHub, Direction.REVERSE,0.015);
+        withServo("L intake arm", Direction.FORWARD,0.0);
+        withServo("R intake arm", Direction.REVERSE,0.015);
     }
 }
