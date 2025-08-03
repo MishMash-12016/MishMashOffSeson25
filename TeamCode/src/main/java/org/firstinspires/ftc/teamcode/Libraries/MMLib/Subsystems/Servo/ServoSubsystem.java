@@ -188,7 +188,10 @@ public class ServoSubsystem extends MMSubsystem {
 
         ArrayList<CuttleServo> tempList = new ArrayList<>();
         for(CuttleServo servo : servoList){
-            if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+            if(servo.getFtcServo()){
+                tempList.add(new CuttleServo(MMRobot.getInstance().currentOpMode.hardwareMap, servo.getServoName()));
+
+            } else if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
                 tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
             }
             else {
