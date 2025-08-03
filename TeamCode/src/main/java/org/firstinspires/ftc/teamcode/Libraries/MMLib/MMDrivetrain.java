@@ -36,7 +36,7 @@ public class MMDrivetrain extends SubsystemBase {
     public static void update(){
         if(instance != null){
             instance.follower.update();             //updates the follower
-            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard//TODO: i dont know what but this needs to be fixed
         }
     }
 

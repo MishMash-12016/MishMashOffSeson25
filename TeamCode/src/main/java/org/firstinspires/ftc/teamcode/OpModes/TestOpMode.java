@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
+import org.firstinspires.ftc.teamcode.Subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeClaw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeRotator;
@@ -37,6 +38,8 @@ public class TestOpMode extends MMOpMode {
 
     @Override
     public void onInit() {
+        //MMDrivetrain.getInstance().enableTeleopDriveDefaultCommand();
+
         MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 IntakeSampleCommend.prepareSampleIntake(
                         () -> MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).get(),
@@ -81,8 +84,8 @@ public class TestOpMode extends MMOpMode {
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.X).whenPressed(LinearIntake.getInstance().setPositionCommand(LinearIntake.linerIntakeOpen));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(LinearIntake.getInstance().setPositionCommand(LinearIntake.linerIntakeClose));
 
-        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawOpen));
-        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose));
+        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(ElevatorSubsystem.getInstance().tuneKSCommand(0.05, 0.001));
+//        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorRightAnglePose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorLeftAnglePose));
 
