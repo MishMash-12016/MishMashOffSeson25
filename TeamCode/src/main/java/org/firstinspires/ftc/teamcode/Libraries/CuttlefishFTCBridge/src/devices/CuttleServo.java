@@ -14,6 +14,7 @@ public class CuttleServo{
     public int port;
     boolean enabled = false;
     final boolean FTCServo;
+    final String servoName;
     double offset = 0.0;
 
     Direction direction = Direction.FORWARD;
@@ -30,6 +31,7 @@ public class CuttleServo{
         port = servoPort;
         hub = revHub;
         FTCServo = false;
+        servoName = null;
     }
     /**
      * Initialize servo using hardwareMap
@@ -40,6 +42,8 @@ public class CuttleServo{
     {
         FTCServo = true;
         ftcServoDevice = hardwareMap.get(com.qualcomm.robotcore.hardware.Servo.class,name);
+
+        servoName = name;
     }
 
     /**
@@ -102,5 +106,17 @@ public class CuttleServo{
 
     public double getOffset(){
         return offset;
+    }
+
+    public boolean getFtcServo(){
+        return FTCServo;
+    }
+
+    /**
+     *
+     * @return the servo name. null if servo is connected to a hub and doesnt have a name
+     */
+    public String getServoName() {
+        return servoName;
     }
 }
