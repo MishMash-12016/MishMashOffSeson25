@@ -65,9 +65,6 @@ public class MMRobotInner extends Robot {
     }
 
     public void initTele() {
-
-        MMDrivetrain.getInstance().enableTeleopDriveDefaultCommand();
-
     }
 
     public void initDebug() {
