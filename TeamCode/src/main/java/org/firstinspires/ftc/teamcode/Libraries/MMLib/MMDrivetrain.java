@@ -44,12 +44,16 @@ public class MMDrivetrain extends SubsystemBase {
     public static void update(){//TODO: fix telemetry debug crush bug
         if(instance != null){
             instance.follower.update();             //updates the follower
-//            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+
+            if(instance.follower.poseUpdater != null) {
+                instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+            }
         }
     }
 
     public MMDrivetrain() {
         follower = new Follower(MMRobot.getInstance().currentOpMode.hardwareMap, FConstants.class, LConstants.class);
+        follower.setStartingPose(new Pose(0,0,0));
     }
 
     public CommandBase holdPointCommand(Pose pose) {
