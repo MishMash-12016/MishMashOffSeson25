@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
+import Ori.Coval.Logging.AutoLogOutput;
 import Ori.Coval.Logging.Logger.KoalaLog;
 /**
  * A subsystem that wraps and manages one or more {@link CuttleServo} instances, allowing
@@ -147,6 +148,7 @@ public class ServoSubsystem extends MMSubsystem {
      *
      * @return the logical position [0.0, 1.0]
      */
+    @AutoLogOutput
     public double getPosition() {
         double noOffsetPose = servoList.get(0).getPosition() - servoList.get(0).getOffset();
         return KoalaLog.log(subsystemName + "/position",
