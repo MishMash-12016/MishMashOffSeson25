@@ -2,58 +2,59 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils;
+package org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.Controllers;
 
-/**
- * Implements a PID control loop.
- */
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
+
+/** Implements a PID control loop. */
 public class PIDController implements AutoCloseable {
+    private static int instances;
 
     // Factor for "proportional" control
-    public double m_kp;
+    private double m_kp;
 
     // Factor for "integral" control
-    public double m_ki;
+    private double m_ki;
 
     // Factor for "derivative" control
-    public double m_kd;
+    private double m_kd;
 
     // The error range where "integral" control applies
-    public double m_iZone = Double.POSITIVE_INFINITY;
+    private double m_iZone = Double.POSITIVE_INFINITY;
 
     // The period (in seconds) of the loop that calls the controller
-    public final double m_period;
+    private final double m_period;
 
-    public double m_maximumIntegral = 1.0;
+    private double m_maximumIntegral = 1.0;
 
-    public double m_minimumIntegral = -1.0;
+    private double m_minimumIntegral = -1.0;
 
-    public double m_maximumInput;
+    private double m_maximumInput;
 
-    public double m_minimumInput;
+    private double m_minimumInput;
 
     // Do the endpoints wrap around? e.g. Absolute encoder
-    public boolean m_continuous;
+    private boolean m_continuous;
 
     // The error at the time of the most recent call to calculate()
-    public double m_error;
-    public double m_errorDerivative;
+    private double m_currentError;
+    private double m_errorRate;
 
-    // The error at the time of the second-most-recent call to calculate() (used to compute velocity)
-    public double m_prevError;
+    // The error at the time of the second-most-recent call to calculate() (used to compute error rate)
+    private double m_prevError;
 
     // The sum of the errors for use in the integral calc
-    public double m_totalError;
+    private double m_totalError;
 
     // The error that is considered at setpoint.
-    public double m_errorTolerance = 0.05;
-    public double m_errorDerivativeTolerance = Double.POSITIVE_INFINITY;
+    private double m_errorTolerance = 0.05;
+    private double m_errorRateTolerance = Double.POSITIVE_INFINITY;
 
-    public double m_setpoint;
-    public double m_measurement;
+    private double m_setpoint;
+    private double m_measurement;
 
-    public boolean m_haveMeasurement;
-    public boolean m_haveSetpoint;
+    private boolean m_haveMeasurement;
+    private boolean m_haveSetpoint;
 
     /**
      * Allocates a PIDController with the given constants for kp, ki, and kd and a default period of
@@ -73,9 +74,9 @@ public class PIDController implements AutoCloseable {
     /**
      * Allocates a PIDController with the given constants for kp, ki, and kd.
      *
-     * @param kp     The proportional coefficient.
-     * @param ki     The integral coefficient.
-     * @param kd     The derivative coefficient.
+     * @param kp The proportional coefficient.
+     * @param ki The integral coefficient.
+     * @param kd The derivative coefficient.
      * @param period The period between controller updates in seconds.
      * @throws IllegalArgumentException if kp &lt; 0
      * @throws IllegalArgumentException if ki &lt; 0
@@ -101,6 +102,8 @@ public class PIDController implements AutoCloseable {
             throw new IllegalArgumentException("Controller period must be a positive number!");
         }
         m_period = period;
+
+        instances++;
     }
 
     @Override
@@ -150,9 +153,9 @@ public class PIDController implements AutoCloseable {
     }
 
     /**
-     * Sets the IZone range. When the absolute value of the position error is greater than IZone, the
+     * Sets the IZone range. When the absolute value of the error is greater than IZone, the
      * total accumulated error will reset to zero, disabling integral gain until the absolute value of
-     * the position error is less than IZone. This is used to prevent integral windup. Must be
+     * the error is less than IZone. This is used to prevent integral windup. Must be
      * non-negative. Passing a value of zero will effectively disable integral gain. Passing a value
      * of {@link Double#POSITIVE_INFINITY} disables IZone functionality.
      *
@@ -212,7 +215,7 @@ public class PIDController implements AutoCloseable {
     }
 
     /**
-     * Returns the error tolerance of this controller. Defaults to 0.05.
+     * Returns the error tolerance of this controller.
      *
      * @return the error tolerance of the controller.
      */
@@ -221,21 +224,12 @@ public class PIDController implements AutoCloseable {
     }
 
     /**
-     * Returns the error derivative tolerance of this controller. Defaults to ∞.
+     * Returns the error rate tolerance of this controller.
      *
-     * @return the error derivative tolerance of the controller.
+     * @return the error rate tolerance of the controller.
      */
-    public double getErrorDerivativeTolerance() {
-        return m_errorDerivativeTolerance;
-    }
-
-    /**
-     * Returns the accumulated error used in the integral calculation of this controller.
-     *
-     * @return The accumulated error of this controller.
-     */
-    public double getAccumulatedError() {
-        return m_totalError;
+    public double getErrorRateTolerance() {
+        return m_errorRateTolerance;
     }
 
     /**
@@ -249,12 +243,12 @@ public class PIDController implements AutoCloseable {
 
         if (m_continuous) {
             double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
-            m_error = inputModulus(m_setpoint - m_measurement, -errorBound, errorBound);
+            m_currentError = MMUtils.inputModulus(m_setpoint - m_measurement, -errorBound, errorBound);
         } else {
-            m_error = m_setpoint - m_measurement;
+            m_currentError = m_setpoint - m_measurement;
         }
 
-        m_errorDerivative = (m_error - m_prevError) / m_period;
+        m_errorRate = (m_currentError - m_prevError) / m_period;
     }
 
     /**
@@ -267,8 +261,7 @@ public class PIDController implements AutoCloseable {
     }
 
     /**
-     * Returns true if the error is within the tolerance of the setpoint. The error tolerance defaults
-     * to 0.05, and the error derivative tolerance defaults to ∞.
+     * Returns true if the error is within the tolerance of the setpoint.
      *
      * <p>This will return false until at least one input value has been computed.
      *
@@ -277,8 +270,8 @@ public class PIDController implements AutoCloseable {
     public boolean atSetpoint() {
         return m_haveMeasurement
                 && m_haveSetpoint
-                && Math.abs(m_error) < m_errorTolerance
-                && Math.abs(m_errorDerivative) < m_errorDerivativeTolerance;
+                && Math.abs(m_currentError) < m_errorTolerance
+                && Math.abs(m_errorRate) < m_errorRateTolerance;
     }
 
     /**
@@ -296,9 +289,7 @@ public class PIDController implements AutoCloseable {
         m_maximumInput = maximumInput;
     }
 
-    /**
-     * Disables continuous input.
-     */
+    /** Disables continuous input. */
     public void disableContinuousInput() {
         m_continuous = false;
     }
@@ -313,13 +304,13 @@ public class PIDController implements AutoCloseable {
     }
 
     /**
-     * Sets the minimum and maximum contributions of the integral term.
+     * Sets the minimum and maximum values for the integrator.
      *
-     * <p>The internal integrator is clamped so that the integral term's contribution to the output
-     * stays between minimumIntegral and maximumIntegral. This prevents integral windup.
+     * <p>When the cap is reached, the integrator value is added to the controller output rather than
+     * the integrator value times the integral gain.
      *
-     * @param minimumIntegral The minimum contribution of the integral term.
-     * @param maximumIntegral The maximum contribution of the integral term.
+     * @param minimumIntegral The minimum value of the integrator.
+     * @param maximumIntegral The maximum value of the integrator.
      */
     public void setIntegratorRange(double minimumIntegral, double maximumIntegral) {
         m_minimumIntegral = minimumIntegral;
@@ -329,39 +320,21 @@ public class PIDController implements AutoCloseable {
     /**
      * Sets the error which is considered tolerable for use with atSetpoint().
      *
-     * @param errorTolerance Error which is tolerable.
+     * @param errorTolerance error which is tolerable.
      */
     public void setTolerance(double errorTolerance) {
-        setTolerance(errorTolerance, Math.min(m_errorDerivativeTolerance, Double.POSITIVE_INFINITY));
+        setTolerance(errorTolerance, Double.POSITIVE_INFINITY);
     }
 
     /**
      * Sets the error which is considered tolerable for use with atSetpoint().
      *
-     * @param errorTolerance           Error which is tolerable.
-     * @param errorDerivativeTolerance Error derivative which is tolerable.
+     * @param errorTolerance error which is tolerable.
+     * @param errorRateTolerance error Rate which is tolerable.
      */
-    public void setTolerance(double errorTolerance, double errorDerivativeTolerance) {
+    public void setTolerance(double errorTolerance, double errorRateTolerance) {
         m_errorTolerance = errorTolerance;
-        m_errorDerivativeTolerance = errorDerivativeTolerance;
-    }
-
-    /**
-     * Returns the minimum contributions of the integral term.
-     *
-     * @return The minimum contributions of the integral term.
-     */
-    public double getMinimumIntegral() {
-        return m_minimumIntegral;
-    }
-
-    /**
-     * Returns the maximum contributions of the integral term.
-     *
-     * @return The maximum contributions of the integral term.
-     */
-    public double getMaximumIntegral() {
-        return m_maximumIntegral;
+        m_errorRateTolerance = errorRateTolerance;
     }
 
     /**
@@ -370,23 +343,31 @@ public class PIDController implements AutoCloseable {
      * @return The error.
      */
     public double getError() {
-        return m_error;
+        return m_currentError;
     }
 
     /**
-     * Returns the error derivative.
+     * Returns the error rate.
      *
-     * @return The error derivative.
+     * @return The error rate.
      */
-    public double getErrorDerivative() {
-        return m_errorDerivative;
+    public double getErrorRate() {
+        return m_errorRate;
+    }
+
+    public double getMinimumIntegral(){
+        return m_minimumIntegral;
+    }
+
+    public double getMaximumIntegral() {
+        return m_maximumIntegral;
     }
 
     /**
      * Returns the next output of the PID controller.
      *
      * @param measurement The current measurement of the process variable.
-     * @param setpoint    The new setpoint of the controller.
+     * @param setpoint The new setpoint of the controller.
      * @return The next controller output.
      */
     public double calculate(double measurement, double setpoint) {
@@ -403,75 +384,38 @@ public class PIDController implements AutoCloseable {
      */
     public double calculate(double measurement) {
         m_measurement = measurement;
-        m_prevError = m_error;
+        m_prevError = m_currentError;
         m_haveMeasurement = true;
 
         if (m_continuous) {
             double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
-            m_error = inputModulus(m_setpoint - m_measurement, -errorBound, errorBound);
+            m_currentError = MMUtils.inputModulus(m_setpoint - m_measurement, -errorBound, errorBound);
         } else {
-            m_error = m_setpoint - m_measurement;
+            m_currentError = m_setpoint - m_measurement;
         }
 
-        m_errorDerivative = (m_error - m_prevError) / m_period;
+        m_errorRate = (m_currentError - m_prevError) / m_period;
 
-        // If the absolute value of the position error is greater than IZone, reset the total error
-        if (Math.abs(m_error) > m_iZone) {
+        // If the absolute value of the error is greater than IZone, reset the total error
+        if (Math.abs(m_currentError) > m_iZone) {
             m_totalError = 0;
         } else if (m_ki != 0) {
             m_totalError =
-                    clamp(
-                            m_totalError + m_error * m_period,
+                    MMUtils.clamp(
+                            m_totalError + m_currentError * m_period,
                             m_minimumIntegral / m_ki,
                             m_maximumIntegral / m_ki);
         }
 
-        return m_kp * m_error + m_ki * m_totalError + m_kd * m_errorDerivative;
+        return m_kp * m_currentError + m_ki * m_totalError + m_kd * m_errorRate;
     }
 
-    /**
-     * Resets the previous error and the integral term.
-     */
+    /** Resets the previous error and the integral term. */
     public void reset() {
-        m_error = 0;
+        m_currentError = 0;
         m_prevError = 0;
         m_totalError = 0;
-        m_errorDerivative = 0;
+        m_errorRate = 0;
         m_haveMeasurement = false;
-    }
-
-
-    /**
-     * Returns modulus of input.
-     *
-     * @param input        Input value to wrap.
-     * @param minimumInput The minimum value expected from the input.
-     * @param maximumInput The maximum value expected from the input.
-     * @return The wrapped value.
-     */
-    public double inputModulus(double input, double minimumInput, double maximumInput) {
-        double modulus = maximumInput - minimumInput;
-
-        // Wrap input if it's above the maximum input
-        int numMax = (int) ((input - minimumInput) / modulus);
-        input -= numMax * modulus;
-
-        // Wrap input if it's below the minimum input
-        int numMin = (int) ((input - maximumInput) / modulus);
-        input -= numMin * modulus;
-
-        return input;
-    }
-
-    /**
-     * Returns value clamped between low and high boundaries.
-     *
-     * @param value Value to clamp.
-     * @param low   The lower boundary to which to clamp value.
-     * @param high  The higher boundary to which to clamp value.
-     * @return The clamped value.
-     */
-    public double clamp(double value, double low, double high) {
-        return Math.max(low, Math.min(value, high));
     }
 }

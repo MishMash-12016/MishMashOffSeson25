@@ -68,6 +68,8 @@ public abstract class MMOpMode extends LinearOpMode {
      * and {@link org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub Control & Expansion Hub} on Play Loop.
      */
     public void onPlayLoopUpdates() {
+        MMRobot.getInstance().battery.update();
+
         CommandScheduler.getInstance().run();                     //runs the scheduler
 
         MMRobot.getInstance().controlHub.pullBulkData();        //updates the controlHub sensors

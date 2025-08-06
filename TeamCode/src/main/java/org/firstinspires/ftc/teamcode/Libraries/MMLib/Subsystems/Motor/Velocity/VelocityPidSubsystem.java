@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Velocity
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.Subsystem;
 
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.FeedForwards.SimpleMotorFeedforward;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKsSysid;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKvSysid;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base.PidBaseSubsystem;
@@ -64,7 +64,7 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
 
 
                 if (feedforward != null) {
-                    feedforwardOutput = feedforward.calculate(pidController.getSetpoint());
+                    feedforwardOutput = feedforward.calculate(setPoint.getAsDouble());
                 }
                 KoalaLog.log(subsystemName + "/pid feedforward", feedforwardOutput, true);
 
@@ -116,7 +116,7 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
     private DoubleSupplier debugKiSupplier;
     private DoubleSupplier debugKdSupplier;
     private DoubleSupplier debugIZoneSupplier;
-    private DoubleSupplier debugPositionToleranceSupplier;
+    private DoubleSupplier debugAccelerationToleranceSupplier;
     private DoubleSupplier debugVelocityToleranceSupplier;
     private DoubleSupplier debugIntegralMinRangeSupplier;
     private DoubleSupplier debugIntegralMaxRangeSupplier;
@@ -132,8 +132,8 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
      * @param debugKiSupplier                Kd
      * @param debugKdSupplier                Ki
      * @param debugIZoneSupplier             iZone
-     * @param debugPositionToleranceSupplier position tolerance
      * @param debugVelocityToleranceSupplier velocity tolerance
+     * @param debugAccelerationToleranceSupplier acceleration tolerance
      * @param debugIntegralMinRangeSupplier    integral min range
      * @param debugIntegralMaxRangeSupplier    integral max range
      * @param debugKsSupplier                  static gain
@@ -145,8 +145,8 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
                                                   DoubleSupplier debugKiSupplier,
                                                   DoubleSupplier debugKdSupplier,
                                                   DoubleSupplier debugIZoneSupplier,
-                                                  DoubleSupplier debugPositionToleranceSupplier,
                                                   DoubleSupplier debugVelocityToleranceSupplier,
+                                                  DoubleSupplier debugAccelerationToleranceSupplier,
                                                   DoubleSupplier debugIntegralMinRangeSupplier,
                                                   DoubleSupplier debugIntegralMaxRangeSupplier,
                                                   DoubleSupplier debugKsSupplier,
@@ -157,8 +157,8 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
         this.debugKiSupplier = debugKiSupplier;
         this.debugKdSupplier = debugKdSupplier;
         this.debugIZoneSupplier = debugIZoneSupplier;
-        this.debugPositionToleranceSupplier = debugPositionToleranceSupplier;
         this.debugVelocityToleranceSupplier = debugVelocityToleranceSupplier;
+        this.debugAccelerationToleranceSupplier = debugAccelerationToleranceSupplier;
         this.debugIntegralMinRangeSupplier = debugIntegralMinRangeSupplier;
         this.debugIntegralMaxRangeSupplier = debugIntegralMaxRangeSupplier;
         this.debugKsSupplier = debugKsSupplier;
@@ -195,13 +195,13 @@ public class VelocityPidSubsystem extends PidBaseSubsystem {
                     pidController::setIZone
             );
             MMUtils.updateIfChanged(
-                    debugPositionToleranceSupplier,
+                    debugAccelerationToleranceSupplier,
                     pidController::getErrorTolerance,
                     this::withVelocityTolerance
             );
             MMUtils.updateIfChanged(
                     debugVelocityToleranceSupplier,
-                    pidController::getErrorDerivativeTolerance,
+                    pidController::getErrorRateTolerance,
                     this::withAccelerationTolerance
             );
 
