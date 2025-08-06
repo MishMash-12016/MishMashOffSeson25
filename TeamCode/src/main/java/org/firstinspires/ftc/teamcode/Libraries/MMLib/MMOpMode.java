@@ -59,9 +59,9 @@ public abstract class MMOpMode extends LinearOpMode {
 
     public abstract void onInit();
 
-    public abstract void onInitLoop();
+    public void onInitLoop() {}
 
-    public abstract void onPlay();
+    public void onPlay() {}
 
     /**
      * Updates the {@link CommandScheduler}, {@link org.firstinspires.ftc.robotcore.external.Telemetry Telemetry}
@@ -88,7 +88,7 @@ public abstract class MMOpMode extends LinearOpMode {
 
     public abstract void onPlayLoop();
 
-    public abstract void onEnd();
+    public void onEnd() {}
 
     /**
      * Cancels all previous commands and deletes the {@link MMRobot Robot Singleton}
