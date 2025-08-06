@@ -36,9 +36,16 @@ public class TestOpMode extends MMOpMode {
 
     boolean SpecimenIntake = false;
 
+    public static Double power = 0.0;
+
     @Override
     public void onInit() {
-        //MMDrivetrain.getInstance().enableTeleopDriveDefaultCommand();
+        MMDrivetrain.getInstance().enableTeleopDriveDefaultCommand(() -> MMRobot.getInstance().gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.05);
+
+        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
+                new InstantCommand(() -> MMDrivetrain.getInstance().resetYaw())
+        );
+
 
         MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 IntakeSampleCommend.prepareSampleIntake(
@@ -84,7 +91,11 @@ public class TestOpMode extends MMOpMode {
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.X).whenPressed(LinearIntake.getInstance().setPositionCommand(LinearIntake.linerIntakeOpen));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(LinearIntake.getInstance().setPositionCommand(LinearIntake.linerIntakeClose));
 
-        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(ElevatorSubsystem.getInstance().tuneKSCommand(0.05, 0.001));
+        ElevatorSubsystem.getInstance().setPose(0);
+
+        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(10));
+        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(0));
+
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorRightAnglePose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorLeftAnglePose));

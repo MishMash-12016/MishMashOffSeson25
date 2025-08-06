@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionPidSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionProfiledPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 import Ori.Coval.Logging.AutoLog;
@@ -18,18 +19,18 @@ import Ori.Coval.Logging.AutoLog;
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 @Config
 @AutoLog
-public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
+public class ElevatorSubsystem extends PositionPidSubsystem {
 
-    public static double KP = 0.08;
-    public static double KI = 0.001;
-    public static double KD = 0.0;
+    public static double KP = 0.5;
+    public static double KI = 8.0;
+    public static double KD = 0.01;
 
-    public static double KS = 0.1005;
-    public static double KV = 0.1;
+    public static double KS = 0.135;
+    public static double KV = 0.058702;
     public static double KA = 0.0;
 
     public static double CONSTRAINT_MAX_VELOCITY = 0.5;
-    public static double CONSTRAINT_MAX_ACCELERATION = 5.0;
+    public static double CONSTRAINT_MAX_ACCELERATION = 1;
 
     public static double I_ZONE = 0.5;
     public static double POSITION_TOLERANCE = 0.05;
@@ -39,11 +40,11 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
     public static int ZERO_POSE = 0;
 
     // Predefined elevator setpoint positions (in inches)
-    public static double ELEVATOR_HIGH_BASKET = 48.0;
+    public static double ELEVATOR_HIGH_BASKET = 10.0;
     public static double ELEVATOR_DOWN_POSITION = 0.0;
-    public static double ELEVATOR_CLIMB_HIGH_BAR = 64.0;
-    public static double ELEVATOR_ZERO = 64.0;
-    public static double ELEVATOR_CLIMB_POSITION = 40.0;
+    public static double ELEVATOR_CLIMB_HIGH_BAR = 13.0;
+    public static double ELEVATOR_ZERO = 0.0;
+    public static double ELEVATOR_CLIMB_POSITION = 5.0;
 
 
     // Singleton instance
@@ -68,7 +69,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
         MMRobot mmRobot = MMRobot.getInstance();
 
-        withEncoder(mmRobot.expansionHub,3,145.1, Direction.FORWARD);
+        withEncoder(mmRobot.expansionHub,3,145.1, Direction.REVERSE);
 
         // Four drive motors, all reversed so that “forward” is upwards
         withMotor(mmRobot.expansionHub, 0, Direction.REVERSE);
@@ -80,8 +81,6 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
         // PIDF & Constraints
         withPid(KP, KI, KD);
-        withFeedforward(KS, KV, KA);
-        withConstraints(CONSTRAINT_MAX_VELOCITY, CONSTRAINT_MAX_ACCELERATION);
         withIZone(I_ZONE);
 
         // Tolerances
@@ -95,7 +94,6 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withSetDefaultCommand(holdCurrentSetPointCommand());
 
         withDebugPidSuppliers(() -> KP, () -> KI, () -> KD, () -> I_ZONE, () -> POSITION_TOLERANCE, () -> VELOCITY_TOLERANCE,
-                null, null, () -> KS, () -> KV, () -> KA,
-                () -> CONSTRAINT_MAX_VELOCITY, () -> CONSTRAINT_MAX_ACCELERATION);
+                null, null);
     }
 }

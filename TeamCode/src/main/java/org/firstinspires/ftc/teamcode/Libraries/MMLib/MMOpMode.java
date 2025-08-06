@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
  */
 public abstract class MMOpMode extends LinearOpMode {
 
-    private final MMRobot mmRobot = MMRobot.getInstance();
+    private MMRobot mmRobot = MMRobot.getInstance();
 
     public OpModeType opModeType = null;
 
@@ -54,6 +54,7 @@ public abstract class MMOpMode extends LinearOpMode {
     }
 
     private void robotInit() {
+        mmRobot = MMRobot.getInstance();
         mmRobot.currentOpMode = this;
         MMRobot.getInstance().initializeSystems(opModeType);
         KoalaLog.setup(hardwareMap);//TODO: maybe move this
@@ -77,13 +78,14 @@ public abstract class MMOpMode extends LinearOpMode {
             MMRobot.getInstance().expansionHub.pullBulkData();  //updates the expansionHub sensors
         }
 
-        MMDrivetrain.update();
 
         telemetry.update();                                       //updates the telemetry
 
         FtcDashboard.getInstance().getTelemetry().update();       //updates the dashboard
 
         AutoLogManager.periodic();
+
+        MMDrivetrain.update();
     }
 
     public abstract void onPlayLoop();

@@ -7,6 +7,7 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.seattlesolvers.solverslib.command.CommandBase;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
@@ -14,6 +15,9 @@ import com.seattlesolvers.solverslib.pedroCommand.HoldPointCommand;
 import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
@@ -34,9 +38,9 @@ public class MMDrivetrain extends SubsystemBase {
     }
 
     public static void update(){
-        if(instance != null){
+        if(instance != null && instance.follower!=null){
             instance.follower.update();             //updates the follower
-            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard//TODO: i dont know what but this needs to be fixed
+//            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard//TODO: i dont know what but this needs to be fixed
         }
     }
 
@@ -69,13 +73,23 @@ public class MMDrivetrain extends SubsystemBase {
         return followPathCommand;
     }
 
-    public CommandBase driveCommand(double forwardDrive, double lateralDrive, double heading) {
-        return this.driveCommand(forwardDrive, lateralDrive, heading, true);
+    public CommandBase driveCommand(DoubleSupplier forwardDrive, DoubleSupplier lateralDrive, DoubleSupplier heading, BooleanSupplier slowMode) {
+        return this.driveCommand(forwardDrive, lateralDrive, heading, false, slowMode);
     }
 
-    public CommandBase driveCommand(double forwardDrive, double lateralDrive, double heading, boolean robotCentric) {
+    public CommandBase driveCommand(DoubleSupplier forwardDrive, DoubleSupplier lateralDrive, DoubleSupplier heading, boolean robotCentric, BooleanSupplier slowMode) {
         return (CommandBase) new RunCommand(() -> {
-            follower.setTeleOpMovementVectors(forwardDrive, lateralDrive, heading, robotCentric);
+
+            if (slowMode.getAsBoolean()) {
+                follower.setTeleOpMovementVectors(
+                        Math.pow(forwardDrive.getAsDouble(), 5) * 0.3,
+                        Math.pow(lateralDrive.getAsDouble(), 5) * 0.3,
+                        Math.pow(heading.getAsDouble(), 1) * 0.25,
+                        robotCentric);
+            }
+            else {
+                follower.setTeleOpMovementVectors(forwardDrive.getAsDouble(), lateralDrive.getAsDouble(), heading.getAsDouble(), robotCentric);
+            }
             follower.update();
         }, this)
                 .beforeStarting(() -> follower.startTeleopDrive());
@@ -98,12 +112,23 @@ public class MMDrivetrain extends SubsystemBase {
         return this.turnCommand(Math.toRadians(degrees), isLeft);
     }
 
+    public void resetYaw(){
+        Pose pose = follower.getPose();
+        pose.setHeading(0);
+        follower.setPose(pose);
+    }
+
     /**
      * enables the Default Command(the default command is the drive field centric command)
      */
-    public void enableTeleopDriveDefaultCommand() {
+    public void enableTeleopDriveDefaultCommand(BooleanSupplier slowMode) {
         MMRobot mmRobot = MMRobot.getInstance();
-        setDefaultCommand(driveCommand(-mmRobot.gamepadEx1.getLeftY(), -mmRobot.gamepadEx1.getLeftX(), -mmRobot.gamepadEx1.getRightX()));
+        setDefaultCommand(driveCommand(
+                ()-> mmRobot.gamepadEx1.getLeftY(),
+                ()-> -mmRobot.gamepadEx1.getLeftX(),
+                ()-> -mmRobot.gamepadEx1.getRightX(),
+                false, slowMode)
+        );
     }
 
     /**

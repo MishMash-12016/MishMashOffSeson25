@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.PIDController
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.SimpleMotorFeedforward;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
+import java.util.Base64;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -179,10 +180,12 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
         super.resetHub();
         double pose = getPose();
         if(encoder.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-            encoder = new CuttleEncoder(MMRobot.getInstance().controlHub, encoder.mPort, encoder.encTicks);
+            encoder.hub = MMRobot.getInstance().controlHub;
+            //encoder = new CuttleEncoder(MMRobot.getInstance().controlHub, encoder.mPort, encoder.encTicks);
         }
         else {
-            encoder = new CuttleEncoder(MMRobot.getInstance().expansionHub, encoder.mPort, encoder.encTicks);
+            encoder.hub = MMRobot.getInstance().expansionHub;
+            //encoder = new CuttleEncoder(MMRobot.getInstance().expansionHub, encoder.mPort, encoder.encTicks);
         }
         setPose(pose);
     }
