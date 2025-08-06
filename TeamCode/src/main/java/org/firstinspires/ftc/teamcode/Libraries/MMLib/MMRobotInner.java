@@ -8,6 +8,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.MMSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBattery;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMBatteryAutoLogged;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
 
@@ -93,6 +94,6 @@ public class MMRobotInner extends Robot {
         if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
             expansionHub = new CuttleRevHub(hardwareMap, expansionHubName);
         }
-        battery = new MMBattery(hardwareMap);
+        battery = new MMBatteryAutoLogged(hardwareMap);
     }
 }

@@ -68,7 +68,7 @@ public class CuttleMotor {
      */
     private double voltageCompensate(double uncompensatedPower) {
         // 1) Read the raw battery voltage once per loop
-        double rawVoltage = MMRobot.getInstance().battery.getVoltage();
+        double rawVoltage = MMRobot.getInstance().battery.getFilteredVoltage();
 
         // 2) Initialize filteredVoltage on first call (if still 0.0).
         //    You could also set filteredVoltage = hub.getBatteryVoltage() in init().
