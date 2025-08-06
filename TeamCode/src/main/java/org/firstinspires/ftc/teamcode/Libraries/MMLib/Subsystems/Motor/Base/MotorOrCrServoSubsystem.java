@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMMotorOrCrServo;
 import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.ArrayList;
 
+import Ori.Coval.Logging.AutoLogOutput;
 import Ori.Coval.Logging.Logger.KoalaLog;
 
 
@@ -73,8 +74,6 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
      * is installed, as this method does not manage command requirements.</p>
      */
     public void setPower(double power) {
-        KoalaLog.log(subsystemName + "/power: ", power, true);
-
         if (power > maxPower) {
             power = maxPower;
         } else if (power < minPower) {
@@ -114,6 +113,7 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
         return this;
     }
 
+    @AutoLogOutput
     public double getPower(){
         return motorOrCrServoList.get(0).getPower();
     }

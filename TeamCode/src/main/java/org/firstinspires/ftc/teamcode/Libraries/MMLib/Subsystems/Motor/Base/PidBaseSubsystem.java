@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import Ori.Coval.Logging.AutoLogOutput;
 import Ori.Coval.Logging.Logger.KoalaLog;
 
 
@@ -57,7 +58,7 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      * @return a Command requiring this subsystem
      */
     public Command getToSetpointCommand(double setPoint) {
-        return getToAndHoldSetPointCommand(()->setPoint).interruptOn(()->KoalaLog.log(subsystemName + "/atSetpoint", pidController.atSetpoint(), true));
+        return getToAndHoldSetPointCommand(()->setPoint).interruptOn(this::getAtSetpoint);
     }
 
     /**
@@ -74,12 +75,29 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
      *
      * @return current pose in encoder units (divided by ratio)
      */
+    @AutoLogOutput
     public double getPose() {
-        return KoalaLog.log(subsystemName + "/pose", encoder.getPose(), true);
+        return encoder.getPose();
     }
 
+    @AutoLogOutput
     public double getVelocity() {
-        return KoalaLog.log(subsystemName + "/velocity", encoder.getVelocity(), true);
+        return encoder.getVelocity();
+    }
+
+    @AutoLogOutput
+    public boolean getAtSetpoint(){
+        return pidController.atSetpoint();
+    }
+
+    @AutoLogOutput
+    public double getError(){
+        return pidController.getError();
+    }
+
+    @AutoLogOutput
+    public double getSetPoint(){
+        return pidController.getSetpoint();
     }
 
     public void setPose(double pose) {
@@ -179,10 +197,10 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
         super.resetHub();
         double pose = getPose();
         if(encoder.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-            encoder = new CuttleEncoder(MMRobot.getInstance().controlHub, encoder.mPort, encoder.encTicks);
+            encoder.hub = MMRobot.getInstance().controlHub;
         }
         else {
-            encoder = new CuttleEncoder(MMRobot.getInstance().expansionHub, encoder.mPort, encoder.encTicks);
+            encoder.hub = MMRobot.getInstance().expansionHub;
         }
         setPose(pose);
     }

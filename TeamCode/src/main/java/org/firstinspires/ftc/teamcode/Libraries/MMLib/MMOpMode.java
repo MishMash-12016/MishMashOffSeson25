@@ -34,8 +34,6 @@ import org.firstinspires.ftc.teamcode.MMRobot;
  */
 public abstract class MMOpMode extends LinearOpMode {
 
-    private final MMRobot mmRobot = MMRobot.getInstance();
-
     public OpModeType opModeType = null;
 
     public AllianceColor allianceColor;
@@ -54,7 +52,7 @@ public abstract class MMOpMode extends LinearOpMode {
     }
 
     private void robotInit() {
-        mmRobot.currentOpMode = this;
+        MMRobot.getInstance().currentOpMode = this;
         MMRobot.getInstance().initializeSystems(opModeType);
         KoalaLog.setup(hardwareMap);//TODO: maybe move this
     }
