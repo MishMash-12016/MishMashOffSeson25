@@ -25,6 +25,9 @@ public class MMRobotInner extends Robot {
 
     public ArrayList<MMSubsystem> subsystems = new ArrayList<>();
 
+    public String controlHubName = "Control Hub";
+    public String expansionHubName = "Expansion Hub";
+
     private static MMRobot instance;
 
     public static synchronized MMRobot getInstance() {
@@ -73,14 +76,22 @@ public class MMRobotInner extends Robot {
         }
     }
 
+    public void setControlHubName(String controlHubName) {
+        this.controlHubName = controlHubName;
+    }
+
+    public void setExpansionHubName(String expansionHubName) {
+        this.expansionHubName = expansionHubName;
+    }
+
     private void initBasics() {
         HardwareMap hardwareMap = MMRobot.getInstance().currentOpMode.hardwareMap;
         gamepadEx1 = new GamepadEx(MMRobot.getInstance().currentOpMode.gamepad1);
         gamepadEx2 = new GamepadEx(MMRobot.getInstance().currentOpMode.gamepad2);
 
-        controlHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.CONTROL_HUB);
+        controlHub = new CuttleRevHub(hardwareMap, controlHubName);
         if (MMRobot.getInstance().currentOpMode.opModeType != OpModeType.NonCompetition.EXPERIMENTING_NO_EXPANSION) {
-            expansionHub = new CuttleRevHub(hardwareMap, CuttleRevHub.HubTypes.EXPANSION_HUB);
+            expansionHub = new CuttleRevHub(hardwareMap, expansionHubName);
         }
         battery = new MMBattery(hardwareMap);
     }

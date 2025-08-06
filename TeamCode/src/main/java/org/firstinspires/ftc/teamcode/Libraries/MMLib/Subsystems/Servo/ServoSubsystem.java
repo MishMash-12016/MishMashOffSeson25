@@ -126,7 +126,7 @@ public class ServoSubsystem extends MMSubsystem {
             } else {
                 setPosition(defaultPosition);
             }
-        });
+        }, this);
     }
 
     /**
@@ -185,20 +185,15 @@ public class ServoSubsystem extends MMSubsystem {
 
     @Override
     public void resetHub(){
-
-        ArrayList<CuttleServo> tempList = new ArrayList<>();
         for(CuttleServo servo : servoList){
             if(servo.getFtcServo()){
-                tempList.add(new CuttleServo(MMRobot.getInstance().currentOpMode.hardwareMap, servo.getServoName()));
 
-            } else if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-                tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port));
+            } else if(servo.hub != null && servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                servo.hub = MMRobot.getInstance().controlHub;
             }
-            else {
-                tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port));
+            else if(servo.hub != null && servo.hub.getHubName().equals(MMRobot.getInstance().expansionHub.getHubName())){
+                servo.hub = MMRobot.getInstance().expansionHub;
             }
         }
-
-        servoList = tempList;
     }
 }
