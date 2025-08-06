@@ -4,6 +4,11 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMRobotInner;
 
 public class MMRobot extends MMRobotInner {
 
+    public MMRobot(){
+        setControlHubName("Control Hub");
+        setExpansionHubName("Expansion Hub");
+    }
+
     @Override
     public void initAuto() {
         super.initAuto();
