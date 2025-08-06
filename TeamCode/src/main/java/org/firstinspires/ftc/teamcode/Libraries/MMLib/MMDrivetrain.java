@@ -15,8 +15,16 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
+
+    public double slowModeRatioForward = 0.3;
+    public double slowModeRatioLateral = 0.3;
+    public double slowModeRatioRotation = 0.25;
+
 
     public static MMDrivetrain instance;
 
@@ -33,10 +41,10 @@ public class MMDrivetrain extends SubsystemBase {
         }
     }
 
-    public static void update(){
+    public static void update(){//TODO: fix telemetry debug crush bug
         if(instance != null){
             instance.follower.update();             //updates the follower
-            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
+//            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
         }
     }
 
@@ -69,16 +77,31 @@ public class MMDrivetrain extends SubsystemBase {
         return followPathCommand;
     }
 
-    public CommandBase driveCommand(double forwardDrive, double lateralDrive, double heading) {
-        return this.driveCommand(forwardDrive, lateralDrive, heading, true);
+    public CommandBase driveCommand(DoubleSupplier forwardDrive, DoubleSupplier lateralDrive, DoubleSupplier heading, BooleanSupplier slowMode) {
+        return this.driveCommand(forwardDrive, lateralDrive, heading, false, slowMode);
     }
 
-    public CommandBase driveCommand(double forwardDrive, double lateralDrive, double heading, boolean robotCentric) {
+    public CommandBase driveCommand(DoubleSupplier forwardDrive, DoubleSupplier lateralDrive, DoubleSupplier heading, boolean robotCentric, BooleanSupplier slowMode) {
         return (CommandBase) new RunCommand(() -> {
-            follower.setTeleOpMovementVectors(forwardDrive, lateralDrive, heading, robotCentric);
+
+            if (slowMode.getAsBoolean()) {
+                follower.setTeleOpMovementVectors(//TODO: add variables for the math.pow
+                        Math.pow(forwardDrive.getAsDouble(), 5) * slowModeRatioForward,
+                        Math.pow(lateralDrive.getAsDouble(), 5) * slowModeRatioLateral,
+                        Math.pow(heading.getAsDouble(), 1) * slowModeRatioRotation,
+                        robotCentric);
+            }
+            else {
+                //TODO: add math.pow with variables
+                follower.setTeleOpMovementVectors(forwardDrive.getAsDouble(), lateralDrive.getAsDouble(), heading.getAsDouble(), robotCentric);
+            }
+
             follower.update();
         }, this)
-                .beforeStarting(() -> follower.startTeleopDrive());
+                .beforeStarting(() -> {
+                    follower.startTeleopDrive();
+                    follower.setMaxPower(2);//TODO:testing to see if this works and if it is the right way to do this
+                }).whenFinished(()-> follower.setMaxPower(1));
     }
 
     public CommandBase turnCommand(double radians, boolean isLeft) {
@@ -98,12 +121,23 @@ public class MMDrivetrain extends SubsystemBase {
         return this.turnCommand(Math.toRadians(degrees), isLeft);
     }
 
+    public void resetYaw(){
+        Pose pose = follower.getPose();
+        pose.setHeading(0);
+        follower.setPose(pose);
+    }
+
     /**
      * enables the Default Command(the default command is the drive field centric command)
      */
-    public void enableTeleopDriveDefaultCommand() {
+    public void enableTeleopDriveDefaultCommand(BooleanSupplier slowMode) {
         MMRobot mmRobot = MMRobot.getInstance();
-        setDefaultCommand(driveCommand(-mmRobot.gamepadEx1.getLeftY(), -mmRobot.gamepadEx1.getLeftX(), -mmRobot.gamepadEx1.getRightX()));
+        setDefaultCommand(driveCommand(
+                ()-> mmRobot.gamepadEx1.getLeftY(),
+                ()-> -mmRobot.gamepadEx1.getLeftX(),
+                ()-> -mmRobot.gamepadEx1.getRightX(),
+                false, slowMode)
+        );
     }
 
     /**
@@ -111,5 +145,15 @@ public class MMDrivetrain extends SubsystemBase {
      */
     public void disableTeleopDriveDefaultCommand() {
         setDefaultCommand(new RunCommand(()->{}, this));
+    }
+
+    public void setSlowModeRatioForward(double slowModeRatioForward) {
+        this.slowModeRatioForward = slowModeRatioForward;
+    }
+    public void setSlowModeRatioLateral(double slowModeRatioLateral) {
+        this.slowModeRatioLateral = slowModeRatioLateral;
+    }
+    public void setSlowModeRatioRotation(double slowModeRatioRotation) {
+        this.slowModeRatioRotation = slowModeRatioRotation;
     }
 }

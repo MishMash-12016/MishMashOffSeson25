@@ -254,6 +254,7 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
         if (MMRobot.getInstance().currentOpMode != null &&
                 MMRobot.getInstance().currentOpMode.opModeType == OpModeType.NonCompetition.DEBUG) {
 
