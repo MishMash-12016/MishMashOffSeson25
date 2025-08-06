@@ -93,7 +93,7 @@ public abstract class MMOpMode extends LinearOpMode {
     /**
      * Cancels all previous commands and deletes the {@link MMRobot Robot Singleton}
      */
-    public void reset() {
+    public void reset() {//TODO: wait for solvers to accept the pr to fix cancelAll than change to it
         CommandScheduler.getInstance().reset();
 //        CommandScheduler.getInstance().cancelAll();
     }
