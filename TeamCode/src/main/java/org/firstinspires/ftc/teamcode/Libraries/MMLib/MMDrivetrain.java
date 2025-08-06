@@ -45,7 +45,7 @@ public class MMDrivetrain extends SubsystemBase {
         if(instance != null){
             instance.follower.update();             //updates the follower
 
-            if(instance.follower.poseUpdater != null) {
+            if(instance.follower.getCurrentPath() != null) {
                 instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
             }
         }
@@ -142,6 +142,10 @@ public class MMDrivetrain extends SubsystemBase {
                 ()-> -mmRobot.gamepadEx1.getRightX(),
                 false, slowMode)
         );
+    }
+
+    public void setPose(double x, double y, double heading){
+        follower.setPose(new Pose(x, y, heading));
     }
 
     /**
