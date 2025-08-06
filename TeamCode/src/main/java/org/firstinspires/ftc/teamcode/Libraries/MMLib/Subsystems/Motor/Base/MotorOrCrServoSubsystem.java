@@ -74,8 +74,6 @@ public class MotorOrCrServoSubsystem extends MMSubsystem {
      * is installed, as this method does not manage command requirements.</p>
      */
     public void setPower(double power) {
-        KoalaLog.log(subsystemName + "/power: ", power, true);
-
         if (power > maxPower) {
             power = maxPower;
         } else if (power < minPower) {

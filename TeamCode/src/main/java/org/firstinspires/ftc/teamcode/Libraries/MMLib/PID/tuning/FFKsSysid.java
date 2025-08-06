@@ -51,7 +51,7 @@ public class FFKsSysid extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return KoalaLog.log("velocity",velocitySupplier.getAsDouble(), true) >= minVelocity;
+        return KoalaLog.log(" sysid ks velocity",velocitySupplier.getAsDouble(), true) >= minVelocity;
     }
 
     @Override

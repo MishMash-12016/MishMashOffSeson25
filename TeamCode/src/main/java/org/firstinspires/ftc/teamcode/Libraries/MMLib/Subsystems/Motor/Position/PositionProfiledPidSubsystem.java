@@ -54,10 +54,9 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
                 if (feedforward != null) {
                     feedforwardOutput = feedforward.calculate(((ProfiledPIDController) pidController).getCurrentSetpointState().velocity);
                 }
-                KoalaLog.log(subsystemName + "/pid feedforward for real", feedforwardOutput, true);
-                KoalaLog.log(subsystemName + "/pid output for real", pidController.calculate(getPose()), true);
+                KoalaLog.log(subsystemName + "/pid feedforward", feedforwardOutput, true);
 
-                setPower(KoalaLog.log("applied pid power", pidOutput + feedforwardOutput, true));// apply computed power
+                setPower(pidOutput + feedforwardOutput);// apply computed power
             }
 
             @Override
@@ -252,10 +251,10 @@ public class PositionProfiledPidSubsystem extends PidBaseSubsystem {
         return this;
     }
 
-    @Override
-    public void periodic() {//TODO: unfuck
-        super.periodic();
 
+    @Override
+    public void periodic() {
+        super.periodic();
         if (MMRobot.getInstance().currentOpMode != null &&
                 MMRobot.getInstance().currentOpMode.opModeType == OpModeType.NonCompetition.DEBUG) {
 

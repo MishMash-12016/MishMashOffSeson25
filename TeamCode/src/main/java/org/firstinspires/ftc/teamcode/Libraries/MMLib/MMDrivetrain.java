@@ -7,7 +7,6 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.seattlesolvers.solverslib.command.CommandBase;
-import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
@@ -21,6 +20,11 @@ import java.util.function.DoubleSupplier;
 
 public class MMDrivetrain extends SubsystemBase {
     public Follower follower;
+
+    public double slowModeRatioForward = 0.3;
+    public double slowModeRatioLateral = 0.3;
+    public double slowModeRatioRotation = 0.25;
+
 
     public static MMDrivetrain instance;
 
@@ -37,10 +41,10 @@ public class MMDrivetrain extends SubsystemBase {
         }
     }
 
-    public static void update(){
-        if(instance != null && instance.follower!=null){
+    public static void update(){//TODO: fix telemetry debug crush bug
+        if(instance != null){
             instance.follower.update();             //updates the follower
-//            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard//TODO: i dont know what but this needs to be fixed
+//            instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
         }
     }
 
@@ -81,18 +85,23 @@ public class MMDrivetrain extends SubsystemBase {
         return (CommandBase) new RunCommand(() -> {
 
             if (slowMode.getAsBoolean()) {
-                follower.setTeleOpMovementVectors(
-                        Math.pow(forwardDrive.getAsDouble(), 5) * 0.3,
-                        Math.pow(lateralDrive.getAsDouble(), 5) * 0.3,
-                        Math.pow(heading.getAsDouble(), 1) * 0.25,
+                follower.setTeleOpMovementVectors(//TODO: add variables for the math.pow
+                        Math.pow(forwardDrive.getAsDouble(), 5) * slowModeRatioForward,
+                        Math.pow(lateralDrive.getAsDouble(), 5) * slowModeRatioLateral,
+                        Math.pow(heading.getAsDouble(), 1) * slowModeRatioRotation,
                         robotCentric);
             }
             else {
+                //TODO: add math.pow with variables
                 follower.setTeleOpMovementVectors(forwardDrive.getAsDouble(), lateralDrive.getAsDouble(), heading.getAsDouble(), robotCentric);
             }
+
             follower.update();
         }, this)
-                .beforeStarting(() -> follower.startTeleopDrive());
+                .beforeStarting(() -> {
+                    follower.startTeleopDrive();
+                    follower.setMaxPower(2);//TODO:testing to see if this works and if it is the right way to do this
+                }).whenFinished(()-> follower.setMaxPower(1));
     }
 
     public CommandBase turnCommand(double radians, boolean isLeft) {
@@ -136,5 +145,15 @@ public class MMDrivetrain extends SubsystemBase {
      */
     public void disableTeleopDriveDefaultCommand() {
         setDefaultCommand(new RunCommand(()->{}, this));
+    }
+
+    public void setSlowModeRatioForward(double slowModeRatioForward) {
+        this.slowModeRatioForward = slowModeRatioForward;
+    }
+    public void setSlowModeRatioLateral(double slowModeRatioLateral) {
+        this.slowModeRatioLateral = slowModeRatioLateral;
+    }
+    public void setSlowModeRatioRotation(double slowModeRatioRotation) {
+        this.slowModeRatioRotation = slowModeRatioRotation;
     }
 }
