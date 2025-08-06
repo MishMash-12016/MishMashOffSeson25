@@ -11,9 +11,10 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.seattlesolvers.solverslib.pedroCommand.HoldPointCommand;
-import org.firstinspires.ftc.teamcode.MMRobot;
+
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.Libraries.pedroPathing.pedroPathing.constants.LConstants;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -45,7 +46,7 @@ public class MMDrivetrain extends SubsystemBase {
         if(instance != null){
             instance.follower.update();             //updates the follower
 
-            if(instance.follower.getClosestPose() != null) {
+            if(instance.follower.getCurrentPath() != null) {
                 instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
             }
         }
@@ -142,6 +143,10 @@ public class MMDrivetrain extends SubsystemBase {
                 ()-> -mmRobot.gamepadEx1.getRightX(),
                 false, slowMode)
         );
+    }
+
+    public void setPose(double x, double y, double heading){
+        follower.setPose(new Pose(x, y, heading));
     }
 
     /**

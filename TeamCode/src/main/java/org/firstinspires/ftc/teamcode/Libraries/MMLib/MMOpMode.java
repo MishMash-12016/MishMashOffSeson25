@@ -7,10 +7,10 @@ import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 
-
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceColor;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.AllianceSide;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
+import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +18,6 @@ import java.util.List;
 
 import Ori.Coval.Logging.AutoLogManager;
 import Ori.Coval.Logging.Logger.KoalaLog;
-
-import org.firstinspires.ftc.teamcode.MMRobot;
 
 
 /**
@@ -59,9 +57,9 @@ public abstract class MMOpMode extends LinearOpMode {
 
     public abstract void onInit();
 
-    public abstract void onInitLoop();
+    public void onInitLoop() {}
 
-    public abstract void onPlay();
+    public void onPlay() {}
 
     /**
      * Updates the {@link CommandScheduler}, {@link org.firstinspires.ftc.robotcore.external.Telemetry Telemetry}
@@ -88,12 +86,12 @@ public abstract class MMOpMode extends LinearOpMode {
 
     public abstract void onPlayLoop();
 
-    public abstract void onEnd();
+    public void onEnd() {}
 
     /**
      * Cancels all previous commands and deletes the {@link MMRobot Robot Singleton}
      */
-    public void reset() {
+    public void reset() {//TODO: wait for solvers to accept the pr to fix cancelAll than change to it
         CommandScheduler.getInstance().reset();
 //        CommandScheduler.getInstance().cancelAll();
     }

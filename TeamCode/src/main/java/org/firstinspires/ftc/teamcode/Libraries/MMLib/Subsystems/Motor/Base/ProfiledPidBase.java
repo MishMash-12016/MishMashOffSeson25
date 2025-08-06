@@ -17,7 +17,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import Ori.Coval.Logging.AutoLogOutput;
-import Ori.Coval.Logging.Logger.KoalaLog;
 
 
 public class ProfiledPidBase extends MotorOrCrServoSubsystem {
@@ -75,11 +74,6 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
         return this;
     }
 
-    public ProfiledPidBase withZeroSwitch(CuttleDigital zeroSwitch) {
-        withZeroSwitch(zeroSwitch, 0);
-        return this;
-    }
-
     /**
      * Configures a zero-position limit switch that resets encoder when activated.
      *
@@ -90,6 +84,11 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
     public ProfiledPidBase withZeroSwitch(CuttleDigital zeroSwitch, double zeroPose) {
         new Trigger(zeroSwitch::getState)
                 .whenActive(() -> encoder.setPose(zeroPose));
+        return this;
+    }
+
+    public ProfiledPidBase withZeroSwitch(CuttleDigital zeroSwitch) {
+        withZeroSwitch(zeroSwitch, 0);
         return this;
     }
 

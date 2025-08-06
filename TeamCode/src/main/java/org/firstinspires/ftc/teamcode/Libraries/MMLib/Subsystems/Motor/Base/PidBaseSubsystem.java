@@ -122,6 +122,11 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
         return this;
     }
 
+    public PidBaseSubsystem withZeroSwitch(CuttleDigital zeroSwitch) {
+        withZeroSwitch(zeroSwitch, 0);
+        return this;
+    }
+
     /**
      * Configures a zero-position limit switch that resets encoder when activated.
      *
