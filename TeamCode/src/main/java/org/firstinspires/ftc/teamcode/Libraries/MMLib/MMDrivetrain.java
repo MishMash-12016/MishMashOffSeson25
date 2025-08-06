@@ -45,7 +45,7 @@ public class MMDrivetrain extends SubsystemBase {
         if(instance != null){
             instance.follower.update();             //updates the follower
 
-            if(instance.follower.poseUpdater != null) {
+            if(instance.follower.getClosestPose() != null) {
                 instance.follower.telemetryDebug(FtcDashboard.getInstance().getTelemetry());//puts pedro data(robot pose, speed..) on the FtcDashboard
             }
         }
