@@ -16,9 +16,8 @@ public class IntakeArm extends ServoSubsystem {
     public static double intakeArmSpecimenIntake = 0.28;
     public static double intakeArmTransferSample = 0.11;
     public static double intakeArmInit = 0.13;
+
     private static IntakeArm instance;
-
-
     public static synchronized IntakeArm getInstance() {
         if (instance == null) {
             instance = new IntakeArmAutoLogged();

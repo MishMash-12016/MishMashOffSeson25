@@ -27,7 +27,7 @@ public class MMRobotInner extends Robot {
     public ArrayList<MMSubsystem> subsystems = new ArrayList<>();
 
     public String controlHubName = "Control Hub";
-    public String expansionHubName = "Expansion Hub";
+    public String expansionHubName = "Expansion Hub 1";
 
     private static MMRobot instance;
 

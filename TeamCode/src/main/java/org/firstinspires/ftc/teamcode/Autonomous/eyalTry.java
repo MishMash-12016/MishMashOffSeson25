@@ -8,12 +8,22 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMRobotInner;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeClaw;
+import org.firstinspires.ftc.teamcode.Subsystems.LinearIntake;
+import org.firstinspires.ftc.teamcode.Subsystems.ScoringArm;
+import org.firstinspires.ftc.teamcode.Subsystems.ScoringClaw;
+import org.firstinspires.ftc.teamcode.Subsystems.ScoringElbow;
 
 import java.util.ArrayList;
 
@@ -22,48 +32,50 @@ import Ori.Coval.Logging.AutoLog;
 @Autonomous
 @Config
 @AutoLog
-public class eyalTry extends CommandOpMode {
-    Follower follower = MMDrivetrain.getInstance().follower;
-    public static double RADIUS = 10;
+public class eyalTry extends MMOpMode {
+    Follower follower;
+    public static double RADIUS = 4;
     PathChain fullPath = new PathChain(
-            new Path(new BezierCurve(new Point(0,0, Point.CARTESIAN), new Point(RADIUS,0, Point.CARTESIAN), new Point(RADIUS, RADIUS, Point.CARTESIAN))),
-            new Path(new BezierCurve(new Point(RADIUS, RADIUS, Point.CARTESIAN), new Point(RADIUS,2*RADIUS, Point.CARTESIAN), new Point(0,2*RADIUS, Point.CARTESIAN))),
-            new Path(new BezierCurve(new Point(0,2*RADIUS, Point.CARTESIAN), new Point(-RADIUS,2*RADIUS, Point.CARTESIAN), new Point(-RADIUS, RADIUS, Point.CARTESIAN))),
-            new Path(new BezierCurve(new Point(-RADIUS, RADIUS, Point.CARTESIAN), new Point(-RADIUS,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)))
+            new Path(new BezierCurve(new Point(0,0, Point.CARTESIAN), new Point(0,10, Point.CARTESIAN)))
     );
-//    Path path1 = new Path(
-//            new BezierCurve(new Point(0,0, Point.CARTESIAN), new Point(RADIUS,0, Point.CARTESIAN), new Point(RADIUS, RADIUS, Point.CARTESIAN))
-//    );
-//    Path path2 = new Path(
-//            new BezierCurve(new Point(RADIUS, RADIUS, Point.CARTESIAN), new Point(RADIUS,2*RADIUS, Point.CARTESIAN), new Point(0,2*RADIUS, Point.CARTESIAN))
-//    );
-//    Path path3 = new Path(
-//            new BezierCurve(new Point(0,2*RADIUS, Point.CARTESIAN), new Point(-RADIUS,2*RADIUS, Point.CARTESIAN), new Point(-RADIUS, RADIUS, Point.CARTESIAN))
-//    );
-//    Path path4 = new Path(
-//            new BezierCurve(new Point(-RADIUS, RADIUS, Point.CARTESIAN), new Point(-RADIUS,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN))
-//    );
-    @Override
-    public void initialize() {
-        super.reset();
 
-
-        schedule(
-                // Updates follower to follow path
-                new RunCommand(() -> follower.update()),
-
-//                new FollowPathCommand(follower, path1),
-//                new FollowPathCommand(follower, path2),
-//                new FollowPathCommand(follower, path3),
-//                new FollowPathCommand(follower, path4)
-
-                new FollowPathCommand(follower, fullPath)
-                );
+    public eyalTry() {
+        super(OpModeType.NonCompetition.DEBUG);
     }
 
     @Override
-    public void run() {
-        super.run();
+    public void onInit() {
+        super.reset();
+        follower = MMDrivetrain.getInstance().follower;
+
+        //set default values to systems
+        LinearIntake.getInstance().setPosition(LinearIntake.linerIntakeClose);
+        IntakeArm.getInstance().setPosition(IntakeArm.intakeArmInit);
+
+        addCommandsOnRun(
+                ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowInitPose),
+                ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmInitPose),
+                MMDrivetrain.getInstance().followPathCommand(fullPath)
+
+        );
+    }
+
+    @Override
+    public void onInitLoop() {
+
+    }
+
+    @Override
+    public void onPlay() {
+    }
+
+    @Override
+    public void onPlayLoop() {
+
+    }
+
+    @Override
+    public void onEnd() {
 
     }
 }
