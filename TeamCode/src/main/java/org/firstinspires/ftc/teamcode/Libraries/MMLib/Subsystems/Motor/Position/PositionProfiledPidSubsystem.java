@@ -42,6 +42,10 @@ public class PositionProfiledPidSubsystem extends ProfiledPidBase {
                         profiledPIDController.calculate(getPose(), setPoint.getAsDouble()),
                         true);
 
+                KoalaLog.log(subsystemName + "/target velocity",
+                        profiledPIDController.getSetpoint().velocity,
+                        true);
+
                 double feedforwardOutput = KoalaLog.log(
                         subsystemName + "/feedforward output",
                         feedforward.calculate(profiledPIDController.getSetpoint().velocity),
