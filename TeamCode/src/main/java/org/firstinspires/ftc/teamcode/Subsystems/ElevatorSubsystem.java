@@ -5,10 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.Controllers.ProfiledPIDController;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKsSysid;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base.ProfiledPidBase;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionPidSubsystem;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.FeedForwards.FeedForwardType;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position.PositionProfiledPidSubsystem;
 import org.firstinspires.ftc.teamcode.MMRobot;
 import Ori.Coval.Logging.AutoLog;
@@ -24,20 +21,18 @@ import Ori.Coval.Logging.AutoLog;
 @AutoLog
 public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
-    public static double KP = 0.5;
-    public static double KI = 8.0;
-    public static double KD = 0.01;
+    public static double KP = 0.08;
+    public static double KI = 0.0;
+    public static double KD = 0.0;
 
-    public static double KS = 0.135;
-    public static double KV = 0.058702;
-    public static double KA = 0.0;
+    public static double KS = 0.045;
+    public static double KG = 0.1;
+    public static double KV = 0.047;
+    public static double KA = 0.1;
 
-    public static double CONSTRAINT_MAX_VELOCITY = 0.5;
-    public static double CONSTRAINT_MAX_ACCELERATION = 1;
-
-    public static double I_ZONE = 0.5;
+    public static double CONSTRAINT_MAX_VELOCITY = 15;
+    public static double CONSTRAINT_MAX_ACCELERATION = 100;
     public static double POSITION_TOLERANCE = 0.05;
-    public static double VELOCITY_TOLERANCE = 0.0;
 
     public static int ZERO_SWITCH_PORT = 0;
     public static int ZERO_POSE = 0;
@@ -84,19 +79,17 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        // PIDF & Constraints
+        // PID & Constraints
         withPid(KP, KI, KD);
-        withIZone(I_ZONE);
 
         // Tolerances
-        withPositionTolerance(POSITION_TOLERANCE);
-        withVelocityTolerance(VELOCITY_TOLERANCE);
+        withTolerance(POSITION_TOLERANCE);
 
         withConstraints(CONSTRAINT_MAX_VELOCITY,CONSTRAINT_MAX_ACCELERATION);
-        withFeedforward(KS,KV,KA);
+        withFeedforward(FeedForwardType.ELEVATOR, KS,KG,KV,KA);
 
         // Zeroing limit switch on encoder
-        withZeroSwitch(new CuttleDigital(mmRobot.controlHub, ZERO_SWITCH_PORT), ZERO_POSE);
+        withZeroSwitch(new CuttleDigital(mmRobot.expansionHub, ZERO_SWITCH_PORT), ZERO_POSE);
 
         // By default, hold whatever setpoint we’re at
         withSetDefaultCommand(holdCurrentSetPointCommand());
@@ -106,12 +99,9 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
                 ()-> KP,
                 ()->KI,
                 ()->KD,
-                ()->I_ZONE,
                 ()->POSITION_TOLERANCE,
-                ()->VELOCITY_TOLERANCE,
-                null,
-                null,
                 ()->KS,
+                ()->KG,
                 ()->KV,
                 ()->KA,
                 ()->CONSTRAINT_MAX_VELOCITY,
