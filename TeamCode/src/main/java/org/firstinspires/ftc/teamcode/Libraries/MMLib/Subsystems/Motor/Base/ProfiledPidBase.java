@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base;
 
 import com.seattlesolvers.solverslib.command.button.Trigger;
+import com.seattlesolvers.solverslib.controller.wpilibcontroller.ProfiledPIDController;
+import com.seattlesolvers.solverslib.trajectory.TrapezoidProfile;
 
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleDigital;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleEncoder;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.Controllers.ProfiledPIDController;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.FeedForwards.SimpleMotorFeedforward;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.TrapezoidProfile;
+
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
@@ -20,6 +21,10 @@ import Ori.Coval.Logging.AutoLogOutput;
 
 
 public class ProfiledPidBase extends MotorOrCrServoSubsystem {
+    private double positionTolarence = 0;
+    private double maxAcceleration = 0;
+    private double maxVelocity = 0;
+
     // Encoder that measures current position and velocity (ticks converted via ratio)
     private CuttleEncoder encoder;
     public ProfiledPIDController profiledPIDController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(0,0));
@@ -62,7 +67,7 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
 
     @AutoLogOutput
     public double getSetPoint(){
-        return profiledPIDController.getSetpoint();
+        return profiledPIDController.getGoal().position;
     }
 
     public void setPose(double pose) {
@@ -116,50 +121,6 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
     public ProfiledPidBase withPid(double kp, double ki, double kd) {
         profiledPIDController.setPID(kp, ki, kd);
         return this;
-    }
-
-
-    /**
-     * Defines the Integral Zone (I-Zone) for the PID controller.
-     *
-     * @param iZone range around setpoint where integral is active
-     * @return this subsystem for chaining
-     */
-    public ProfiledPidBase withIZone(double iZone) {
-        profiledPIDController.setIZone(iZone);
-        return this;
-    }
-
-    /**
-     * Restricts the integral accumulator within given bounds.
-     *
-     * @param minIntegralRange minimum accumulator value
-     * @param maxIntegralRange maximum accumulator value
-     * @return this subsystem for chaining
-     */
-    public ProfiledPidBase withIntegralRange(double minIntegralRange, double maxIntegralRange) {
-        profiledPIDController.setIntegratorRange(minIntegralRange, maxIntegralRange);
-        return this;
-    }
-
-    /**
-     * Restricts the integral accumulator within given bounds.
-     *
-     * @param minIntegralRange minimum accumulator value
-     * @return this subsystem for chaining
-     */
-    public ProfiledPidBase withMinIntegralRange(double minIntegralRange) {
-        return withIntegralRange(minIntegralRange, profiledPIDController.getMinimumIntegral());
-    }
-
-    /**
-     * Restricts the integral accumulator within given bounds.
-     *
-     * @param maxIntegralRange minimum accumulator value
-     * @return this subsystem for chaining
-     */
-    public ProfiledPidBase withMaxIntegralRange(double maxIntegralRange) {
-        return withIntegralRange(profiledPIDController.getMinimumIntegral(), maxIntegralRange);
     }
 
     /**
@@ -224,7 +185,8 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
      */
     public ProfiledPidBase withMaxVelocityConstraint(double maxVelocity) {
         profiledPIDController
-                .setConstraints(new TrapezoidProfile.Constraints(maxVelocity, profiledPIDController.getConstraints().maxAcceleration));
+                .setConstraints(new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+        this.maxVelocity = maxVelocity;
         return this;
     }
 
@@ -236,7 +198,8 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
      */
     public ProfiledPidBase withMaxAccelerationConstraint(double maxAcceleration) {
         profiledPIDController
-                .setConstraints(new TrapezoidProfile.Constraints(profiledPIDController.getConstraints().maxAcceleration, maxAcceleration));
+                .setConstraints(new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+        this.maxAcceleration = maxAcceleration;
         return this;
     }
 
@@ -246,19 +209,9 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
      * @param tolerance allowable error range
      * @return this subsystem for chaining
      */
-    public ProfiledPidBase withPositionTolerance(double tolerance) {
-        profiledPIDController.setTolerance(tolerance, profiledPIDController.getVelocityTolerance());
-        return this;
-    }
-
-    /**
-     * Sets the acceptable velocity error tolerance for the PID setpoint.
-     *
-     * @param tolerance allowable error range
-     * @return this subsystem for chaining
-     */
-    public ProfiledPidBase withVelocityTolerance(double tolerance) {
-        profiledPIDController.setTolerance(profiledPIDController.getPositionTolerance(), tolerance);
+    public ProfiledPidBase withTolerance(double tolerance) {
+        profiledPIDController.setTolerance(tolerance, Double.POSITIVE_INFINITY);
+        positionTolarence = tolerance;
         return this;
     }
 
@@ -362,33 +315,10 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
                     profiledPIDController::setD
             );
             MMUtils.updateIfChanged(
-                    debugIZoneSupplier,
-                    profiledPIDController::getIZone,
-                    profiledPIDController::setIZone
-            );
-            MMUtils.updateIfChanged(
                     debugPositionToleranceSupplier,
-                    profiledPIDController::getPositionTolerance,
-                    this::withPositionTolerance
+                    ()->positionTolarence,
+                    this::withTolerance
             );
-            MMUtils.updateIfChanged(
-                    debugVelocityToleranceSupplier,
-                    profiledPIDController::getVelocityTolerance,
-                    this::withVelocityTolerance
-            );
-
-            MMUtils.updateIfChanged(
-                    debugIntegralMinRangeSupplier,
-                    profiledPIDController::getMinimumIntegral,
-                    this::withMinIntegralRange
-            );
-
-            MMUtils.updateIfChanged(
-                    debugIntegralMaxRangeSupplier,
-                    profiledPIDController::getMaximumIntegral,
-                    this::withMaxIntegralRange
-            );
-
             MMUtils.updateIfChanged(
                     debugKsSupplier,
                     feedforward::getKs,
@@ -409,14 +339,14 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
 
             MMUtils.updateIfChanged(
                     debugMaxVelocitySupplier,
-                    () -> profiledPIDController.getConstraints().getMaxVelocity(),
-                    profiledPIDController::setMaxVelocity
+                    () -> maxVelocity,
+                    this::withMaxVelocityConstraint
             );
 
             MMUtils.updateIfChanged(
                     debugMaxAccelerationSupplier,
-                    () -> profiledPIDController.getConstraints().getMaxAcceleration(),
-                    profiledPIDController::setMaxAcceleration
+                    () -> maxAcceleration,
+                    this::withMaxAccelerationConstraint
             );
         }
     }
