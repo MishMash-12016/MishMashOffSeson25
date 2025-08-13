@@ -4,7 +4,6 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.localization.Localizers;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-//TODO: turn pedro to fully be command base
 public class FConstants {
     public static double p = 0.1;
     public static double i = 0;
