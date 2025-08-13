@@ -52,7 +52,7 @@ public abstract class MMOpMode extends LinearOpMode {
     private void robotInit() {
         MMRobot.getInstance().currentOpMode = this;
         MMRobot.getInstance().initializeSystems(opModeType);
-        KoalaLog.setup(hardwareMap);//TODO: maybe move this
+        KoalaLog.setup(hardwareMap);
     }
 
     public abstract void onInit();
