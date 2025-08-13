@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices.CuttleRevHub;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.Controllers.ProfiledPIDController;
+import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.FeedForwards.ElevatorFeedforward;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.FeedForwards.SimpleMotorFeedforward;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.pidUtils.TrapezoidProfile;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMUtils;
@@ -23,7 +24,7 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
     // Encoder that measures current position and velocity (ticks converted via ratio)
     private CuttleEncoder encoder;
     public ProfiledPIDController profiledPIDController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(0,0));
-    public SimpleMotorFeedforward feedforward;//TODO:  make other feedforwards usable
+    public ElevatorFeedforward feedforward;//TODO:  make other feedforwards usable
 
     //base
     public ProfiledPidBase(String subsystemName) {
@@ -169,8 +170,8 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
      * @param kv velocity gain
      * @param ka acceleration gain
      */
-    public ProfiledPidBase withFeedforward(double ks, double kv, double ka) {
-        feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+    public ProfiledPidBase withFeedforward(double ks, double kv, double ka, double kg) {
+        feedforward = new ElevatorFeedforward(ks, kg, kv, ka);
         return this;
     }
 
@@ -288,7 +289,9 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
     private DoubleSupplier debugKaSupplier;
     private DoubleSupplier debugMaxVelocitySupplier;
     private DoubleSupplier debugMaxAccelerationSupplier;
+    private DoubleSupplier debugKgSupplier;
 
+    //TODO kg
     /**
      * add suppliers that when changed will auto update the pid values.
      * any value you don't need just put null
@@ -306,6 +309,7 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
      * @param debugKaSupplier                  acceleration gain
      * @param debugMaxVelocitySupplier         max velocity
      * @param debugMaxAccelerationSupplier     max acceleration
+     * @param debugKgSupplier                  Kg
      * @implNote !NOTICE THIS ONLY WORKS IF IN DEBUG MODE
      */
     public ProfiledPidBase withDebugPidSuppliers(DoubleSupplier debugKpSupplier,
@@ -320,7 +324,8 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
                                                  DoubleSupplier debugKvSupplier,
                                                  DoubleSupplier debugKaSupplier,
                                                  DoubleSupplier debugMaxVelocitySupplier,
-                                                 DoubleSupplier debugMaxAccelerationSupplier) {
+                                                 DoubleSupplier debugMaxAccelerationSupplier,
+                                                 DoubleSupplier debugKgSupplier) {
 
         this.debugKpSupplier = debugKpSupplier;
         this.debugKiSupplier = debugKiSupplier;
@@ -335,6 +340,7 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
         this.debugKaSupplier = debugKaSupplier;
         this.debugMaxVelocitySupplier = debugMaxVelocitySupplier;
         this.debugMaxAccelerationSupplier = debugMaxAccelerationSupplier;
+        this.debugKgSupplier = debugKgSupplier;
 
         return this;
     }
@@ -417,6 +423,12 @@ public class ProfiledPidBase extends MotorOrCrServoSubsystem {
                     debugMaxAccelerationSupplier,
                     () -> profiledPIDController.getConstraints().getMaxAcceleration(),
                     profiledPIDController::setMaxAcceleration
+            );
+
+            MMUtils.updateIfChanged(
+                    debugKgSupplier,
+                    feedforward::getKg,
+                    feedforward::setKg
             );
         }
     }

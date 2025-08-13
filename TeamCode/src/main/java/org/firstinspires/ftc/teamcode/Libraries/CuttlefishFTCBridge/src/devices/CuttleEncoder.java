@@ -54,8 +54,9 @@ public class CuttleEncoder
         return getCounts()/encTicks;
     }
 
+    //TODO minus not plus
     public void setPose(double pose){
-        offsetTicks += getCounts() - pose;
+        offsetTicks -= getCounts() - pose;
     }
 
     /**

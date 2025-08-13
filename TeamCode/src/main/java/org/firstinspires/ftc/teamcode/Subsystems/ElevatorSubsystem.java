@@ -24,12 +24,13 @@ import Ori.Coval.Logging.AutoLog;
 @AutoLog
 public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
 
-    public static double KP = 0.5;
-    public static double KI = 8.0;
-    public static double KD = 0.01;
+    public static double KP = 0.0;
+    public static double KI = 0.0;
+    public static double KD = 0.0;
 
-    public static double KS = 0.135;
-    public static double KV = 0.058702;
+    public static double KS = 0.0;
+    public static double KG = 0.135;
+    public static double KV = 0.0;
     public static double KA = 0.0;
 
     public static double CONSTRAINT_MAX_VELOCITY = 0.5;
@@ -81,7 +82,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withMotor(mmRobot.expansionHub, 3, Direction.REVERSE);
         withZeroSwitch(new CuttleDigital(mmRobot.expansionHub,0));
 
-        withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         // PIDF & Constraints
@@ -93,7 +94,7 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
         withVelocityTolerance(VELOCITY_TOLERANCE);
 
         withConstraints(CONSTRAINT_MAX_VELOCITY,CONSTRAINT_MAX_ACCELERATION);
-        withFeedforward(KS,KV,KA);
+        withFeedforward(KS,KV,KA, KG);
 
         // Zeroing limit switch on encoder
         withZeroSwitch(new CuttleDigital(mmRobot.controlHub, ZERO_SWITCH_PORT), ZERO_POSE);
@@ -115,7 +116,8 @@ public class ElevatorSubsystem extends PositionProfiledPidSubsystem {
                 ()->KV,
                 ()->KA,
                 ()->CONSTRAINT_MAX_VELOCITY,
-                ()->CONSTRAINT_MAX_ACCELERATION
+                ()->CONSTRAINT_MAX_ACCELERATION,
+                ()->KG
         );
     }
 }

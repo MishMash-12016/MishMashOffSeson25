@@ -15,6 +15,9 @@ import Ori.Coval.Logging.Logger.KoalaLog;
 public class PositionProfiledPidSubsystem extends ProfiledPidBase {
     public PositionProfiledPidSubsystem(String subsystemName) {
         super(subsystemName);
+        //TODO
+        KoalaLog.log(subsystemName + "/target velocity",
+                0, true);
     }
 
 
@@ -41,6 +44,10 @@ public class PositionProfiledPidSubsystem extends ProfiledPidBase {
                         subsystemName + "/pid output",
                         profiledPIDController.calculate(getPose(), setPoint.getAsDouble()),
                         true);
+
+                //TODO
+                KoalaLog.log(subsystemName + "/target velocity",
+                        profiledPIDController.getStateSetpoint().velocity, true);
 
                 double feedforwardOutput = KoalaLog.log(
                         subsystemName + "/feedforward output",
