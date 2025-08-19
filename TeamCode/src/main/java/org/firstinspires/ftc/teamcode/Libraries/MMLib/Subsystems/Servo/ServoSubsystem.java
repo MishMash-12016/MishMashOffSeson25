@@ -49,6 +49,16 @@ public class ServoSubsystem extends MMSubsystem {
     }
 
     /**
+     * Instantly moves all servos to the given position.
+     *
+     * @param position the target position [0.0, 1.0]
+     * @return a RunCommand that moves the servos immediately
+     */
+    public Command setPositionRunCommand(double position) {
+        return new RunCommand(() -> setPosition(position), this);
+    }
+
+    /**
      * Moves all servos to the target position gradually over a specified time.
      *
      * @param targetPose         the final target position [0.0, 1.0]
@@ -186,17 +196,33 @@ public class ServoSubsystem extends MMSubsystem {
         return this;
     }
 
+    public ServoSubsystem withDefaultCommand(Command command){
+        setDefaultCommand(command);
+        return this;
+    }
+
     @Override
     public void resetHub(){
+
+        ArrayList<CuttleServo> tempList = new ArrayList<>();
         for(CuttleServo servo : servoList){
             if(servo.getFtcServo()){
+                tempList.add(new CuttleServo(MMRobot.getInstance().currentOpMode.hardwareMap, servo.getServoName())
+                    .setDirection(servo.getDirection())
+                    .setOffset(servo.getOffset()));
 
-            } else if(servo.hub != null && servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
-                servo.hub = MMRobot.getInstance().controlHub;
+            } else if(servo.hub.getHubName().equals(MMRobot.getInstance().controlHub.getHubName())){
+                tempList.add(new CuttleServo(MMRobot.getInstance().controlHub, servo.port)
+                    .setDirection(servo.getDirection())
+                    .setOffset(servo.getOffset()));
             }
-            else if(servo.hub != null && servo.hub.getHubName().equals(MMRobot.getInstance().expansionHub.getHubName())){
-                servo.hub = MMRobot.getInstance().expansionHub;
+            else {
+                tempList.add(new CuttleServo(MMRobot.getInstance().expansionHub, servo.port)
+                    .setDirection(servo.getDirection())
+                    .setOffset(servo.getOffset()));
             }
         }
+
+        servoList = tempList;
     }
 }
