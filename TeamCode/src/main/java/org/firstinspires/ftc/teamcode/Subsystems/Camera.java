@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -13,6 +14,11 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Ori.Coval.Logging.AutoLog;
+
+@Config
+@AutoLog
 
 public class Camera extends MMSubsystem {
     public final Limelight3A camera;
@@ -42,11 +48,13 @@ public class Camera extends MMSubsystem {
     public static double timesPipelineSwitchFail = 0;
 
     private int sampleColorID; //current color need to be detected
-
-
+    private static Camera instance;
 
 
     public Camera() {
+        super();
+        MMRobot.getInstance().subsystems.add(this);
+
         camera = MMRobot.getInstance().currentOpMode.hardwareMap.get(Limelight3A.class, "limelight");
         initializeCamera();
         camera.pipelineSwitch(currentPipeline);
@@ -54,6 +62,13 @@ public class Camera extends MMSubsystem {
         targetLeftUp = new ArrayList<>();
         targetLeftUp.add(0, 0.0);
         targetLeftUp.add(0, 0.0);
+    }
+
+    public static synchronized Camera getInstance() {
+        if (instance == null) {
+            instance = new Camera();
+        }
+        return instance;
     }
 
     public void initializeCamera() {
@@ -115,7 +130,6 @@ public class Camera extends MMSubsystem {
             timesAngleFailed += 1;
             return null;
         }
-
         return result.getPythonOutput()[0];
     }
 
@@ -200,6 +214,10 @@ public class Camera extends MMSubsystem {
             return false;
         }
         return true;
+    }
+
+    public LLResult GetResult(){
+        return camera.getLatestResult();
     }
 
     //Only change the angle of the intake rotator
