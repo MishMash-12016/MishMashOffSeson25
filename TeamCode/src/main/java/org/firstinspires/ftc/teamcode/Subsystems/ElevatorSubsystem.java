@@ -76,7 +76,6 @@ public class ElevatorSubsystem extends PositionPidSubsystem {
         withMotor(mmRobot.expansionHub, 2, Direction.REVERSE);
         withMotor(mmRobot.expansionHub, 3, Direction.REVERSE);
         withZeroSwitch(new CuttleDigital(mmRobot.expansionHub,0));
-
         withZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
