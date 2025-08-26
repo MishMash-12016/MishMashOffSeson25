@@ -80,23 +80,23 @@ public class Camera extends MMSubsystem {
         initiated = true;
     }
 
-    //Get degrees in X axis getting result
-    public double getTx(LLResult result, double defaultValue) {
-        if (result == null) {
+    //Get degrees in X axis getting cameraResult
+    public double getTx(LLResult cameraResult, double defaultValue) {
+        if (cameraResult == null) {
             return defaultValue;
         }
-        return result.getTx();
+        return cameraResult.getTx();
     }
 
-    //Get degrees in X axis getting result
-    public double getTy(LLResult result, double defaultValue) {
-        if (result == null) {
+    //Get degrees in X axis getting cameraResult
+    public double getTy(LLResult cameraResult, double defaultValue) {
+        if (cameraResult == null) {
             return defaultValue;
         }
-        return result.getTy();
+        return cameraResult.getTy();
     }
 
-    //Get distance in Y axis with given result
+    //Get distance in Y axis with given cameraResult
     public Double getDistance(LLResult lastResult,double defaultValueTy) {
         double ty = getTy(lastResult, defaultValueTy);
         if (ty == 0) {
@@ -124,13 +124,13 @@ public class Camera extends MMSubsystem {
 
     //Get angle of a sample in servo degrees
     public Double getSampleAngle() {
-        LLResult result = camera.getLatestResult();
+        LLResult cameraResult = camera.getLatestResult();
 
-        if (result == null) {
+        if (cameraResult == null) {
             timesAngleFailed += 1;
             return null;
         }
-        return result.getPythonOutput()[0];
+        return cameraResult.getPythonOutput()[0];
     }
 
 
@@ -233,7 +233,7 @@ public class Camera extends MMSubsystem {
         );
     }
 
-    //Doing every moment, it updates the python inputs, and then updates the result to the latest and freshest one. and telemtry, a lot of telemtry.
+    //Doing every moment, it updates the python inputs, and then updates the cameraResult to the latest and freshest one. and telemtry, a lot of telemtry.
     @Override
     public void periodic() {
         //updating the python endlessly
