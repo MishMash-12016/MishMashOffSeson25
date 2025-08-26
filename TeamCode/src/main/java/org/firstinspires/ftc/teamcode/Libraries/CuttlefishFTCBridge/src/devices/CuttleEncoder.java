@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
 import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
-
+import org.firstinspires.ftc.teamcode.MMRobot;
 /**
  * Rotary encoder connected through a motor encoder port
  * */
@@ -55,7 +55,7 @@ public class CuttleEncoder
     }
 
     public void setPose(double pose){
-        offsetTicks += getCounts() - pose;
+        offsetTicks -= getCounts() - pose;
     }
 
     /**

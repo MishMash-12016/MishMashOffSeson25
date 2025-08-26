@@ -42,7 +42,7 @@ public class MMDrivetrain extends SubsystemBase {
         }
     }
 
-    public static void update(){//TODO: fix telemetry debug crush bug
+    public static void update(){
         if(instance != null){
             instance.follower.update();             //updates the follower
 

@@ -93,7 +93,7 @@ public class TestOpMode extends MMOpMode {
 
         ElevatorSubsystem.getInstance().setPose(0);
 
-        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(10));
+        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(5));
         MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(0));
 
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose));

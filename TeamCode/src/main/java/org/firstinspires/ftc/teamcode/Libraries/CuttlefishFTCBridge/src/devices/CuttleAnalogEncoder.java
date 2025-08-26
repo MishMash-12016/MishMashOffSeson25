@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.devices;
+import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 
 import static org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.MathUtils.rFullToHalf;
-
-import org.firstinspires.ftc.teamcode.Libraries.CuttlefishFTCBridge.src.utils.Direction;
 
 /**
  * Analog rotary encoder.

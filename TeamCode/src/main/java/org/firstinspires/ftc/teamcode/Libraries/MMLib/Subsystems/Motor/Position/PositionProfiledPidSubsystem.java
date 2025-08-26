@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Position;
 
 import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.Subsystem;
 
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKsSysid;
-import org.firstinspires.ftc.teamcode.Libraries.MMLib.PID.tuning.FFKvSysid;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.Motor.Base.ProfiledPidBase;
 
 import java.util.Set;
@@ -12,6 +11,7 @@ import java.util.function.DoubleSupplier;
 
 import Ori.Coval.Logging.Logger.KoalaLog;
 
+//TODO: add sysid
 public class PositionProfiledPidSubsystem extends ProfiledPidBase {
     public PositionProfiledPidSubsystem(String subsystemName) {
         super(subsystemName);
@@ -42,10 +42,14 @@ public class PositionProfiledPidSubsystem extends ProfiledPidBase {
                         profiledPIDController.calculate(getPose(), setPoint.getAsDouble()),
                         true);
 
+                KoalaLog.log(subsystemName + "/target velocity",
+                        profiledPIDController.getSetpoint().velocity,
+                        true);
+
                 double feedforwardOutput = KoalaLog.log(
                         subsystemName + "/feedforward output",
-                        feedforward.calculate(profiledPIDController.getStateSetpoint().velocity),
-                        true);//TODO: check whether to divide here by batteryVoltage
+                        feedforward.calculate(profiledPIDController.getSetpoint().velocity),
+                        true);
 
                 setPower(pidOutput + feedforwardOutput);// apply computed power
             }
@@ -83,14 +87,16 @@ public class PositionProfiledPidSubsystem extends ProfiledPidBase {
      * @return a Command requiring this subsystem
      */
     public Command holdCurrentSetPointCommand() {
-        return getToAndHoldSetPointCommand(()-> profiledPIDController.getSetpoint());
+        return getToAndHoldSetPointCommand(()-> profiledPIDController.getGoal().position);
     }
 
-    public Command tuneKSCommand(double rampRate, double minVelocity){
-        return new FFKsSysid(rampRate,minVelocity,this,this::setPower,this::getVelocity);
-    }
-
-    public Command tuneKVCommand(double rampRate, double kS){
-        return new FFKvSysid(rampRate, kS, 5, this, this::setPower, this::getVelocity);
+    /**
+     * Creates a Command that keeps the mechanism in its current setpoint place using PID control.
+     *
+     * @return a Command requiring this subsystem
+     */
+    public Command holdCurrentPoseCommand() {
+        return new InstantCommand(()->profiledPIDController.setGoal(getPose()))
+                .andThen(holdCurrentSetPointCommand());
     }
 }
