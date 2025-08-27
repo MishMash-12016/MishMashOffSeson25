@@ -15,12 +15,10 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
-import org.firstinspires.ftc.teamcode.Subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeClaw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeRotator;
 import org.firstinspires.ftc.teamcode.Subsystems.LinearIntake;
-import org.firstinspires.ftc.teamcode.Subsystems.MotorTicsTest;
 import org.firstinspires.ftc.teamcode.Subsystems.ScoringArm;
 import org.firstinspires.ftc.teamcode.Subsystems.ScoringElbow;
 
@@ -95,13 +93,12 @@ public class TestOpMode extends MMOpMode {
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawClose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorRightAnglePose));
 //        MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(IntakeRotator.getInstance().setPositionCommand(IntakeRotator.rotatorLeftAnglePose));
-        MotorTicsTest
 
     }
 
     @Override
     public void onInitLoop() {
-        MotorTicsTest
+
     }
 
     @Override
