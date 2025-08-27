@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.ScoringArm;
 import org.firstinspires.ftc.teamcode.Subsystems.ScoringClaw;
 import org.firstinspires.ftc.teamcode.Subsystems.ScoringElbow;
 
-public class CameraIntake {
+public class CameraCommandGroups {
     public static SequentialCommandGroup CameraSampleIntake(){
         return new SequentialCommandGroup(
                 new InstantCommand(() -> Camera.getInstance().switchToDetector()),
