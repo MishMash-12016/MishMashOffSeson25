@@ -8,6 +8,7 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 
+import org.firstinspires.ftc.teamcode.CommendGroups.Camera.CameraCommands;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Subsystems.MMSubsystem;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.MMathTools;
 import org.firstinspires.ftc.teamcode.MMRobot;
@@ -23,7 +24,7 @@ import Ori.Coval.Logging.AutoLog;
 public class Camera extends MMSubsystem {
     public final Limelight3A camera;
 
-    private LLResult previousResult;
+    private LLResult detectorPreviousResult;
 
     public int currentPipeline = 0;
 
@@ -56,7 +57,7 @@ public class Camera extends MMSubsystem {
         MMRobot.getInstance().subsystems.add(this);
 
         camera = MMRobot.getInstance().currentOpMode.hardwareMap.get(Limelight3A.class, "limelight");
-        initializeCamera();
+        InitializeCamera();
         camera.pipelineSwitch(currentPipeline);
 
         targetLeftUp = new ArrayList<>();
@@ -71,12 +72,12 @@ public class Camera extends MMSubsystem {
         return instance;
     }
 
-    public void initializeCamera() {
+    public void InitializeCamera() {
         camera.setPollRateHz(100);
         camera.start();
     }
 
-    public void setInitiated(){
+    public void SetInitiated(){
         initiated = true;
     }
 
@@ -146,13 +147,13 @@ public class Camera extends MMSubsystem {
     }
 
     public void setPreviousResult() {
-        previousResult = camera.getLatestResult();
+        detectorPreviousResult = camera.getLatestResult();
     }
 
     //find the closest sample to the middle of the robot
     public void findClosestSample() {
-        if (previousResult != null) {
-            List<LLResultTypes.DetectorResult> detectorResults = previousResult.getDetectorResults();
+        if (detectorPreviousResult != null) {
+            List<LLResultTypes.DetectorResult> detectorResults = detectorPreviousResult.getDetectorResults();
             if (!detectorResults.isEmpty()) {
                 LLResultTypes.DetectorResult dr = detectorResults.get(0);
                 List<List<Double>> corners = dr.getTargetCorners();
@@ -220,16 +221,20 @@ public class Camera extends MMSubsystem {
         return camera.getLatestResult();
     }
 
+    public LLResult GetPreviousDetectorResult(){
+        return detectorPreviousResult;
+    }
+
     //Only change the angle of the intake rotator
-    public SequentialCommandGroup changeAngle() {
+    public SequentialCommandGroup changeRotatorAngle() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> findClosestSample()),
                 new WaitUntilCommand(() -> switchToPython()),
 
                 new WaitUntilCommand(() -> camera.getStatus().getPipelineIndex() == currentPipeline),
                 new InstantCommand(() -> camera.updatePythonInputs(new double[]{0.0, 0.0, 0.0, length, height, x, y, 0.0})),
-                new WaitUntilCommand(() -> camera.getLatestResult().getPythonOutput()[0] != 0)
-                //limelightGetter.getRotateToSample() TODO: uncomment when avaliable
+                new WaitUntilCommand(() -> camera.getLatestResult().getPythonOutput()[0] != 0),
+                CameraCommands.RotateToSampleCommand()
         );
     }
 

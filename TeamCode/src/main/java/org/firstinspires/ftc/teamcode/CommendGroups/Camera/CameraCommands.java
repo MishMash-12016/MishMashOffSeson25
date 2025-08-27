@@ -49,14 +49,13 @@ public class CameraCommands {
 
     private static Command createStrafePath() {
         Path strafeToSample = new Path(
-                // Line 1
                 new BezierLine(
                         new Point(MMDrivetrain.getInstance().follower.getPose().getX(), MMDrivetrain.getInstance().follower.getPose().getY(), Point.CARTESIAN),
                         new Point(MMDrivetrain.getInstance().follower.getPose().getX(), MMDrivetrain.getInstance().follower.getPose().getY(), Point.CARTESIAN)
                 )
         );
 
-        LLResult lastResult = Camera.getInstance().GetResult();
+        LLResult lastResult = Camera.getInstance().GetPreviousDetectorResult();
         double distanceX = Camera.getInstance().getStrafeOffset(lastResult, 0, 0);
         double distanceY = (linearIntakeLength - Camera.getInstance().getDistance(lastResult, 0)) / 25.4;
 
@@ -74,9 +73,11 @@ public class CameraCommands {
             strafeToSample = new Path(
                     // Line 1
                     new BezierLine(
-                            new Point(MMDrivetrain.getInstance().follower.getPose().getX(), MMDrivetrain.getInstance().follower.getPose().getY(), Point.CARTESIAN),
+                            new Point(MMDrivetrain.getInstance().follower.getPose().getX(),
+                                    MMDrivetrain.getInstance().follower.getPose().getY(), Point.CARTESIAN),
                             new Point(endPoint.getX(), endPoint.getY(), Point.CARTESIAN))
             );
+
             return MMDrivetrain.getInstance().followPathCommand(strafeToSample);
         }
         return new InstantCommand();
