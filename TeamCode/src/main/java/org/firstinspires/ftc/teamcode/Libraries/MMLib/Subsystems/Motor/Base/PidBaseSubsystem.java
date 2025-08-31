@@ -24,7 +24,6 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
     // Encoder that measures current position and velocity (ticks converted via ratio)
     private CuttleEncoder encoder;
     public PIDController pidController = new PIDController(0, 0, 0);
-    public SimpleMotorFeedforward feedforward;
 
     //base
     public PidBaseSubsystem(String subsystemName) {
@@ -113,6 +112,10 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
 
     public void setPose(double pose) {
         encoder.setPose(pose);
+    }
+
+    public void setSetpoint(double setpoint){
+        pidController.setSetpoint(setpoint);
     }
 
     public PidBaseSubsystem withEncoder(CuttleRevHub revHub, int encoderPort, double cpr, Direction direction) {
@@ -219,5 +222,6 @@ public class PidBaseSubsystem extends MotorOrCrServoSubsystem {
             encoder.hub = MMRobot.getInstance().expansionHub;
         }
         setPose(pose);
+        setSetpoint(pose);
     }
 }
