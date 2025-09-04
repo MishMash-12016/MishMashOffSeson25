@@ -85,6 +85,7 @@ public class CameraCommands {
                             new Point(endPoint.getX(), endPoint.getY(), Point.CARTESIAN))
             );
 
+            strafeToSample.setTangentHeadingInterpolation();
             return MMDrivetrain.getInstance().followPathCommand(strafeToSample);
         }
         return new InstantCommand();
