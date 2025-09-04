@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMDrivetrain;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.MMOpMode;
 import org.firstinspires.ftc.teamcode.Libraries.MMLib.Utils.OpModeVeriables.OpModeType;
 import org.firstinspires.ftc.teamcode.MMRobot;
+import org.firstinspires.ftc.teamcode.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeClaw;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.ScoringArm;
 import org.firstinspires.ftc.teamcode.Subsystems.ScoringElbow;
 
 import Ori.Coval.Logging.AutoLog;
+import Ori.Coval.Logging.Logger.KoalaLog;
 
 @TeleOp
 @Config
@@ -40,6 +42,10 @@ public class LamlamTestOpMode extends MMOpMode {
 
     @Override
     public void onInit() {
+        Camera.getInstance().trackRedAndYellow();
+        MMDrivetrain.getInstance().setPose(0, 0, Math.toRadians(0));
+        KoalaLog.setup(hardwareMap);
+
         MMDrivetrain.getInstance().enableTeleopDriveDefaultCommand(() -> MMRobot.getInstance().gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.05);
 
         //The camera intake:
@@ -90,6 +96,7 @@ public class LamlamTestOpMode extends MMOpMode {
 
         ElevatorSubsystem.getInstance().setPose(0);
 
+
         MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(5));
         MMRobot.getInstance().gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whileActiveContinuous(ElevatorSubsystem.getInstance().getToSetpointCommand(0));
 
@@ -107,7 +114,6 @@ public class LamlamTestOpMode extends MMOpMode {
 
     @Override
     public void onPlay() {
-
     }
 
     @Override

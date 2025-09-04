@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Ori.Coval.Logging.AutoLog;
+import Ori.Coval.Logging.AutoLogManager;
 
 @Config
 @AutoLog
@@ -27,6 +28,7 @@ public class Camera extends MMSubsystem {
     private LLResult detectorPreviousResult;
 
     public int currentPipeline = 0;
+    public int detectorPipeline = 0;
 
     private boolean initiated = false;
 
@@ -241,8 +243,9 @@ public class Camera extends MMSubsystem {
     //Doing every moment, it updates the python inputs, and then updates the cameraResult to the latest and freshest one. and telemtry, a lot of telemtry.
     @Override
     public void periodic() {
+        AutoLogManager.periodic();
         //updating the python endlessly
-        if (!initiated) return;
+//        if (!initiated) return;
 
         camera.updatePythonInputs(
                 new double[]{0.0, 0.0, 0.0, length, height, x, y, 0.0}

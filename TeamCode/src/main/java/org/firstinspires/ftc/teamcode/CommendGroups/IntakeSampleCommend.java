@@ -31,6 +31,19 @@ public class IntakeSampleCommend {
                 )
         );
     }
+
+    public static Command prepareSampleIntakeNoIntakeRotator() {
+        return new ParallelCommandGroup(
+                ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowPrepareSampleTransferPose),
+                ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmPrepareSampleTransferPose),
+                ScoringClaw.getInstance().setPositionCommand(ScoringClaw.IntakeClawOpenPos),
+                LinearIntake.getInstance().setPositionCommand(LinearIntake.linerIntakeOpen),
+                IntakeArm.getInstance().setPositionOverTimeCommand(IntakeArm.intakeArmPrepareIntakeSample, 300),
+                new WaitCommand(300).andThen(
+                        IntakeClaw.getInstance().setPositionCommand(IntakeClaw.scoringClawOpen)
+                )
+        );
+    }
     public static Command prepareSampleIntakeWithoutButton() {
         return new ParallelCommandGroup(
                 ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowPrepareSampleTransferPose),
