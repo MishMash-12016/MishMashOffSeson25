@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.CommendGroups.Camera;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
@@ -21,32 +22,32 @@ import Ori.Coval.Logging.Logger.KoalaLog;
 @Config
 //@AutoLog
 public class CameraCommandGroups {
-    public static SequentialCommandGroup CameraSampleIntake(){
+    public static SequentialCommandGroup CameraSampleIntake() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> Camera.getInstance().switchToDetector()),
                 new WaitUntilCommand(() -> Camera.getInstance().getPipelineIndex() == Camera.getInstance().currentPipeline),
+                new InstantCommand(() -> Camera.getInstance().setPreviousResult()),
 
-                ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowInitPose),
-                ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmInitPose),
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                ScoringElbow.getInstance().setPositionCommand(ScoringElbow.ElbowInitPose),
+                                ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmInitPose),
 
-                //Lamlam side:
-                new InstantCommand(()->Camera.getInstance().setPreviousResult()),
-                new InstantCommand(()-> KoalaLog.log("Previous result before angle change", Camera.getInstance().GetPreviousDetectorResult() != null,true)),
-                Camera.getInstance().changeRotatorAngle(),
-                new InstantCommand(()-> KoalaLog.log("Previous result after angle change", Camera.getInstance().GetPreviousDetectorResult() != null,true)),
+                                //Lamlam side:
+                                new InstantCommand(() -> Camera.getInstance().setPreviousResult()),
+                                Camera.getInstance().changeRotatorAngle(),
 
-//                new InstantCommand(() -> Camera.getInstance().switchToDetector()),
-//                new WaitUntilCommand(() -> Camera.getInstance().getPipelineIndex() == Camera.getInstance().currentPipeline),
-//                new InstantCommand(()->Camera.getInstance().setPreviousResult()),
-
-
-                CameraCommands.StrafeToSample(),
+                                CameraCommands.StrafeToSample(),
 //
-                new WaitCommand(300),
-                IntakeSampleCommend.prepareSampleIntakeNoIntakeRotator(),
-                new WaitCommand(400),
-                IntakeSampleCommend.SampleIntake()
-
-                );
+                                new WaitCommand(200),
+                                IntakeSampleCommend.prepareSampleIntakeNoIntakeRotator(),
+                                new WaitCommand(400),
+                                IntakeSampleCommend.SampleIntake()
+                        ),
+                        new InstantCommand(()->Camera.getInstance().resetPreviousResult())
+                        ,
+                        ()->Camera.getInstance().isTargetVisible()
+                )
+        );
     }
 }

@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import Ori.Coval.Logging.Logger.KoalaLog;
 
@@ -115,6 +116,17 @@ public class Camera extends MMSubsystem {
         return Math.abs(distanceMM);
     }
 
+    //Get distance in Y axis with given cameraResult
+    public Double getDistance() {
+        if (dy == 0) {
+            return 0.0;
+        }
+        double angleToGoalDegrees = CAMERA_ANGLE - dy;
+        double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+        double distanceMM = (TARGET_HEIGHT - CAMERA_HEIGHT) / Math.tan(angleToGoalRadians);
+        return Math.abs(distanceMM);
+    }
+
 
 
     public double getStrafeOffset(LLResult lastResult) {
@@ -127,6 +139,17 @@ public class Camera extends MMSubsystem {
                 double diagonalLength = Math.sqrt(height * height + distanceY * distanceY);
                 return tanTX * diagonalLength / 2.54 / 10;
             }
+        }
+        return 0;
+    }
+
+    public double getStrafeOffset() {
+            if (dx != 0) {
+                double tanTX = Math.tan(Math.toRadians(dx));
+                double height = CAMERA_HEIGHT - TARGET_HEIGHT;
+                double distanceY = getDistance();
+                double diagonalLength = Math.sqrt(height * height + distanceY * distanceY);
+                return tanTX * diagonalLength / 2.54 / 10;
         }
         return 0;
     }
@@ -158,6 +181,10 @@ public class Camera extends MMSubsystem {
         previousResultDetector = camera.getLatestResult();
     }
 
+    public void resetPreviousResult() {
+        previousResultDetector = null;
+    }
+
     //find the closest sample to the middle of the robot
     public void findClosestSample() {
         if (previousResultDetector != null) {
@@ -175,8 +202,8 @@ public class Camera extends MMSubsystem {
                 y = targetLeftUp.get(1);
                 sampleColorID = dr.getClassId();
 
-                dx = dr.getTargetXDegrees() / 25.4;
-                dy = dr.getTargetYDegrees() / 25.4;
+//                dx = dr.getTargetXDegrees();
+//                dy = dr.getTargetYDegrees();
             }
         }
     }
@@ -211,6 +238,10 @@ public class Camera extends MMSubsystem {
         }
 
         return true;
+    }
+
+    public boolean isTargetVisible(){
+        return camera.getLatestResult() != null;
     }
 
     //Switch to python based detection pipepline
@@ -261,11 +292,11 @@ public class Camera extends MMSubsystem {
         //updating the python endlessly
 //        if (!initiated) return;
 
-//        dx = getStrafeOffset(GetPreviousDetectorResult());
-//        dy = (linearIntakeLength - getDistance(GetPreviousDetectorResult())) / 25.4;
-//
-//        KoalaLog.log("distanceX periodic",dx,true);
-//        KoalaLog.log("distanceY periodic",dy,true);
+        dx = getStrafeOffset(GetPreviousDetectorResult());
+        dy = (linearIntakeLength - getDistance(GetPreviousDetectorResult())) / 25.4;
+
+        KoalaLog.log("distanceX periodic",dx,true);
+        KoalaLog.log("distanceY periodic",dy,true);
 
         camera.updatePythonInputs(
                 new double[]{0.0, 0.0, 0.0, length, height, x, y, 0.0}
