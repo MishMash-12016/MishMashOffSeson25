@@ -19,7 +19,7 @@ import Ori.Coval.Logging.AutoLog;
 import Ori.Coval.Logging.Logger.KoalaLog;
 
 @Config
-@AutoLog
+//@AutoLog
 public class CameraCommandGroups {
     public static SequentialCommandGroup CameraSampleIntake(){
         return new SequentialCommandGroup(
@@ -30,10 +30,15 @@ public class CameraCommandGroups {
                 ScoringArm.getInstance().setPositionCommand(ScoringArm.scoringArmInitPose),
 
                 //Lamlam side:
-                new InstantCommand(() -> Camera.getInstance().setPreviousResult()),
+                new InstantCommand(()->Camera.getInstance().setPreviousResult()),
                 new InstantCommand(()-> KoalaLog.log("Previous result before angle change", Camera.getInstance().GetPreviousDetectorResult() != null,true)),
                 Camera.getInstance().changeRotatorAngle(),
                 new InstantCommand(()-> KoalaLog.log("Previous result after angle change", Camera.getInstance().GetPreviousDetectorResult() != null,true)),
+
+//                new InstantCommand(() -> Camera.getInstance().switchToDetector()),
+//                new WaitUntilCommand(() -> Camera.getInstance().getPipelineIndex() == Camera.getInstance().currentPipeline),
+//                new InstantCommand(()->Camera.getInstance().setPreviousResult()),
+
 
                 CameraCommands.StrafeToSample(),
 //
