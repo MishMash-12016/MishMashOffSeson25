@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.CommendGroups.Camera.CameraCommands.linearIntakeLength;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -16,18 +18,18 @@ import org.firstinspires.ftc.teamcode.MMRobot;
 import java.util.ArrayList;
 import java.util.List;
 
-import Ori.Coval.Logging.AutoLog;
-import Ori.Coval.Logging.AutoLogManager;
+import Ori.Coval.Logging.Logger.KoalaLog;
 
 @Config
-@AutoLog
+//@AutoLog
 
 public class Camera extends MMSubsystem {
     public final Limelight3A camera;
 
-    private LLResult detectorPreviousResult;
+    public LLResult previousResultDetector;
 
     public int currentPipeline = 0;
+
     public int detectorPipeline = 0;
 
     private boolean initiated = false;
@@ -37,7 +39,6 @@ public class Camera extends MMSubsystem {
     public static double CAMERA_HEIGHT = 445;
     public static double CAMERA_ANGLE = 90 - 35.0;
     public static double TARGET_HEIGHT = 39;
-    public static double SPECIMEN_HEIGHT = 247.5;
 
 
     //size and location of detected sample (-1 means not initialized):
@@ -46,6 +47,9 @@ public class Camera extends MMSubsystem {
     public static double height = -1;
     public static double x = -1;
     public static double y = -1;
+
+    public static double dx = -1;
+    public static double dy = -1;
 
     public static double timesAngleFailed = 0;
     public static double timesPipelineSwitchFail = 0;
@@ -84,24 +88,24 @@ public class Camera extends MMSubsystem {
     }
 
     //Get degrees in X axis getting cameraResult
-    public double getTx(LLResult cameraResult, double defaultValue) {
+    public double getTx(LLResult cameraResult) {
         if (cameraResult == null) {
-            return defaultValue;
+            return 0;
         }
         return cameraResult.getTx();
     }
 
     //Get degrees in X axis getting cameraResult
-    public double getTy(LLResult cameraResult, double defaultValue) {
+    public double getTy(LLResult cameraResult) {
         if (cameraResult == null) {
-            return defaultValue;
+            return 0;
         }
         return cameraResult.getTy();
     }
 
     //Get distance in Y axis with given cameraResult
-    public Double getDistance(LLResult lastResult,double defaultValueTy) {
-        double ty = getTy(lastResult, defaultValueTy);
+    public Double getDistance(LLResult lastResult) {
+        double ty = getTy(lastResult);
         if (ty == 0) {
             return 0.0;
         }
@@ -111,13 +115,15 @@ public class Camera extends MMSubsystem {
         return Math.abs(distanceMM);
     }
 
-    public double getStrafeOffset(LLResult lastResult,double defaultValueTy, double defaultValueTx) {
+
+
+    public double getStrafeOffset(LLResult lastResult) {
         if (lastResult != null) {
-            double tx = getTx(lastResult, defaultValueTx);
-            if (tx != defaultValueTx) {
+            double tx = getTx(lastResult);
+            if (tx != 0) {
                 double tanTX = Math.tan(Math.toRadians(tx));
                 double height = CAMERA_HEIGHT - TARGET_HEIGHT;
-                double distanceY = getDistance(lastResult, defaultValueTy);
+                double distanceY = getDistance(lastResult);
                 double diagonalLength = Math.sqrt(height * height + distanceY * distanceY);
                 return tanTX * diagonalLength / 2.54 / 10;
             }
@@ -149,13 +155,13 @@ public class Camera extends MMSubsystem {
     }
 
     public void setPreviousResult() {
-        detectorPreviousResult = camera.getLatestResult();
+        previousResultDetector = camera.getLatestResult();
     }
 
     //find the closest sample to the middle of the robot
     public void findClosestSample() {
-        if (detectorPreviousResult != null) {
-            List<LLResultTypes.DetectorResult> detectorResults = detectorPreviousResult.getDetectorResults();
+        if (previousResultDetector != null) {
+            List<LLResultTypes.DetectorResult> detectorResults = previousResultDetector.getDetectorResults();
             if (!detectorResults.isEmpty()) {
                 LLResultTypes.DetectorResult dr = detectorResults.get(0);
                 List<List<Double>> corners = dr.getTargetCorners();
@@ -168,28 +174,36 @@ public class Camera extends MMSubsystem {
                 x = targetLeftUp.get(0);
                 y = targetLeftUp.get(1);
                 sampleColorID = dr.getClassId();
+
+                dx = dr.getTargetXDegrees() / 25.4;
+                dy = dr.getTargetYDegrees() / 25.4;
             }
         }
     }
 
     public void trackRed() {
         currentPipeline = 0;
+        detectorPipeline = 0;
     }
 
     public void trackBlue() {
         currentPipeline = 1;
+        detectorPipeline = 1;
     }
 
     public void trackRedAndYellow() {
+        detectorPipeline = 6;
         currentPipeline = 6;
     }
 
     public void trackBlueAndYellow() {
         currentPipeline = 7;
+        detectorPipeline = 7;
     }
 
     //Switch to neural-detector based detection pipepline (AI omg ooga booga big words I love man)
     public boolean switchToDetector() {
+        currentPipeline = detectorPipeline;
         if (!camera.pipelineSwitch(currentPipeline)) {
             //telemetry.addData("failed to switch to detector", 0);
             timesPipelineSwitchFail += 1;
@@ -224,7 +238,7 @@ public class Camera extends MMSubsystem {
     }
 
     public LLResult GetPreviousDetectorResult(){
-        return detectorPreviousResult;
+        return previousResultDetector;
     }
 
     //Only change the angle of the intake rotator
@@ -243,9 +257,15 @@ public class Camera extends MMSubsystem {
     //Doing every moment, it updates the python inputs, and then updates the cameraResult to the latest and freshest one. and telemtry, a lot of telemtry.
     @Override
     public void periodic() {
-        AutoLogManager.periodic();
+//        AutoLogManager.periodic();
         //updating the python endlessly
 //        if (!initiated) return;
+
+//        dx = getStrafeOffset(GetPreviousDetectorResult());
+//        dy = (linearIntakeLength - getDistance(GetPreviousDetectorResult())) / 25.4;
+//
+//        KoalaLog.log("distanceX periodic",dx,true);
+//        KoalaLog.log("distanceY periodic",dy,true);
 
         camera.updatePythonInputs(
                 new double[]{0.0, 0.0, 0.0, length, height, x, y, 0.0}

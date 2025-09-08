@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.CommendGroups.Camera;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
@@ -9,6 +10,7 @@ import com.pedropathing.pathgen.Point;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.robocol.TelemetryMessage;
 import com.seattlesolvers.solverslib.command.Command;
+import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.Subsystem;
@@ -30,7 +32,7 @@ import Ori.Coval.Logging.AutoLogOutput;
 import Ori.Coval.Logging.Logger.KoalaLog;
 
 @Config
-@AutoLog
+//@AutoLog
 public class CameraCommands {
 
     public static double linearIntakeLength = 422; //TODO : CHECK IF TRUE!!!
@@ -56,25 +58,38 @@ public class CameraCommands {
         });
     }
 
-    public static Command StrafeToSample() {
-
+    public static InstantCommand StrafeToSample() {
         LLResult lastResult = Camera.getInstance().GetPreviousDetectorResult();
-        double distanceX = Camera.getInstance().getStrafeOffset(lastResult, 0, 0);
-        double distanceY = (linearIntakeLength - Camera.getInstance().getDistance(lastResult, 0)) / 25.4;
-        if (lastResult == null){
-            KoalaLog.log("last result is null", "", true);
-        }
-        KoalaLog.log("distanceX in StrafeCommand ", distanceX, true);
 
-        if (distanceX != 0) {
+        if (lastResult != null) {
+            double distanceX = Camera.getInstance().getTx(Camera.getInstance().GetResult());
+            double distanceY = Camera.getInstance().getTy(Camera.getInstance().GetResult());
+
+            FtcDashboard.getInstance().getTelemetry().addData("distanceX in strafe", distanceX);
+            FtcDashboard.getInstance().getTelemetry().addData("distanceY in strafe", distanceY);
+
+            MMDrivetrain.getInstance().follower.updatePose();
+            MMDrivetrain.getInstance().follower.update();
+
 //            MMDrivetrain.update();
             Pose currentPose = MMDrivetrain.getInstance().follower.getPose();
-            KoalaLog.log("entered the strafe if ", distanceX, true);
-            Translation2d distanceXVector = new Translation2d(distanceX, currentPose.getHeading() + Math.toRadians(90));
-            Translation2d distanceYVector = new Translation2d(distanceY, currentPose.getHeading());
-            Translation2d endPoint = new Translation2d(currentPose.getX(), currentPose.getY())
-                    .plus(distanceXVector)
-                    .plus(distanceYVector);
+            double h = currentPose.getHeading(); // radians
+
+            // robot -> field
+            double dxf = distanceX * Math.cos(h + Math.PI/2.0) + distanceY * Math.cos(h);
+            double dyf = distanceX * Math.sin(h + Math.PI/2.0) + distanceY * Math.sin(h);
+
+            // skip truly tiny nudges
+
+            double endX = currentPose.getX() + dxf;
+            double endY = currentPose.getY() + dyf;
+
+            FtcDashboard.getInstance().getTelemetry().addData("endX in strafe", endX);
+            FtcDashboard.getInstance().getTelemetry().addData("endY in strafe", endY);
+
+
+
+            FtcDashboard.getInstance().getTelemetry().update();
 
             //TODO : implement pedro path to the endpoint, DONT KNOW IF IT IS RIGHT!
             Path strafeToSample = new Path(
@@ -82,12 +97,15 @@ public class CameraCommands {
                     new BezierLine(
                             new Point(MMDrivetrain.getInstance().follower.getPose().getX(),
                                     MMDrivetrain.getInstance().follower.getPose().getY(), Point.CARTESIAN),
-                            new Point(endPoint.getX(), endPoint.getY(), Point.CARTESIAN))
+                            new Point(endX, endY, Point.CARTESIAN))
             );
+            double robotHeading = MMDrivetrain.getInstance().follower.getPose().getHeading(); // radians
 
-            strafeToSample.setTangentHeadingInterpolation();
-            return MMDrivetrain.getInstance().followPathCommand(strafeToSample);
+            strafeToSample.setConstantHeadingInterpolation(robotHeading);
+            new InstantCommand();
         }
+
+        KoalaLog.log("last result is null", "", true);
         return new InstantCommand();
     }
 
